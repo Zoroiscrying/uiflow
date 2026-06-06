@@ -2,7 +2,7 @@
 * text=auto eol=lf
 
 # Exclude from Asset Library download
-/test            export-ignore
-/test/**         export-ignore
-/addons/gdUnit4  export-ignore
+/tests            export-ignore
+/tests/**         export-ignore
+/addons/gdUnit4   export-ignore
 /addons/gdUnit4/** export-ignore
