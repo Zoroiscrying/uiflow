@@ -13,8 +13,10 @@ var _examples: Array[Dictionary] = [
 
 
 func _ready() -> void:
+	var buttons_node := $Margin/Scroll/VBox/Buttons
 	for i in range(_examples.size()):
-		var btn: Button = $Margin/Scroll/VBox/Buttons.get_child(i)
+		# Scene has Button, Label, Button, Label... so button index = i * 2
+		var btn: Button = buttons_node.get_child(i * 2)
 		var example: Dictionary = _examples[i]
 		btn.text = example["title"]
 		btn.pressed.connect(func():
@@ -29,8 +31,8 @@ func _ready() -> void:
 
 
 func _on_enter(_data: Dictionary = {}) -> void:
-	UIFlow.set_default_focus($Margin/Scroll/VBox/Buttons.get_child(0))
+	UIFlow.set_default_focus($Margin/Scroll/VBox/Buttons.get_child(0) as Button)
 
 
 func _on_resume() -> void:
-	UIFlow.set_default_focus($Margin/Scroll/VBox/Buttons.get_child(0))
+	UIFlow.set_default_focus($Margin/Scroll/VBox/Buttons.get_child(0) as Button)
