@@ -148,3 +148,60 @@ func create_transition(type: UIFlowTransitionType.Type, duration: float, ease: T
 			return UIFlowTransitionScale.new(duration, ease, trans)
 		_:
 			return UIFlowTransitionNone.new()
+
+
+# ── Binding shortcuts ────────────────────────────────────────────────────────
+
+## Bind a Signal to a property on a node.
+## Returns a binding object that can be used to disconnect later.
+##
+## Example:
+## [codeblock]
+## var binding = UIFlow.bind_signal($HealthBar, "value", player_data.health_changed)
+## # Later: binding.unbind()
+## [/codeblock]
+func bind_signal(node: Node, prop_name: StringName, sig: Signal) -> UIFlowBindUtils.UIFlowBinding:
+	return UIFlowBindUtils.bind_signal(node, prop_name, sig)
+
+
+## Bind a Signal to a property with a transform function.
+##
+## Example:
+## [codeblock]
+## UIFlow.bind_signal_t($GoldLabel, "text", player_data.gold_changed,
+##     func(v): return "Gold: %d" % v)
+## [/codeblock]
+func bind_signal_t(node: Node, prop_name: StringName, sig: Signal, transform: Callable) -> UIFlowBindUtils.UIFlowBinding:
+	return UIFlowBindUtils.bind_signal_t(node, prop_name, sig, transform)
+
+
+## Bind a Signal to node visibility with a predicate.
+##
+## Example:
+## [codeblock]
+## UIFlow.bind_visible($Warning, player_data.health_changed,
+##     func(v): return v < 20.0)
+## [/codeblock]
+func bind_visible(node: Node, sig: Signal, predicate: Callable) -> UIFlowBindUtils.UIFlowBinding:
+	return UIFlowBindUtils.bind_visible(node, sig, predicate)
+
+
+## Bind a Signal to a property with a format string.
+##
+## Example:
+## [codeblock]
+## UIFlow.bind_format($Label, "text", player_data.health_changed, "HP: %s")
+## [/codeblock]
+func bind_format(node: Node, prop_name: StringName, sig: Signal, format: String) -> UIFlowBindUtils.UIFlowBinding:
+	return UIFlowBindUtils.bind_format(node, prop_name, sig, format)
+
+
+## Two-way bind a Slider to a Signal and setter.
+##
+## Example:
+## [codeblock]
+## UIFlow.bind_slider($VolumeSlider, settings_data.volume_changed,
+##     settings_data.set_volume)
+## [/codeblock]
+func bind_slider(slider: Range, sig: Signal, setter: Callable) -> UIFlowBindUtils.UIFlowBinding:
+	return UIFlowBindUtils.bind_slider(slider, sig, setter)
