@@ -1,5 +1,5 @@
 ## Transition demo page — shown when a transition button is pressed.
-extends UIFlowPage
+class_name TransitionDemoPage extends UIFlowPage
 
 var _transition_name: String = ""
 

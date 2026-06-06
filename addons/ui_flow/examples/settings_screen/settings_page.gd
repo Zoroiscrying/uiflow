@@ -1,5 +1,5 @@
 ## Settings page — demonstrates two-way data binding with sliders and toggles.
-extends UIFlowPage
+class_name SettingsPageExample extends UIFlowPage
 
 @export var settings: SettingsData
 

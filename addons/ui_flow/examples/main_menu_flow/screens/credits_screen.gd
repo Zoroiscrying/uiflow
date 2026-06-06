@@ -1,5 +1,5 @@
 ## Credits screen — simple page with back navigation.
-extends UIFlowPage
+class_name CreditsScreen extends UIFlowPage
 
 func _ready() -> void:
 	$VBox/BackButton.pressed.connect(func(): UIFlow.pop())

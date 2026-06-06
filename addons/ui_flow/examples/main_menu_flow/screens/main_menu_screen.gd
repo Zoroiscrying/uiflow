@@ -1,5 +1,5 @@
 ## Main menu — central hub with navigation to other screens.
-extends UIFlowPage
+class_name MainMenuScreen extends UIFlowPage
 
 func _ready() -> void:
 	$VBox/PlayButton.pressed.connect(func(): print("Play pressed!"))

@@ -1,5 +1,5 @@
 ## Pause menu — modal overlay with Resume/Settings/Quit.
-extends UIFlowPage
+class_name PausePage extends UIFlowPage
 
 func _ready() -> void:
 	$Panel/VBox/ResumeButton.pressed.connect(func(): UIFlow.pop())

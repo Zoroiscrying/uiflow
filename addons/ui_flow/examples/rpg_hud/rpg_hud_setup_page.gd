@@ -1,6 +1,6 @@
 ## RPG HUD Setup Page — initializes EventBus and game simulation,
 ## then pushes the actual HUD page.
-extends UIFlowPage
+class_name RPGHudSetupPage extends UIFlowPage
 
 var _game_events: GameEvents
 var _stats: PlayerStats

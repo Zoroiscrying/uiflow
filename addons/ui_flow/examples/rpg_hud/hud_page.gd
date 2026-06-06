@@ -1,5 +1,5 @@
 ## RPG HUD — demonstrates data binding + EventBus + pause menu.
-extends UIFlowPage
+class_name HUDPage extends UIFlowPage
 
 @export var stats: PlayerStats
 

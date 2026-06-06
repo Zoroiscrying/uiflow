@@ -1,7 +1,7 @@
 ## Example Hub — main entry point for all UIFlow examples.
 ##
 ## Demonstrates UIFlow navigation between example scenes.
-extends UIFlowPage
+class_name ExampleHub extends UIFlowPage
 
 ## Maps example titles to their wrapper data.
 const EXAMPLES: Array[Dictionary] = [
@@ -11,7 +11,7 @@ const EXAMPLES: Array[Dictionary] = [
 	},
 	{
 		"title": "Settings Screen",
-		"page_class": SettingsPage,
+		"page_class": SettingsPageExample,
 	},
 	{
 		"title": "RPG HUD + Pause",

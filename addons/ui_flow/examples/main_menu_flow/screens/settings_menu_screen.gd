@@ -1,5 +1,5 @@
 ## Settings menu placeholder — shows navigation depth.
-extends UIFlowPage
+class_name SettingsMenuScreen extends UIFlowPage
 
 func _ready() -> void:
 	$VBox/BackButton.pressed.connect(func(): UIFlow.pop())

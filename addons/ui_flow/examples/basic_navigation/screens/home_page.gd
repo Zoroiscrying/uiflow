@@ -1,5 +1,5 @@
 ## Example home page — demonstrates UIFlowPage lifecycle and navigation.
-extends UIFlowPage
+class_name HomePage extends UIFlowPage
 
 func _ready() -> void:
 	$VBox/SettingsButton.pressed.connect(_on_settings_pressed)

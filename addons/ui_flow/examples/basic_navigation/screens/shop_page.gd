@@ -1,5 +1,5 @@
 ## Example shop page — demonstrates receiving data and custom methods.
-extends UIFlowPage
+class_name ShopPage extends UIFlowPage
 
 var _npc_id: int = 0
 

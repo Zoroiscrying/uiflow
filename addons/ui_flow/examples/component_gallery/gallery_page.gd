@@ -2,7 +2,7 @@
 ##
 ## UI is defined in .tscn with proper anchors, containers, and font sizes.
 ## Code only handles signal connections and UIFlow API calls.
-extends UIFlowPage
+class_name GalleryPage extends UIFlowPage
 
 func _ready() -> void:
 	# Toast

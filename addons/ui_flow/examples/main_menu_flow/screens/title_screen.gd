@@ -1,5 +1,5 @@
 ## Title screen — entry point, fades into main menu.
-extends UIFlowPage
+class_name TitleScreen extends UIFlowPage
 
 func _on_enter(_data: Dictionary = {}) -> void:
 	# Animate title appearance
