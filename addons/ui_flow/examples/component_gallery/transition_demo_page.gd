@@ -9,6 +9,6 @@ func set_transition_name(name: String) -> void:
 
 
 func _on_enter(_data: Dictionary = {}) -> void:
-	$VBox/NameLabel.text = "Transition: %s" % _transition_name
-	$VBox/BackButton.pressed.connect(func(): UIFlow.pop())
-	UIFlow.set_default_focus($VBox/BackButton)
+	$Center/NameLabel.text = "Transition: %s" % _transition_name
+	$Center/BackButton.pressed.connect(func(): UIFlow.pop())
+	UIFlow.set_default_focus($Center/BackButton)

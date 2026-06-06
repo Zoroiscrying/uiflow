@@ -2,14 +2,14 @@
 class_name MainMenuScreen extends UIFlowPage
 
 func _ready() -> void:
-	$VBox/PlayButton.pressed.connect(func(): print("Play pressed!"))
-	$VBox/SettingsButton.pressed.connect(func():
+	$Center/PlayButton.pressed.connect(func(): print("Play pressed!"))
+	$Center/SettingsButton.pressed.connect(func():
 		UIFlow.push(SettingsMenuScreen, {}, UIFlowTransitionType.Type.SLIDE_LEFT)
 	)
-	$VBox/CreditsButton.pressed.connect(func():
+	$Center/CreditsButton.pressed.connect(func():
 		UIFlow.push(CreditsScreen, {}, UIFlowTransitionType.Type.FADE)
 	)
-	$VBox/QuitButton.pressed.connect(func():
+	$Center/QuitButton.pressed.connect(func():
 		UIFlowUI.Confirm.show_confirm("Quit", "Are you sure you want to quit?",
 			func(): get_tree().quit()
 		)
@@ -26,9 +26,9 @@ func _on_enter(_data: Dictionary = {}) -> void:
 	seq.play()
 
 	# Focus first button
-	UIFlow.set_default_focus($VBox/PlayButton)
+	UIFlow.set_default_focus($Center/PlayButton)
 
 
 func _on_resume() -> void:
 	# Re-focus when returning from sub-screens
-	UIFlow.set_default_focus($VBox/PlayButton)
+	UIFlow.set_default_focus($Center/PlayButton)
