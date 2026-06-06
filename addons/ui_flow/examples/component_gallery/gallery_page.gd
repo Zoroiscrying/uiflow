@@ -11,6 +11,10 @@ func _on_enter(_data: Dictionary = {}) -> void:
 		return
 	_connected = true
 
+
+func _on_resume() -> void:
+	UIFlow.set_default_focus($Margin/Scroll/VBox/ToastSection/Buttons/InfoBtn)
+
 	# Toast
 	$Margin/Scroll/VBox/ToastSection/Buttons/InfoBtn.pressed.connect(func():
 		UIFlowUI.Toast.show_toast("This is an info message.", UIFlowToast.Type.INFO)
@@ -66,9 +70,11 @@ func _demo_transition(type: UIFlowTransitionType.Type, label: String) -> void:
 
 func _demo_bounce() -> void:
 	var title: Control = $Margin/Scroll/VBox/Title
-	UIFlow.animate(title, UIFlowTweenProp.Prop.POSITION_Y,
-		title.position.y - 20, title.position.y,
-		0.4, Tween.EASE_OUT, Tween.TRANS_ELASTIC)
+	# Use offset_top for container-managed controls (position is managed by layout)
+	var original: float = title.offset_top
+	title.offset_top = original - 20
+	var tween: Tween = title.create_tween()
+	tween.tween_property(title, "offset_top", original, 0.4).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_ELASTIC)
 
 
 func _demo_stagger() -> void:

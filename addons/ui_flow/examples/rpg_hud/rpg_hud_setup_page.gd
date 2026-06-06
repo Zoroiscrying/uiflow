@@ -4,9 +4,12 @@ class_name RPGHudSetupPage extends UIFlowPage
 
 var _game_events: GameEvents
 var _stats: PlayerStats
+var _is_pausing: bool = false
 
 
 func _on_enter(_data: Dictionary = {}) -> void:
+	_is_pausing = false
+
 	# Create event bus
 	_game_events = GameEvents.new()
 	_game_events.name = "GameEvents"
@@ -43,11 +46,19 @@ func _on_enter(_data: Dictionary = {}) -> void:
 		_game_events.level_up.emit(_stats.level)
 	)
 
-	# Set back → pause menu (only if not already paused)
+	_set_pause_back()
+
+
+func _set_pause_back() -> void:
 	UIFlow.set_back_callback(func():
-		if UIFlow.stack_depth() <= 1 or UIFlow.current_page() == PausePage:
+		if _is_pausing:
 			return
+		if UIFlow.current_page() == PausePage:
+			return
+		_is_pausing = true
 		UIFlow.push(PausePage, {}, UIFlowTransitionType.Type.FADE)
+		# Reset flag after a short delay
+		get_tree().create_timer(0.5).timeout.connect(func(): _is_pausing = false)
 	)
 
 
@@ -58,9 +69,5 @@ func _on_exit() -> void:
 
 
 func _on_resume() -> void:
-	# Re-set back callback when returning from pause
-	UIFlow.set_back_callback(func():
-		if UIFlow.stack_depth() <= 1 or UIFlow.current_page() == PausePage:
-			return
-		UIFlow.push(PausePage, {}, UIFlowTransitionType.Type.FADE)
-	)
+	_is_pausing = false
+	_set_pause_back()
