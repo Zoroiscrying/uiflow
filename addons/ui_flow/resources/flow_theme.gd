@@ -102,3 +102,127 @@ func set_color(slot: ColorSlot, color: Color) -> void:
 		ColorSlot.ON_PRIMARY: on_primary = color
 		ColorSlot.ON_SECONDARY: on_secondary = color
 		ColorSlot.ON_SURFACE: on_surface = color
+
+
+## Build a Godot Theme resource from this UIFlowTheme.
+## Apply to any Control node — all children will inherit the styles.
+##
+## Example:
+## [codeblock]
+## var godot_theme = my_uiflow_theme.build_godot_theme()
+## $UIRoot.theme = godot_theme
+## [/codeblock]
+func build_godot_theme() -> Theme:
+	var t := Theme.new()
+
+	# ── Button ────────────────────────────────────────────────────────────────
+	var btn_normal := StyleBoxFlat.new()
+	btn_normal.bg_color = surface
+	btn_normal.set_corner_radius_all(radius_sm)
+	btn_normal.set_content_margin_all(spacing_md)
+	t.set_stylebox("normal", "Button", btn_normal)
+
+	var btn_hover := StyleBoxFlat.new()
+	btn_hover.bg_color = surface.lightened(0.1)
+	btn_hover.set_corner_radius_all(radius_sm)
+	btn_hover.set_content_margin_all(spacing_md)
+	t.set_stylebox("hover", "Button", btn_hover)
+
+	var btn_pressed := StyleBoxFlat.new()
+	btn_pressed.bg_color = primary.darkened(0.2)
+	btn_pressed.set_corner_radius_all(radius_sm)
+	btn_pressed.set_content_margin_all(spacing_md)
+	t.set_stylebox("pressed", "Button", btn_pressed)
+
+	var btn_focus := StyleBoxFlat.new()
+	btn_focus.bg_color = surface
+	btn_focus.set_corner_radius_all(radius_sm)
+	btn_focus.set_content_margin_all(spacing_md)
+	btn_focus.border_color = primary
+	btn_focus.set_border_width_all(2)
+	t.set_stylebox("focus", "Button", btn_focus)
+
+	t.set_color("font_color", "Button", on_surface)
+	t.set_color("font_hover_color", "Button", on_surface)
+	t.set_color("font_pressed_color", "Button", on_primary)
+	t.set_font_size("font_size", "Button", font_size_body)
+
+	# ── Label ─────────────────────────────────────────────────────────────────
+	t.set_color("font_color", "Label", on_surface)
+	t.set_font_size("font_size", "Label", font_size_body)
+
+	# ── Panel ─────────────────────────────────────────────────────────────────
+	var panel_style := StyleBoxFlat.new()
+	panel_style.bg_color = surface
+	panel_style.set_corner_radius_all(radius_md)
+	t.set_stylebox("panel", "Panel", panel_style)
+
+	# ── PanelContainer ────────────────────────────────────────────────────────
+	t.set_stylebox("panel", "PanelContainer", panel_style)
+
+	# ── HSlider / VSlider ─────────────────────────────────────────────────────
+	var slider_style := StyleBoxFlat.new()
+	slider_style.bg_color = background.lightened(0.1)
+	slider_style.set_corner_radius_all(radius_sm)
+	slider_style.set_content_margin_vertical(4)
+	t.set_stylebox("slider", "HSlider", slider_style)
+
+	var slider_grabber := StyleBoxFlat.new()
+	slider_grabber.bg_color = primary
+	slider_grabber.set_corner_radius_all(radius_sm)
+	t.set_stylebox("grabber", "HSlider", slider_grabber)
+
+	var slider_area := StyleBoxFlat.new()
+	slider_area.bg_color = primary.darkened(0.3)
+	slider_area.set_corner_radius_all(radius_sm)
+	t.set_stylebox("grabber_area", "HSlider", slider_area)
+
+	# ── ProgressBar ───────────────────────────────────────────────────────────
+	var progress_bg := StyleBoxFlat.new()
+	progress_bg.bg_color = background.lightened(0.05)
+	progress_bg.set_corner_radius_all(radius_sm)
+	t.set_stylebox("background", "ProgressBar", progress_bg)
+
+	var progress_fill := StyleBoxFlat.new()
+	progress_fill.bg_color = primary
+	progress_fill.set_corner_radius_all(radius_sm)
+	t.set_stylebox("fill", "ProgressBar", progress_fill)
+
+	t.set_color("font_color", "ProgressBar", on_surface)
+	t.set_font_size("font_size", "ProgressBar", font_size_small)
+
+	# ── CheckButton ───────────────────────────────────────────────────────────
+	t.set_color("font_color", "CheckButton", on_surface)
+	t.set_font_size("font_size", "CheckButton", font_size_body)
+
+	# ── LineEdit ──────────────────────────────────────────────────────────────
+	var line_edit_normal := StyleBoxFlat.new()
+	line_edit_normal.bg_color = background
+	line_edit_normal.set_corner_radius_all(radius_sm)
+	line_edit_normal.set_content_margin_all(spacing_sm)
+	line_edit_normal.border_color = surface.lightened(0.2)
+	line_edit_normal.set_border_width_all(1)
+	t.set_stylebox("normal", "LineEdit", line_edit_normal)
+
+	var line_edit_focus := StyleBoxFlat.new()
+	line_edit_focus.bg_color = background
+	line_edit_focus.set_corner_radius_all(radius_sm)
+	line_edit_focus.set_content_margin_all(spacing_sm)
+	line_edit_focus.border_color = primary
+	line_edit_focus.set_border_width_all(1)
+	t.set_stylebox("focus", "LineEdit", line_edit_focus)
+
+	t.set_color("font_color", "LineEdit", on_surface)
+	t.set_color("caret_color", "LineEdit", on_surface)
+	t.set_font_size("font_size", "LineEdit", font_size_body)
+
+	# ── ScrollContainer ───────────────────────────────────────────────────────
+	var scroll_bg := StyleBoxFlat.new()
+	scroll_bg.bg_color = background
+	scroll_bg.set_corner_radius_all(radius_sm)
+	t.set_stylebox("scroll", "ScrollContainer", scroll_bg)
+
+	# ── HSeparator ────────────────────────────────────────────────────────────
+	t.set_color("separator", "HSeparator", surface.lightened(0.15))
+
+	return t

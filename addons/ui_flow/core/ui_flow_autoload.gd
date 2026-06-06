@@ -47,6 +47,9 @@ func _ready() -> void:
 	Transitions = UIFlowTransitionManager.new()
 	ThemeHelper = UIFlowThemeHelper.new()
 
+	# Apply default theme to page container
+	_apply_theme_to_container()
+
 	Router = UIFlowNavigator.new()
 	Router.name = "UIFlowNavigator"
 	add_child(Router)
@@ -246,6 +249,7 @@ func get_theme() -> UIFlowTheme:
 
 
 ## Apply a UIFlowTheme resource as the active theme.
+## Automatically generates a Godot Theme and applies it to all UI containers.
 ##
 ## Example:
 ## [codeblock]
@@ -254,11 +258,30 @@ func get_theme() -> UIFlowTheme:
 ## [/codeblock]
 func apply_theme(theme: UIFlowTheme) -> void:
 	ThemeHelper.apply_theme(theme)
+	_apply_theme_to_container()
 
 
 ## Apply a built-in theme by name ("dark" or "light").
 func apply_builtin_theme(name: String) -> void:
 	ThemeHelper.apply_builtin(name)
+	_apply_theme_to_container()
+
+
+func _apply_theme_to_container() -> void:
+	var uiflow_theme: UIFlowTheme = ThemeHelper.get_current()
+	if uiflow_theme == null:
+		return
+
+	# Build Godot Theme from UIFlowTheme and apply to page container
+	var godot_theme: Theme = uiflow_theme.build_godot_theme()
+	_page_container.theme = godot_theme
+
+	# Also apply to UIFlowUI component layer if it exists
+	var ui_layer: CanvasLayer = get_node_or_null("/root/UIFlowUI/UIFlowComponentLayer")
+	if ui_layer:
+		for child in ui_layer.get_children():
+			if child is Control:
+				child.theme = godot_theme
 
 
 ## Get a named color from the current theme.
