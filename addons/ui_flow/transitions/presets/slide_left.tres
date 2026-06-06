@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="UIFlowTransition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://addons/ui_flow/resources/flow_transition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+type = 2
+duration = 0.3
+ease_type = 2
+trans_type = 5

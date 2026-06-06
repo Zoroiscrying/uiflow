@@ -228,9 +228,19 @@ func navigation_path() -> Array[StringName]:
 func _resolve_transition(transition) -> UIFlowTransitionBase:
 	if transition == null:
 		return _transition_manager.default_transition()
+	# Direct instance
 	if transition is UIFlowTransitionBase:
 		return transition
+	# UIFlowTransition resource (.tres)
+	if transition is UIFlowTransition:
+		return transition.create_instance()
+	# Enum type (lookup preset)
 	if transition is UIFlowTransitionType.Type:
 		return _transition_manager.get_preset(transition)
+	# String name (custom preset lookup)
+	if transition is String:
+		var custom: UIFlowTransition = _transition_manager.get_custom_preset(transition)
+		if custom:
+			return custom.create_instance()
 	push_warning("UIFlow: Invalid transition type, using default.")
 	return _transition_manager.default_transition()

@@ -129,29 +129,30 @@ func register_scene(page_class: GDScript, scene: PackedScene) -> void:
 
 # ── Transition shortcuts ─────────────────────────────────────────────────────
 
-## Set the default transition type and duration.
-func set_default_transition(type: UIFlowTransitionType.Type, duration: float = 0.3) -> void:
-	Transitions.set_default(type, duration)
+## Set the default transition type.
+func set_default_transition(type: UIFlowTransitionType.Type, _duration: float = 0.3) -> void:
+	Transitions.set_default(type, _duration)
 
 
-## Register a custom transition.
-func register_transition(name: String, transition: UIFlowTransitionBase) -> void:
+## Get a preset UIFlowTransition resource by type.
+## Returns the .tres resource — edit its properties to customize.
+func get_transition_preset(type: UIFlowTransitionType.Type) -> UIFlowTransition:
+	return Transitions.get_preset_resource(type)
+
+
+## Register a custom transition resource by name.
+func register_transition(name: String, transition: UIFlowTransition) -> void:
 	Transitions.register_custom(name, transition)
 
 
-## Create a transition instance with custom parameters.
+## Create a transition instance with inline parameters.
 func create_transition(type: UIFlowTransitionType.Type, duration: float, ease: Tween.EaseType = Tween.EASE_IN_OUT, trans: Tween.TransitionType = Tween.TRANS_LINEAR) -> UIFlowTransitionBase:
-	match type:
-		UIFlowTransitionType.Type.FADE:
-			return UIFlowTransitionFade.new(duration, ease, trans)
-		UIFlowTransitionType.Type.SLIDE_LEFT:
-			return UIFlowTransitionSlideLeft.new(duration, ease, trans)
-		UIFlowTransitionType.Type.SLIDE_RIGHT:
-			return UIFlowTransitionSlideRight.new(duration, ease, trans)
-		UIFlowTransitionType.Type.SCALE:
-			return UIFlowTransitionScale.new(duration, ease, trans)
-		_:
-			return UIFlowTransitionNone.new()
+	return Transitions.create_instance(type, duration, ease, trans)
+
+
+## Create a transition instance from a UIFlowTransition resource.
+func create_transition_from(res: UIFlowTransition) -> UIFlowTransitionBase:
+	return Transitions.create_instance_from_resource(res)
 
 
 # ── Animation shortcuts ──────────────────────────────────────────────────────
