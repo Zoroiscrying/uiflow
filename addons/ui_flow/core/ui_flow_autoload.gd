@@ -7,7 +7,12 @@
 ## UIFlow.push(SettingsPage)
 ## UIFlow.push(ShopPage, {"npc_id": 123})
 ## UIFlow.pop()
-## UIFlow.Toast.show("Hello!")
+## [/codeblock]
+##
+## For convenience components (Toast, Confirm, Alert), use [code]UIFlowUI[/code]:
+## [codeblock]
+## UIFlowUI.Toast.show("Hello!")
+## UIFlowUI.Confirm.show("Title", "Message", on_confirm)
 ## [/codeblock]
 extends Node
 
@@ -20,19 +25,9 @@ var Scenes: UIFlowSceneResolver
 ## Transition management (presets and playback).
 var Transitions: UIFlowTransitionManager
 
-# ── Components ───────────────────────────────────────────────────────────────
-
-## Toast notification system.
-var Toast: UIFlowToast
-## Confirmation dialog.
-var Confirm: UIFlowConfirmDialog
-## Alert dialog.
-var Alert: UIFlowAlertDialog
-
 # ── Internal ─────────────────────────────────────────────────────────────────
 
 var _page_container: Control
-var _component_layer: CanvasLayer
 
 
 func _ready() -> void:
@@ -43,12 +38,6 @@ func _ready() -> void:
 	_page_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_page_container)
 
-	# Create component layer (above everything)
-	_component_layer = CanvasLayer.new()
-	_component_layer.name = "UIFlowComponentLayer"
-	_component_layer.layer = 100
-	add_child(_component_layer)
-
 	# Initialize sub-systems
 	Scenes = UIFlowSceneResolver.new()
 	Transitions = UIFlowTransitionManager.new()
@@ -57,30 +46,6 @@ func _ready() -> void:
 	Router.name = "UIFlowNavigator"
 	add_child(Router)
 	Router.setup(_page_container, Scenes, Transitions)
-
-	# Initialize components
-	_setup_components()
-
-
-func _setup_components() -> void:
-	# Toast
-	Toast = UIFlowToast.new()
-	Toast.name = "UIFlowToast"
-	Toast.set_anchors_preset(Control.PRESET_FULL_RECT)
-	Toast.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_component_layer.add_child(Toast)
-
-	# Confirm
-	Confirm = UIFlowConfirmDialog.new()
-	Confirm.name = "UIFlowConfirm"
-	Confirm.set_anchors_preset(Control.PRESET_FULL_RECT)
-	_component_layer.add_child(Confirm)
-
-	# Alert
-	Alert = UIFlowAlertDialog.new()
-	Alert.name = "UIFlowAlert"
-	Alert.set_anchors_preset(Control.PRESET_FULL_RECT)
-	_component_layer.add_child(Alert)
 
 
 # ── Router shortcuts ─────────────────────────────────────────────────────────
@@ -176,12 +141,6 @@ func create_transition(type: UIFlowTransitionType.Type, duration: float, ease: T
 
 ## Animate a property on a node using TweenProp enum.
 ## Returns the Tween for chaining or awaiting.
-##
-## Example:
-## [codeblock]
-## UIFlow.animate($Panel, UIFlowTweenProp.Prop.MODULATE_A, 0.0, 1.0, 0.3)
-## await UIFlow.animate($Panel, UIFlowTweenProp.Prop.POSITION_X, -400, 0, 0.4).finished
-## [/codeblock]
 func animate(
 	node: Node,
 	prop: UIFlowTweenProp.Prop,

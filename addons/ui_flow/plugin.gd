@@ -3,6 +3,7 @@
 extends EditorPlugin
 
 const AUTOLOAD_NAME := "UIFlow"
+const UI_AUTOLOAD_NAME := "UIFlowUI"
 const SCENE_DIR_SETTING := "ui_flow/scene_directory"
 const DEFAULT_SCENE_DIR := "res://UIScene/"
 
@@ -17,10 +18,12 @@ func _exit_tree() -> void:
 
 func _enable_plugin() -> void:
 	add_autoload_singleton(AUTOLOAD_NAME, "res://addons/ui_flow/core/ui_flow_autoload.tscn")
+	add_autoload_singleton(UI_AUTOLOAD_NAME, "res://addons/ui_flow/core/ui_flow_ui_autoload.tscn")
 	_ensure_project_settings()
 
 
 func _disable_plugin() -> void:
+	remove_autoload_singleton(UI_AUTOLOAD_NAME)
 	remove_autoload_singleton(AUTOLOAD_NAME)
 
 
