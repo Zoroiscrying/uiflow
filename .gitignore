@@ -1,0 +1,13 @@
+# Godot 4+ specific ignores
+.godot/
+/android/
+
+# IDE
+.vscode/
+.idea/
+*.sln
+*.csproj
+
+# OS
+.DS_Store
+Thumbs.db
