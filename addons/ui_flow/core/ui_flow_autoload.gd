@@ -24,6 +24,10 @@ var Router: UIFlowNavigator
 var Scenes: UIFlowSceneResolver
 ## Transition management (presets and playback).
 var Transitions: UIFlowTransitionManager
+## Input handling and focus management.
+var Input: UIFlowInputHandler
+## Theme utilities and named color palette.
+var ThemeHelper: UIFlowThemeHelper
 
 # ── Internal ─────────────────────────────────────────────────────────────────
 
@@ -41,11 +45,24 @@ func _ready() -> void:
 	# Initialize sub-systems
 	Scenes = UIFlowSceneResolver.new()
 	Transitions = UIFlowTransitionManager.new()
+	ThemeHelper = UIFlowThemeHelper.new()
 
 	Router = UIFlowNavigator.new()
 	Router.name = "UIFlowNavigator"
 	add_child(Router)
 	Router.setup(_page_container, Scenes, Transitions)
+
+	Input = UIFlowInputHandler.new()
+	Input.name = "UIFlowInputHandler"
+	add_child(Input)
+
+	# Auto-pop behavior: back action pops the top page
+	Input.back_pressed.connect(_on_back_pressed)
+
+
+func _on_back_pressed() -> void:
+	if stack_depth() > 0:
+		pop()
 
 
 # ── Router shortcuts ─────────────────────────────────────────────────────────
@@ -196,3 +213,42 @@ func bind_format(node: Node, prop_name: StringName, sig: Signal, format: String)
 ## Two-way bind a Slider to a Signal and setter.
 func bind_slider(slider: Range, sig: Signal, setter: Callable) -> UIFlowBindUtils.UIFlowBinding:
 	return UIFlowBindUtils.bind_slider(slider, sig, setter)
+
+
+# ── Input shortcuts ──────────────────────────────────────────────────────────
+
+## Set a custom back/cancel callback.
+func set_back_callback(callback: Callable) -> void:
+	Input.set_custom_callback(callback)
+
+
+## Reset back behavior to default (auto-pop).
+func reset_back_callback() -> void:
+	Input.reset_callback()
+
+
+## Set the default focus node for the current page.
+func set_default_focus(node: Control) -> void:
+	Input.set_default_focus(node)
+
+
+## Enable or disable back/cancel handling.
+func set_back_enabled(value: bool) -> void:
+	Input.set_enabled(value)
+
+
+# ── Theme shortcuts ──────────────────────────────────────────────────────────
+
+## Get a named color from the palette.
+func get_color(slot: UIFlowThemeHelper.ColorSlot) -> Color:
+	return ThemeHelper.get_color(slot)
+
+
+## Set a named color in the palette.
+func set_color(slot: UIFlowThemeHelper.ColorSlot, color: Color) -> void:
+	ThemeHelper.set_color(slot, color)
+
+
+## Apply a Godot Theme resource globally.
+func apply_theme(theme: Theme) -> void:
+	ThemeHelper.apply_theme(theme)
