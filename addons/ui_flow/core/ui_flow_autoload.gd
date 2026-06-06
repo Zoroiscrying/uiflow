@@ -7,6 +7,7 @@
 ## UIFlow.push(SettingsPage)
 ## UIFlow.push(ShopPage, {"npc_id": 123})
 ## UIFlow.pop()
+## UIFlow.Toast.show("Hello!")
 ## [/codeblock]
 extends Node
 
@@ -19,15 +20,19 @@ var Scenes: UIFlowSceneResolver
 ## Transition management (presets and playback).
 var Transitions: UIFlowTransitionManager
 
-# ── Signals ──────────────────────────────────────────────────────────────────
+# ── Components ───────────────────────────────────────────────────────────────
 
-## Event Bus — define your game events as signals here.
-## Example: [code]signal player_died[/code] in a custom EventBus script,
-## or use this node directly for simple projects.
+## Toast notification system.
+var Toast: UIFlowToast
+## Confirmation dialog.
+var Confirm: UIFlowConfirmDialog
+## Alert dialog.
+var Alert: UIFlowAlertDialog
 
 # ── Internal ─────────────────────────────────────────────────────────────────
 
 var _page_container: Control
+var _component_layer: CanvasLayer
 
 
 func _ready() -> void:
@@ -38,6 +43,12 @@ func _ready() -> void:
 	_page_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_page_container)
 
+	# Create component layer (above everything)
+	_component_layer = CanvasLayer.new()
+	_component_layer.name = "UIFlowComponentLayer"
+	_component_layer.layer = 100
+	add_child(_component_layer)
+
 	# Initialize sub-systems
 	Scenes = UIFlowSceneResolver.new()
 	Transitions = UIFlowTransitionManager.new()
@@ -47,14 +58,35 @@ func _ready() -> void:
 	add_child(Router)
 	Router.setup(_page_container, Scenes, Transitions)
 
+	# Initialize components
+	_setup_components()
+
+
+func _setup_components() -> void:
+	# Toast
+	Toast = UIFlowToast.new()
+	Toast.name = "UIFlowToast"
+	Toast.set_anchors_preset(Control.PRESET_FULL_RECT)
+	Toast.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_component_layer.add_child(Toast)
+
+	# Confirm
+	Confirm = UIFlowConfirmDialog.new()
+	Confirm.name = "UIFlowConfirm"
+	Confirm.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_component_layer.add_child(Confirm)
+
+	# Alert
+	Alert = UIFlowAlertDialog.new()
+	Alert.name = "UIFlowAlert"
+	Alert.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_component_layer.add_child(Alert)
+
 
 # ── Router shortcuts ─────────────────────────────────────────────────────────
 
 ## Push a page onto the navigation stack.
 ## Returns the page instance for immediate custom initialization.
-## [param page_class] is the GDScript class (e.g. SettingsPage).
-## [param data] is passed to the page's [code]_on_enter()[/code] callback.
-## [param transition] optionally overrides the default transition (a preset type or custom instance).
 ##
 ## Example:
 ## [codeblock]
@@ -76,7 +108,7 @@ func replace(page_class: GDScript, data: Dictionary = {}, transition = null) -> 
 	return Router.replace(page_class, data, transition)
 
 
-## Remove all pages and optionally push a new root page.
+## Remove all pages.
 func pop_to_root(transition = null) -> void:
 	Router.pop_to_root(transition)
 
@@ -97,15 +129,6 @@ func navigation_path() -> Array[StringName]:
 
 
 ## Find a page instance in the stack by its class.
-## Returns null if the page is not in the stack.
-## Useful for accessing paused pages (covered by another page).
-##
-## Example:
-## [codeblock]
-## var settings: SettingsPage = UIFlow.get_page(SettingsPage) as SettingsPage
-## if settings:
-##     settings.refresh()
-## [/codeblock]
 func get_page(page_class: GDScript) -> Control:
 	return Router.get_page(page_class)
 
@@ -118,7 +141,6 @@ func has_page(page_class: GDScript) -> bool:
 # ── Scene registration shortcuts ─────────────────────────────────────────────
 
 ## Register a custom scene mapping for a page class.
-## Use when the scene file doesn't follow the naming convention.
 func register_scene(page_class: GDScript, scene: PackedScene) -> void:
 	Scenes.register_scene(page_class, scene)
 
@@ -150,58 +172,68 @@ func create_transition(type: UIFlowTransitionType.Type, duration: float, ease: T
 			return UIFlowTransitionNone.new()
 
 
-# ── Binding shortcuts ────────────────────────────────────────────────────────
+# ── Animation shortcuts ──────────────────────────────────────────────────────
 
-## Bind a Signal to a property on a node.
-## Returns a binding object that can be used to disconnect later.
+## Animate a property on a node using TweenProp enum.
+## Returns the Tween for chaining or awaiting.
 ##
 ## Example:
 ## [codeblock]
-## var binding = UIFlow.bind_signal($HealthBar, "value", player_data.health_changed)
-## # Later: binding.unbind()
+## UIFlow.animate($Panel, UIFlowTweenProp.Prop.MODULATE_A, 0.0, 1.0, 0.3)
+## await UIFlow.animate($Panel, UIFlowTweenProp.Prop.POSITION_X, -400, 0, 0.4).finished
 ## [/codeblock]
+func animate(
+	node: Node,
+	prop: UIFlowTweenProp.Prop,
+	from: Variant,
+	to: Variant,
+	duration: float = 0.3,
+	ease_type: Tween.EaseType = Tween.EASE_IN_OUT,
+	trans_type: Tween.TransitionType = Tween.TRANS_LINEAR
+) -> Tween:
+	return UIFlowAnimator.animate(node, prop, from, to, duration, ease_type, trans_type)
+
+
+## Animate using a raw Godot property path string.
+func animate_raw(
+	node: Node,
+	prop_path: String,
+	from: Variant,
+	to: Variant,
+	duration: float = 0.3,
+	ease_type: Tween.EaseType = Tween.EASE_IN_OUT,
+	trans_type: Tween.TransitionType = Tween.TRANS_LINEAR
+) -> Tween:
+	return UIFlowAnimator.animate_raw(node, prop_path, from, to, duration, ease_type, trans_type)
+
+
+## Create a sequencer for multi-element animations.
+func sequencer() -> UIFlowSequencer:
+	return UIFlowAnimator.sequencer()
+
+
+# ── Binding shortcuts ────────────────────────────────────────────────────────
+
+## Bind a Signal to a property on a node.
 func bind_signal(node: Node, prop_name: StringName, sig: Signal) -> UIFlowBindUtils.UIFlowBinding:
 	return UIFlowBindUtils.bind_signal(node, prop_name, sig)
 
 
 ## Bind a Signal to a property with a transform function.
-##
-## Example:
-## [codeblock]
-## UIFlow.bind_signal_t($GoldLabel, "text", player_data.gold_changed,
-##     func(v): return "Gold: %d" % v)
-## [/codeblock]
 func bind_signal_t(node: Node, prop_name: StringName, sig: Signal, transform: Callable) -> UIFlowBindUtils.UIFlowBinding:
 	return UIFlowBindUtils.bind_signal_t(node, prop_name, sig, transform)
 
 
 ## Bind a Signal to node visibility with a predicate.
-##
-## Example:
-## [codeblock]
-## UIFlow.bind_visible($Warning, player_data.health_changed,
-##     func(v): return v < 20.0)
-## [/codeblock]
 func bind_visible(node: Node, sig: Signal, predicate: Callable) -> UIFlowBindUtils.UIFlowBinding:
 	return UIFlowBindUtils.bind_visible(node, sig, predicate)
 
 
 ## Bind a Signal to a property with a format string.
-##
-## Example:
-## [codeblock]
-## UIFlow.bind_format($Label, "text", player_data.health_changed, "HP: %s")
-## [/codeblock]
 func bind_format(node: Node, prop_name: StringName, sig: Signal, format: String) -> UIFlowBindUtils.UIFlowBinding:
 	return UIFlowBindUtils.bind_format(node, prop_name, sig, format)
 
 
 ## Two-way bind a Slider to a Signal and setter.
-##
-## Example:
-## [codeblock]
-## UIFlow.bind_slider($VolumeSlider, settings_data.volume_changed,
-##     settings_data.set_volume)
-## [/codeblock]
 func bind_slider(slider: Range, sig: Signal, setter: Callable) -> UIFlowBindUtils.UIFlowBinding:
 	return UIFlowBindUtils.bind_slider(slider, sig, setter)
