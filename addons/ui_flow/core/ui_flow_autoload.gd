@@ -49,9 +49,15 @@ func _ready() -> void:
 	_page_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	ui_layer.add_child(_page_container)
 
-	# Ensure container has proper size even inside CanvasLayer
+	# Set explicit size from window — CanvasLayer Controls need this
+	var window_size := DisplayServer.window_get_size()
 	_page_container.position = Vector2.ZERO
-	_page_container.size = get_viewport().get_visible_rect().size
+	_page_container.size = Vector2(window_size)
+
+	# Update size on window resize
+	get_viewport().size_changed.connect(func():
+		_page_container.size = Vector2(DisplayServer.window_get_size())
+	)
 
 	# Initialize sub-systems
 	Scenes = UIFlowSceneResolver.new()
