@@ -10,7 +10,7 @@ func _ready() -> void:
 		UIFlow.push(CreditsScreen, {}, UIFlowTransitionType.Type.FADE)
 	)
 	$VBox/QuitButton.pressed.connect(func():
-		UIFlowUI.Confirm.show("Quit", "Are you sure you want to quit?",
+		UIFlowUI.Confirm.show_confirm("Quit", "Are you sure you want to quit?",
 			func(): get_tree().quit()
 		)
 	)

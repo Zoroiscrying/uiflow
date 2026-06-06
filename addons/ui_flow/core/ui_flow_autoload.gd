@@ -25,7 +25,7 @@ var Scenes: UIFlowSceneResolver
 ## Transition management (presets and playback).
 var Transitions: UIFlowTransitionManager
 ## Input handling and focus management.
-var Input: UIFlowInputHandler
+var FlowInput: UIFlowInputHandler
 ## Theme utilities and named color palette.
 var ThemeHelper: UIFlowThemeHelper
 
@@ -55,12 +55,12 @@ func _ready() -> void:
 	add_child(Router)
 	Router.setup(_page_container, Scenes, Transitions)
 
-	Input = UIFlowInputHandler.new()
-	Input.name = "UIFlowInputHandler"
-	add_child(Input)
+	FlowInput = UIFlowInputHandler.new()
+	FlowInput.name = "UIFlowInputHandler"
+	add_child(FlowInput)
 
 	# Auto-pop behavior: back action pops the top page
-	Input.back_pressed.connect(_on_back_pressed)
+	FlowInput.back_pressed.connect(_on_back_pressed)
 
 
 func _on_back_pressed() -> void:
@@ -223,22 +223,22 @@ func bind_slider(slider: Range, sig: Signal, setter: Callable) -> UIFlowBindUtil
 
 ## Set a custom back/cancel callback.
 func set_back_callback(callback: Callable) -> void:
-	Input.set_custom_callback(callback)
+	FlowInput.set_custom_callback(callback)
 
 
 ## Reset back behavior to default (auto-pop).
 func reset_back_callback() -> void:
-	Input.reset_callback()
+	FlowInput.reset_callback()
 
 
 ## Set the default focus node for the current page.
 func set_default_focus(node: Control) -> void:
-	Input.set_default_focus(node)
+	FlowInput.set_default_focus(node)
 
 
 ## Enable or disable back/cancel handling.
 func set_back_enabled(value: bool) -> void:
-	Input.set_enabled(value)
+	FlowInput.set_enabled(value)
 
 
 # ── Theme shortcuts ──────────────────────────────────────────────────────────

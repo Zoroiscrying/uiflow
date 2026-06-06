@@ -7,7 +7,7 @@ func _ready() -> void:
 		UIFlow.push(SettingsPageExample, {}, UIFlowTransitionType.Type.SLIDE_LEFT)
 	)
 	$Panel/VBox/QuitButton.pressed.connect(func():
-		UIFlowUI.Confirm.show("Quit", "Return to main menu?",
+		UIFlowUI.Confirm.show_confirm("Quit", "Return to main menu?",
 			func(): UIFlow.pop_to_root()
 		)
 	)

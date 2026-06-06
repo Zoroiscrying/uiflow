@@ -22,7 +22,7 @@ func _ready() -> void:
 		)
 
 	$Margin/Scroll/VBox/QuitButton.pressed.connect(func():
-		UIFlowUI.Confirm.show("Quit", "Exit the example viewer?",
+		UIFlowUI.Confirm.show_confirm("Quit", "Exit the example viewer?",
 			func(): get_tree().quit()
 		)
 	)

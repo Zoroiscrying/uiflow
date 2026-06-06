@@ -15,9 +15,18 @@ run/main_scene="res://addons/ui_flow/examples/main.tscn"
 config/features=PackedStringArray("4.6", "GL Compatibility")
 config/icon="res://icon.svg"
 
+[autoload]
+
+UIFlow="*res://addons/ui_flow/core/ui_flow_autoload.tscn"
+UIFlowUI="*res://addons/ui_flow/core/ui_flow_ui_autoload.tscn"
+
 [dotnet]
 
 project/assembly_name="Godot-Plugin-UI-Flow"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/gdUnit4/plugin.cfg", "res://addons/ui_flow/plugin.cfg")
 
 [physics]
 
