@@ -1,71 +1,104 @@
-## Theme helper — named color palette and theme utilities for UIFlow.
+## Theme manager — loads and manages UIFlowTheme resources.
 ##
-## Provides a semantic color system (primary, secondary, accent, error, etc.)
-## that can be used across the project for consistent styling.
+## Built-in themes: dark.tres, light.tres (in themes/ directory).
+## Users can create custom .tres themes and apply them at runtime.
 class_name UIFlowThemeHelper extends RefCounted
 
-## Named color slots.
-enum ColorSlot {
-	PRIMARY,
-	SECONDARY,
-	ACCENT,
-	ERROR,
-	WARNING,
-	SUCCESS,
-	INFO,
-	BACKGROUND,
-	SURFACE,
-	ON_PRIMARY,
-	ON_SECONDARY,
-	ON_SURFACE,
+const THEMES_DIR := "res://addons/ui_flow/themes/"
+
+const BUILTIN_THEMES: Dictionary = {
+	"dark": "dark.tres",
+	"light": "light.tres",
 }
 
-var _colors: Dictionary = {}
-var _theme: Theme = null
+var _current_theme: UIFlowTheme = null
+var _loaded_themes: Dictionary = {} # String -> UIFlowTheme
 
 
 func _init() -> void:
-	_set_defaults()
+	# Load built-in themes
+	for name_key: String in BUILTIN_THEMES:
+		var path: String = THEMES_DIR + BUILTIN_THEMES[name_key]
+		if ResourceLoader.exists(path):
+			_loaded_themes[name_key] = load(path) as UIFlowTheme
+
+	# Default to dark theme
+	_current_theme = _loaded_themes.get("dark", UIFlowTheme.new())
 
 
-func _set_defaults() -> void:
-	_colors[ColorSlot.PRIMARY] = Color(0.3, 0.5, 0.9)
-	_colors[ColorSlot.SECONDARY] = Color(0.5, 0.5, 0.5)
-	_colors[ColorSlot.ACCENT] = Color(0.9, 0.6, 0.2)
-	_colors[ColorSlot.ERROR] = Color(0.9, 0.3, 0.3)
-	_colors[ColorSlot.WARNING] = Color(0.9, 0.7, 0.2)
-	_colors[ColorSlot.SUCCESS] = Color(0.3, 0.8, 0.4)
-	_colors[ColorSlot.INFO] = Color(0.4, 0.7, 0.9)
-	_colors[ColorSlot.BACKGROUND] = Color(0.1, 0.1, 0.12)
-	_colors[ColorSlot.SURFACE] = Color(0.15, 0.15, 0.18)
-	_colors[ColorSlot.ON_PRIMARY] = Color.WHITE
-	_colors[ColorSlot.ON_SECONDARY] = Color.WHITE
-	_colors[ColorSlot.ON_SURFACE] = Color(0.9, 0.9, 0.9)
+## Get the current active theme.
+func get_current() -> UIFlowTheme:
+	return _current_theme
 
 
-## Get a named color.
-func get_color(slot: ColorSlot) -> Color:
-	return _colors.get(slot, Color.WHITE)
+## Apply a UIFlowTheme resource as the active theme.
+func apply_theme(theme: UIFlowTheme) -> void:
+	if theme:
+		_current_theme = theme
 
 
-## Set a named color.
-func set_color(slot: ColorSlot, color: Color) -> void:
-	_colors[slot] = color
+## Apply a built-in theme by name ("dark" or "light").
+func apply_builtin(name: String) -> void:
+	if _loaded_themes.has(name):
+		_current_theme = _loaded_themes[name]
+	else:
+		push_warning("UIFlowThemeHelper: Unknown built-in theme '%s'" % name)
 
 
-## Apply a Godot Theme resource as the active theme.
-func apply_theme(theme: Theme) -> void:
-	_theme = theme
+## Get a color from the current theme.
+func get_color(slot: UIFlowTheme.ColorSlot) -> Color:
+	if _current_theme:
+		return _current_theme.get_color(slot)
+	return Color.WHITE
 
 
-## Get the active theme (or null if none set).
-func get_theme() -> Theme:
-	return _theme
+## Set a color on the current theme.
+func set_color(slot: UIFlowTheme.ColorSlot, color: Color) -> void:
+	if _current_theme:
+		_current_theme.set_color(slot, color)
 
 
-## Apply a style override to a specific node.
-func set_override(node: Control, theme_type: String, property: String, value: Variant) -> void:
-	if _theme:
-		_theme.set(theme_type, property, value)
-	# Also apply directly to the node
-	node.set(theme_type + "/" + property, value)
+## Get a font size from the current theme.
+func get_font_size(size_name: String) -> int:
+	if _current_theme == null:
+		return 14
+	match size_name:
+		"title": return _current_theme.font_size_title
+		"heading": return _current_theme.font_size_heading
+		"body": return _current_theme.font_size_body
+		"small": return _current_theme.font_size_small
+		_: return _current_theme.font_size_body
+
+
+## Get a spacing value from the current theme.
+func get_spacing(size_name: String) -> int:
+	if _current_theme == null:
+		return 8
+	match size_name:
+		"xs": return _current_theme.spacing_xs
+		"sm": return _current_theme.spacing_sm
+		"md": return _current_theme.spacing_md
+		"lg": return _current_theme.spacing_lg
+		"xl": return _current_theme.spacing_xl
+		_: return _current_theme.spacing_md
+
+
+## Get a border radius from the current theme.
+func get_radius(size_name: String) -> int:
+	if _current_theme == null:
+		return 4
+	match size_name:
+		"sm": return _current_theme.radius_sm
+		"md": return _current_theme.radius_md
+		"lg": return _current_theme.radius_lg
+		_: return _current_theme.radius_sm
+
+
+## Register a custom theme by name for later use.
+func register_theme(name: String, theme: UIFlowTheme) -> void:
+	_loaded_themes[name] = theme
+
+
+## Get a registered theme by name.
+func get_theme_by_name(name: String) -> UIFlowTheme:
+	return _loaded_themes.get(name, null)

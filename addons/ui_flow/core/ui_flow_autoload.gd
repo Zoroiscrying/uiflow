@@ -240,16 +240,50 @@ func set_back_enabled(value: bool) -> void:
 
 # ── Theme shortcuts ──────────────────────────────────────────────────────────
 
-## Get a named color from the palette.
-func get_color(slot: UIFlowThemeHelper.ColorSlot) -> Color:
+## Get the current active UIFlowTheme resource.
+func get_theme() -> UIFlowTheme:
+	return ThemeHelper.get_current()
+
+
+## Apply a UIFlowTheme resource as the active theme.
+##
+## Example:
+## [codeblock]
+## UIFlow.apply_theme(preload("res://addons/ui_flow/themes/dark.tres"))
+## UIFlow.apply_theme(preload("res://my_custom_theme.tres"))
+## [/codeblock]
+func apply_theme(theme: UIFlowTheme) -> void:
+	ThemeHelper.apply_theme(theme)
+
+
+## Apply a built-in theme by name ("dark" or "light").
+func apply_builtin_theme(name: String) -> void:
+	ThemeHelper.apply_builtin(name)
+
+
+## Get a named color from the current theme.
+func get_color(slot: UIFlowTheme.ColorSlot) -> Color:
 	return ThemeHelper.get_color(slot)
 
 
-## Set a named color in the palette.
-func set_color(slot: UIFlowThemeHelper.ColorSlot, color: Color) -> void:
+## Set a named color on the current theme.
+func set_color(slot: UIFlowTheme.ColorSlot, color: Color) -> void:
 	ThemeHelper.set_color(slot, color)
 
 
-## Apply a Godot Theme resource globally.
-func apply_theme(theme: Theme) -> void:
-	ThemeHelper.apply_theme(theme)
+## Get a font size from the current theme.
+## Valid sizes: "title", "heading", "body", "small"
+func get_font_size(size_name: String) -> int:
+	return ThemeHelper.get_font_size(size_name)
+
+
+## Get a spacing value from the current theme.
+## Valid sizes: "xs", "sm", "md", "lg", "xl"
+func get_spacing(size_name: String) -> int:
+	return ThemeHelper.get_spacing(size_name)
+
+
+## Get a border radius from the current theme.
+## Valid sizes: "sm", "md", "lg"
+func get_radius(size_name: String) -> int:
+	return ThemeHelper.get_radius(size_name)
