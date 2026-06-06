@@ -43,10 +43,11 @@ func _on_enter(_data: Dictionary = {}) -> void:
 		_game_events.level_up.emit(_stats.level)
 	)
 
-	# Set back → pause menu
+	# Set back → pause menu (only if not already paused)
 	UIFlow.set_back_callback(func():
-		if UIFlow.current_page() != PausePage:
-			UIFlow.push(PausePage, {}, UIFlowTransitionType.Type.FADE)
+		if UIFlow.stack_depth() <= 1 or UIFlow.current_page() == PausePage:
+			return
+		UIFlow.push(PausePage, {}, UIFlowTransitionType.Type.FADE)
 	)
 
 
@@ -59,6 +60,7 @@ func _on_exit() -> void:
 func _on_resume() -> void:
 	# Re-set back callback when returning from pause
 	UIFlow.set_back_callback(func():
-		if UIFlow.current_page() != PausePage:
-			UIFlow.push(PausePage, {}, UIFlowTransitionType.Type.FADE)
+		if UIFlow.stack_depth() <= 1 or UIFlow.current_page() == PausePage:
+			return
+		UIFlow.push(PausePage, {}, UIFlowTransitionType.Type.FADE)
 	)

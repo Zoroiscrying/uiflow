@@ -46,9 +46,9 @@ func push(page_class: GDScript, data: Dictionary = {}, transition = null, page_t
 		var current_page: UIFlowPage = current["instance"] as UIFlowPage
 		if current_page and current_page.has_method("_on_pause"):
 			current_page._on_pause()
-		# Play exit transition on current page (hide behind new page)
-		if transition:
-			_transition_manager.play_exit_instant(current_page)
+		# Play exit transition on current page (animated, not instant)
+		var resolved = _resolve_transition(transition)
+		_transition_manager.play_exit(current_page, resolved)
 
 	# Instantiate and add new page (start fully transparent to prevent flash)
 	var instance: Control = scene.instantiate()

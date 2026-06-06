@@ -16,6 +16,7 @@ func play_enter(node: Control, callback: Callable = Callable()) -> void:
 	var target_x: float = node.position.x
 	node.position.x = node.get_viewport_rect().size.x
 	node.visible = true
+tnode.modulate.a = 1.0
 	var tween: Tween = node.create_tween()
 	tween.tween_property(node, "position:x", target_x, duration).set_ease(ease_type).set_trans(trans_type)
 	if callback.is_valid():

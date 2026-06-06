@@ -1,10 +1,16 @@
 ## Gallery page — showcases all UIFlow components and transitions.
-##
-## UI is defined in .tscn with proper anchors, containers, and font sizes.
-## Code only handles signal connections and UIFlow API calls.
 class_name GalleryPage extends UIFlowPage
 
-func _ready() -> void:
+var _connected: bool = false
+
+
+func _on_enter(_data: Dictionary = {}) -> void:
+	UIFlow.set_default_focus($Margin/Scroll/VBox/ToastSection/Buttons/InfoBtn)
+
+	if _connected:
+		return
+	_connected = true
+
 	# Toast
 	$Margin/Scroll/VBox/ToastSection/Buttons/InfoBtn.pressed.connect(func():
 		UIFlowUI.Toast.show_toast("This is an info message.", UIFlowToast.Type.INFO)
@@ -51,10 +57,6 @@ func _ready() -> void:
 	$Margin/Scroll/VBox/AnimSection/Buttons/StaggerBtn.pressed.connect(func():
 		_demo_stagger()
 	)
-
-
-func _on_enter(_data: Dictionary = {}) -> void:
-	UIFlow.set_default_focus($Margin/Scroll/VBox/ToastSection/Buttons/InfoBtn)
 
 
 func _demo_transition(type: UIFlowTransitionType.Type, label: String) -> void:
