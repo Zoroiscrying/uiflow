@@ -155,10 +155,15 @@ func build_godot_theme() -> Theme:
 	var panel_style := StyleBoxFlat.new()
 	panel_style.bg_color = surface
 	panel_style.set_corner_radius_all(radius_md)
+	panel_style.set_content_margin_all(spacing_md)
 	t.set_stylebox("panel", "Panel", panel_style)
 
 	# ── PanelContainer ────────────────────────────────────────────────────────
-	t.set_stylebox("panel", "PanelContainer", panel_style)
+	var panel_container_style := StyleBoxFlat.new()
+	panel_container_style.bg_color = surface
+	panel_container_style.set_corner_radius_all(radius_md)
+	panel_container_style.set_content_margin_all(spacing_lg)
+	t.set_stylebox("panel", "PanelContainer", panel_container_style)
 
 	# ── HSlider / VSlider ─────────────────────────────────────────────────────
 	var slider_style := StyleBoxFlat.new()
@@ -224,5 +229,23 @@ func build_godot_theme() -> Theme:
 
 	# ── HSeparator ────────────────────────────────────────────────────────────
 	t.set_color("separator", "HSeparator", surface.lightened(0.15))
+
+	# ── Container Spacing ─────────────────────────────────────────────────────
+	# HBoxContainer / VBoxContainer — gap between children
+	t.set_constant("separation", "HBoxContainer", spacing_sm)
+	t.set_constant("separation", "VBoxContainer", spacing_sm)
+
+	# MarginContainer — outer margins
+	t.set_constant("margin_left", "MarginContainer", spacing_lg)
+	t.set_constant("margin_top", "MarginContainer", spacing_lg)
+	t.set_constant("margin_right", "MarginContainer", spacing_lg)
+	t.set_constant("margin_bottom", "MarginContainer", spacing_lg)
+
+	# GridContainer — grid gaps
+	t.set_constant("h_separation", "GridContainer", spacing_sm)
+	t.set_constant("v_separation", "GridContainer", spacing_sm)
+
+	# TabContainer — tab bar spacing
+	t.set_constant("side_margin", "TabContainer", spacing_md)
 
 	return t
