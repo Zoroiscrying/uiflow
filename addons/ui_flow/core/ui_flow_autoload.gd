@@ -55,7 +55,7 @@ func _ready() -> void:
 
 ## Set a custom Control node as the UI root for pages.
 ## Call this BEFORE pushing the first page.
-## If not called, UIFlow creates its own CanvasLayer.
+## If not called, UIFlow creates its own container.
 func set_ui_root(root: Control) -> void:
 	_custom_ui_root = root
 	_page_container = root
@@ -70,18 +70,14 @@ func _ensure_page_container() -> void:
 	if _custom_ui_root:
 		_page_container = _custom_ui_root
 	else:
-		# Auto-create a CanvasLayer for standalone use
-		var ui_layer := CanvasLayer.new()
-		ui_layer.name = "UIFlowPageLayer"
-		ui_layer.layer = 10
-		add_child(ui_layer)
-
+		# Auto-create — add Control directly to the autoload node.
+		# In Godot, Controls render on top of 3D content by default.
 		_page_container = Control.new()
 		_page_container.name = "UIFlowPageContainer"
 		_page_container.set_anchors_preset(Control.PRESET_FULL_RECT)
 		_page_container.grow_horizontal = Control.GROW_DIRECTION_BOTH
 		_page_container.grow_vertical = Control.GROW_DIRECTION_BOTH
-		ui_layer.add_child(_page_container)
+		add_child(_page_container)
 
 	Router.setup(_page_container, Scenes, Transitions)
 	_apply_theme_to_container()
