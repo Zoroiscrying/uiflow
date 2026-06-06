@@ -34,50 +34,57 @@ var ThemeHelper: UIFlowThemeHelper
 var _page_container: Control
 
 
+var _custom_ui_root: Control = null
+
+
 func _ready() -> void:
-	# Create page container on a CanvasLayer to render above 3D content
-	var ui_layer := CanvasLayer.new()
-	ui_layer.name = "UIFlowPageLayer"
-	ui_layer.layer = 10
-	add_child(ui_layer)
-
-	_page_container = Control.new()
-	_page_container.name = "UIFlowPageContainer"
-	_page_container.set_anchors_preset(Control.PRESET_FULL_RECT)
-	_page_container.grow_horizontal = Control.GROW_DIRECTION_BOTH
-	_page_container.grow_vertical = Control.GROW_DIRECTION_BOTH
-	_page_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	ui_layer.add_child(_page_container)
-
-	# Set explicit size from window — CanvasLayer Controls need this
-	var window_size := DisplayServer.window_get_size()
-	_page_container.position = Vector2.ZERO
-	_page_container.size = Vector2(window_size)
-
-	# Update size on window resize
-	get_viewport().size_changed.connect(func():
-		_page_container.size = Vector2(DisplayServer.window_get_size())
-	)
-
 	# Initialize sub-systems
 	Scenes = UIFlowSceneResolver.new()
 	Transitions = UIFlowTransitionManager.new()
 	ThemeHelper = UIFlowThemeHelper.new()
 
-	# Apply default theme to page container
-	_apply_theme_to_container()
-
 	Router = UIFlowNavigator.new()
 	Router.name = "UIFlowNavigator"
 	add_child(Router)
-	Router.setup(_page_container, Scenes, Transitions)
 
 	FlowInput = UIFlowInputHandler.new()
 	FlowInput.name = "UIFlowInputHandler"
 	add_child(FlowInput)
-
-	# Auto-pop behavior: back action pops the top page
 	FlowInput.back_pressed.connect(_on_back_pressed)
+
+
+## Set a custom Control node as the UI root for pages.
+## Call this BEFORE pushing the first page.
+## If not called, UIFlow creates its own CanvasLayer.
+func set_ui_root(root: Control) -> void:
+	_custom_ui_root = root
+	_page_container = root
+	Router.setup(_page_container, Scenes, Transitions)
+	_apply_theme_to_container()
+
+
+func _ensure_page_container() -> void:
+	if _page_container:
+		return
+
+	if _custom_ui_root:
+		_page_container = _custom_ui_root
+	else:
+		# Auto-create a CanvasLayer for standalone use
+		var ui_layer := CanvasLayer.new()
+		ui_layer.name = "UIFlowPageLayer"
+		ui_layer.layer = 10
+		add_child(ui_layer)
+
+		_page_container = Control.new()
+		_page_container.name = "UIFlowPageContainer"
+		_page_container.set_anchors_preset(Control.PRESET_FULL_RECT)
+		_page_container.grow_horizontal = Control.GROW_DIRECTION_BOTH
+		_page_container.grow_vertical = Control.GROW_DIRECTION_BOTH
+		ui_layer.add_child(_page_container)
+
+	Router.setup(_page_container, Scenes, Transitions)
+	_apply_theme_to_container()
 
 
 func _on_back_pressed() -> void:
@@ -96,6 +103,7 @@ func _on_back_pressed() -> void:
 ## page.setup(my_config)
 ## [/codeblock]
 func push(page_class: GDScript, data: Dictionary = {}, transition = null, page_theme: UIFlowTheme = null) -> Control:
+	_ensure_page_container()
 	return Router.push(page_class, data, transition, page_theme)
 
 
