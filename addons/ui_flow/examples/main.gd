@@ -1,7 +1,7 @@
-## Main entry point — starts the UIFlow example hub.
+## Main entry point — 3D game world with UIFlow UI overlay.
 ##
-## This scene uses UIFlow itself to navigate between examples,
-## demonstrating the framework's core navigation capabilities.
+## Demonstrates UIFlow working seamlessly with a real 3D scene.
+## The 3D world runs continuously while UI navigates on top.
 extends Control
 
 func _ready() -> void:
