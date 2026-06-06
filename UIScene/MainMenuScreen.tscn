@@ -1,0 +1,46 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://addons/ui_flow/examples/main_menu_flow/screens/main_menu_screen.gd" id="1"]
+
+[node name="MainMenuScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1")
+
+[node name="BG" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.1, 0.1, 0.15, 1)
+
+[node name="VBox" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -120.0
+offset_top = -140.0
+offset_right = 120.0
+offset_bottom = 140.0
+theme_override_constants/separation = 12
+
+[node name="PlayButton" type="Button" parent="VBox"]
+layout_mode = 2
+text = "Play"
+
+[node name="SettingsButton" type="Button" parent="VBox"]
+layout_mode = 2
+text = "Settings"
+
+[node name="CreditsButton" type="Button" parent="VBox"]
+layout_mode = 2
+text = "Credits"
+
+[node name="QuitButton" type="Button" parent="VBox"]
+layout_mode = 2
+text = "Quit"

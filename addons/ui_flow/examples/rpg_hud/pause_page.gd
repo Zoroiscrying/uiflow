@@ -1,0 +1,31 @@
+## Pause menu — modal overlay with Resume/Settings/Quit.
+extends UIFlowPage
+
+func _ready() -> void:
+	$Panel/VBox/ResumeButton.pressed.connect(func(): UIFlow.pop())
+	$Panel/VBox/SettingsButton.pressed.connect(func():
+		UIFlow.push(SettingsPage, {}, UIFlowTransitionType.Type.SLIDE_LEFT)
+	)
+	$Panel/VBox/QuitButton.pressed.connect(func():
+		UIFlowUI.Confirm.show("Quit", "Return to main menu?",
+			func(): UIFlow.pop_to_root()
+		)
+	)
+
+
+func _on_enter(_data: Dictionary = {}) -> void:
+	UIFlow.set_default_focus($Panel/VBox/ResumeButton)
+
+	# Animate panel appearance
+	$Dimmer.modulate.a = 0.0
+	$Panel.scale = Vector2(0.9, 0.9)
+	$Panel.modulate.a = 0.0
+
+	var tween = create_tween().set_parallel(true)
+	tween.tween_property($Dimmer, "modulate:a", 0.5, 0.15)
+	tween.tween_property($Panel, "modulate:a", 1.0, 0.15)
+	tween.tween_property($Panel, "scale", Vector2.ONE, 0.2).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
+
+
+func _on_resume() -> void:
+	UIFlow.set_default_focus($Panel/VBox/ResumeButton)

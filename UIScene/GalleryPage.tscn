@@ -1,0 +1,133 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://addons/ui_flow/examples/component_gallery/gallery_page.gd" id="1"]
+
+[node name="GalleryPage" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1")
+
+[node name="BG" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.1, 0.1, 0.13, 1)
+
+[node name="Scroll" type="ScrollContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = -20.0
+
+[node name="VBox" type="VBoxContainer" parent="Scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 16
+
+[node name="Title" type="Label" parent="Scroll/VBox"]
+layout_mode = 2
+text = "UI Flow — Component Gallery"
+horizontal_alignment = 1
+
+[node name="ToastSection" type="VBoxContainer" parent="Scroll/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="ToastTitle" type="Label" parent="Scroll/VBox/ToastSection"]
+layout_mode = 2
+text = "Toast Notifications"
+
+[node name="ToastButtons" type="HBoxContainer" parent="Scroll/VBox/ToastSection"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="InfoButton" type="Button" parent="Scroll/VBox/ToastSection/ToastButtons"]
+layout_mode = 2
+text = "Info"
+
+[node name="SuccessButton" type="Button" parent="Scroll/VBox/ToastSection/ToastButtons"]
+layout_mode = 2
+text = "Success"
+
+[node name="WarningButton" type="Button" parent="Scroll/VBox/ToastSection/ToastButtons"]
+layout_mode = 2
+text = "Warning"
+
+[node name="ErrorButton" type="Button" parent="Scroll/VBox/ToastSection/ToastButtons"]
+layout_mode = 2
+text = "Error"
+
+[node name="DialogSection" type="VBoxContainer" parent="Scroll/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="DialogTitle" type="Label" parent="Scroll/VBox/DialogSection"]
+layout_mode = 2
+text = "Dialogs"
+
+[node name="DialogButtons" type="HBoxContainer" parent="Scroll/VBox/DialogSection"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="ConfirmButton" type="Button" parent="Scroll/VBox/DialogSection/DialogButtons"]
+layout_mode = 2
+text = "Confirm Dialog"
+
+[node name="AlertButton" type="Button" parent="Scroll/VBox/DialogSection/DialogButtons"]
+layout_mode = 2
+text = "Alert Dialog"
+
+[node name="TransitionSection" type="VBoxContainer" parent="Scroll/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="TransTitle" type="Label" parent="Scroll/VBox/TransitionSection"]
+layout_mode = 2
+text = "Transitions (click to demo)"
+
+[node name="TransButtons" type="HBoxContainer" parent="Scroll/VBox/TransitionSection"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="FadeButton" type="Button" parent="Scroll/VBox/TransitionSection/TransButtons"]
+layout_mode = 2
+text = "Fade"
+
+[node name="SlideLeftButton" type="Button" parent="Scroll/VBox/TransitionSection/TransButtons"]
+layout_mode = 2
+text = "Slide Left"
+
+[node name="SlideRightButton" type="Button" parent="Scroll/VBox/TransitionSection/TransButtons"]
+layout_mode = 2
+text = "Slide Right"
+
+[node name="ScaleButton" type="Button" parent="Scroll/VBox/TransitionSection/TransButtons"]
+layout_mode = 2
+text = "Scale"
+
+[node name="AnimSection" type="VBoxContainer" parent="Scroll/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="AnimTitle" type="Label" parent="Scroll/VBox/AnimSection"]
+layout_mode = 2
+text = "Animations"
+
+[node name="AnimButtons" type="HBoxContainer" parent="Scroll/VBox/AnimSection"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="BounceButton" type="Button" parent="Scroll/VBox/AnimSection/AnimButtons"]
+layout_mode = 2
+text = "Bounce Title"
+
+[node name="StaggerButton" type="Button" parent="Scroll/VBox/AnimSection/AnimButtons"]
+layout_mode = 2
+text = "Stagger Fade"
