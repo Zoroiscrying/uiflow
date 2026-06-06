@@ -26,13 +26,16 @@ func setup(p_container: Control, p_resolver: UIFlowSceneResolver, p_transition_m
 ## [param page_class] is the GDScript class (e.g. SettingsPage).
 ## [param data] is passed to the page's [code]_on_enter()[/code] callback.
 ## [param transition] optionally overrides the default transition.
+## [param page_theme] optionally applies a UIFlowTheme to this page only.
 ##
 ## Example:
 ## [codeblock]
 ## var page: SettingsPage = UIFlow.push(SettingsPage) as SettingsPage
 ## page.custom_init(some_data)
+## # Or with page-level theme:
+## UIFlow.push(SettingsPage, {}, null, shop_theme)
 ## [/codeblock]
-func push(page_class: GDScript, data: Dictionary = {}, transition = null) -> Control:
+func push(page_class: GDScript, data: Dictionary = {}, transition = null, page_theme: UIFlowTheme = null) -> Control:
 	var scene: PackedScene = _scene_resolver.resolve(page_class)
 	if scene == null:
 		return null
@@ -51,6 +54,11 @@ func push(page_class: GDScript, data: Dictionary = {}, transition = null) -> Con
 	var instance: Control = scene.instantiate()
 	_container.add_child(instance)
 	instance.visible = false
+
+	# Apply page-level theme if provided
+	if page_theme:
+		var godot_theme: Theme = page_theme.build_godot_theme()
+		instance.theme = godot_theme
 
 	_stack.push_back({
 		"class": page_class,
