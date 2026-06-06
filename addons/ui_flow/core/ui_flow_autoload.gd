@@ -44,8 +44,14 @@ func _ready() -> void:
 	_page_container = Control.new()
 	_page_container.name = "UIFlowPageContainer"
 	_page_container.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_page_container.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	_page_container.grow_vertical = Control.GROW_DIRECTION_BOTH
 	_page_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	ui_layer.add_child(_page_container)
+
+	# Ensure container has proper size even inside CanvasLayer
+	_page_container.position = Vector2.ZERO
+	_page_container.size = get_viewport().get_visible_rect().size
 
 	# Initialize sub-systems
 	Scenes = UIFlowSceneResolver.new()
