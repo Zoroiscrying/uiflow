@@ -40,15 +40,13 @@ func push(page_class: GDScript, data: Dictionary = {}, transition = null, page_t
 	if scene == null:
 		return null
 
-	# Pause current top page
+	# Pause current top page — just hide it, don't animate
 	if _stack.size() > 0:
 		var current: Dictionary = _stack.back()
 		var current_page: UIFlowPage = current["instance"] as UIFlowPage
 		if current_page and current_page.has_method("_on_pause"):
 			current_page._on_pause()
-		# Play exit transition on current page (animated, not instant)
-		var resolved = _resolve_transition(transition)
-		_transition_manager.play_exit(current_page, resolved)
+		current_page.visible = false
 
 	# Instantiate and add new page (start fully transparent to prevent flash)
 	var instance: Control = scene.instantiate()
@@ -106,6 +104,7 @@ func pop(transition = null) -> void:
 			var below: Dictionary = _stack.back()
 			var below_instance: Control = below["instance"]
 			below_instance.visible = true
+			below_instance.modulate.a = 1.0
 			var below_page: UIFlowPage = below_instance as UIFlowPage
 			if below_page and below_page.has_method("_on_resume"):
 				below_page._on_resume()
