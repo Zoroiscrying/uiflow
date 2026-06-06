@@ -88,7 +88,8 @@ func _ensure_page_container() -> void:
 
 
 func _on_back_pressed() -> void:
-	if stack_depth() > 0:
+	# Only pop if there's more than 1 page (protect root page)
+	if stack_depth() > 1:
 		pop()
 
 
