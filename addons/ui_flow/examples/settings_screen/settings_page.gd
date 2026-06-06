@@ -10,6 +10,11 @@ func _on_enter(_data: Dictionary = {}) -> void:
 	if settings == null:
 		settings = SettingsData.new()
 
+	# Clean up old bindings before creating new ones
+	for b in _bindings:
+		b.unbind()
+	_bindings.clear()
+
 	# Bind sliders (two-way: UI ↔ data)
 	_bindings.append(
 		UIFlow.bind_slider($Margin/Center/MasterVolume/Slider, settings.master_volume_changed,
