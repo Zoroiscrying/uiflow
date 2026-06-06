@@ -19,8 +19,8 @@ func _ready() -> void:
 func _on_enter(_data: Dictionary = {}) -> void:
 	# Stagger animation for menu buttons
 	var seq = UIFlow.sequencer()
-	for i in range($VBox.get_child_count()):
-		var child = $VBox.get_child(i)
+	for i in range($Center.get_child_count()):
+		var child = $Center.get_child(i)
 		child.modulate.a = 0.0
 		seq.add(child, UIFlowTweenProp.Prop.MODULATE_A, 0.0, 1.0, 0.2).delay(0.05 * i)
 	seq.play()
