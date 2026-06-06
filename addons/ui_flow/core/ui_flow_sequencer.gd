@@ -78,8 +78,17 @@ func _play_next(index: int) -> void:
 
 
 func _play_step(index: int) -> void:
+	if index >= _steps.size():
+		_is_playing = false
+		finished.emit()
+		return
+
 	var step: Dictionary = _steps[index]
 	var node: Node = step["node"]
+
+	if not is_instance_valid(node) or not node.is_inside_tree():
+		_play_next(index + 1)
+		return
 
 	var tween = UIFlowAnimator.animate(
 		node,

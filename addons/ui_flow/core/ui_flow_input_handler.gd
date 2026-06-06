@@ -89,5 +89,5 @@ func _on_page_popped(_page_class: GDScript) -> void:
 		var prev_focus_ref: WeakRef = _focus_stack.pop_back()
 		if prev_focus_ref:
 			var prev_focus: Control = prev_focus_ref.get_ref() as Control
-			if prev_focus and is_instance_valid(prev_focus) and prev_focus is Control:
+			if prev_focus and is_instance_valid(prev_focus) and prev_focus is Control and prev_focus.is_inside_tree():
 				prev_focus.grab_focus()

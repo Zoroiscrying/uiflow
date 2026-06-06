@@ -50,10 +50,11 @@ func push(page_class: GDScript, data: Dictionary = {}, transition = null, page_t
 		if transition:
 			_transition_manager.play_exit_instant(current_page)
 
-	# Instantiate and add new page
+	# Instantiate and add new page (start fully transparent to prevent flash)
 	var instance: Control = scene.instantiate()
-	_container.add_child(instance)
+	instance.modulate.a = 0.0
 	instance.visible = false
+	_container.add_child(instance)
 
 	# Apply page-level theme if provided
 	if page_theme:
