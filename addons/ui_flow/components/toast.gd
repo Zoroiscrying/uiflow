@@ -67,32 +67,40 @@ func _create_toast_node(message: String, type: Type) -> Control:
 	var panel := PanelContainer.new()
 	panel.custom_minimum_size = Vector2(250, 0)
 
-	# Style based on type
-	var style := StyleBoxFlat.new()
-	style.corner_radius_top_left = 6
-	style.corner_radius_top_right = 6
-	style.corner_radius_bottom_left = 6
-	style.corner_radius_bottom_right = 6
-	style.content_margin_left = 12
-	style.content_margin_right = 12
-	style.content_margin_top = 8
-	style.content_margin_bottom = 8
+	# Get theme values
+	var theme: UIFlowTheme = UIFlow.get_theme() if UIFlow else null
+	var radius: int = theme.radius_md if theme else 8
+	var pad: int = theme.spacing_md if theme else 12
+	var font_size: int = theme.font_size_body if theme else 14
+	var text_color: Color = theme.on_surface if theme else Color.WHITE
 
+	# Style based on type — derive from theme semantic colors
+	var bg_color: Color
 	match type:
 		Type.INFO:
-			style.bg_color = Color(0.2, 0.3, 0.5, 0.9)
+			bg_color = (theme.info if theme else Color(0.4, 0.7, 0.9)).darkened(0.3)
 		Type.SUCCESS:
-			style.bg_color = Color(0.2, 0.5, 0.3, 0.9)
+			bg_color = (theme.success if theme else Color(0.3, 0.8, 0.4)).darkened(0.3)
 		Type.WARNING:
-			style.bg_color = Color(0.5, 0.4, 0.2, 0.9)
+			bg_color = (theme.warning if theme else Color(0.9, 0.7, 0.2)).darkened(0.3)
 		Type.ERROR:
-			style.bg_color = Color(0.5, 0.2, 0.2, 0.9)
+			bg_color = (theme.error if theme else Color(0.9, 0.3, 0.3)).darkened(0.3)
+	bg_color.a = 0.95
 
+	var style := StyleBoxFlat.new()
+	style.set_corner_radius_all(radius)
+	style.content_margin_left = pad
+	style.content_margin_right = pad
+	style.content_margin_top = int(pad * 0.7)
+	style.content_margin_bottom = int(pad * 0.7)
+	style.bg_color = bg_color
 	panel.add_theme_stylebox_override("panel", style)
 
 	var label := Label.new()
 	label.text = message
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	label.add_theme_color_override("font_color", text_color)
+	label.add_theme_font_size_override("font_size", font_size)
 	panel.add_child(label)
 
 	return panel

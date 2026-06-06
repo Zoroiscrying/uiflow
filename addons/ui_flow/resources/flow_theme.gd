@@ -51,6 +51,9 @@ enum ColorSlot {
 @export var on_surface: Color = Color(0.9, 0.9, 0.9)
 
 @export_group("Typography")
+@export var font_regular: Font = null
+@export var font_bold: Font = null
+@export var font_mono: Font = null
 @export var font_size_title: int = 28
 @export var font_size_heading: int = 18
 @export var font_size_body: int = 14
@@ -114,6 +117,18 @@ func set_color(slot: ColorSlot, color: Color) -> void:
 ## [/codeblock]
 func build_godot_theme() -> Theme:
 	var t := Theme.new()
+
+	# ── Font ──────────────────────────────────────────────────────────────────
+	if font_regular:
+		t.set_font("font", "Button", font_regular)
+		t.set_font("font", "Label", font_regular)
+		t.set_font("font", "LineEdit", font_regular)
+		t.set_font("font", "CheckButton", font_regular)
+		t.set_font("font", "ProgressBar", font_regular)
+	if font_bold:
+		t.set_font("font_bold", "Label", font_bold)
+	if font_mono:
+		t.set_font("font", "CodeEdit", font_mono)
 
 	# ── Button ────────────────────────────────────────────────────────────────
 	var btn_normal := StyleBoxFlat.new()

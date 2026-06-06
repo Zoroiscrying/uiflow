@@ -11,6 +11,15 @@ var _active: bool = false
 
 
 func _component_ready() -> void:
+	var theme: UIFlowTheme = UIFlow.get_theme() if UIFlow else null
+	var radius: int = theme.radius_lg if theme else 8
+	var pad: int = theme.spacing_lg if theme else 20
+	var gap: int = theme.spacing_md if theme else 15
+	var surface_color: Color = theme.surface if theme else Color(0.15, 0.15, 0.2)
+	var text_color: Color = theme.on_surface if theme else Color(0.9, 0.9, 0.9)
+	var title_size: int = theme.font_size_heading if theme else 18
+	var body_size: int = theme.font_size_body if theme else 14
+
 	# Full-screen overlay
 	_overlay = ColorRect.new()
 	_overlay.name = "Overlay"
@@ -28,27 +37,23 @@ func _component_ready() -> void:
 	_panel.grow_vertical = Control.GROW_DIRECTION_BOTH
 
 	var style := StyleBoxFlat.new()
-	style.corner_radius_top_left = 8
-	style.corner_radius_top_right = 8
-	style.corner_radius_bottom_left = 8
-	style.corner_radius_bottom_right = 8
-	style.content_margin_left = 20
-	style.content_margin_right = 20
-	style.content_margin_top = 20
-	style.content_margin_bottom = 20
-	style.bg_color = Color(0.15, 0.15, 0.2, 1)
+	style.set_corner_radius_all(radius)
+	style.set_content_margin_all(pad)
+	style.bg_color = surface_color
 	_panel.add_theme_stylebox_override("panel", style)
 	add_child(_panel)
 
 	# VBox inside panel
 	var vbox := VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", 15)
+	vbox.add_theme_constant_override("separation", gap)
 	_panel.add_child(vbox)
 
 	# Title
 	_title_label = Label.new()
 	_title_label.name = "Title"
 	_title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_title_label.add_theme_color_override("font_color", text_color)
+	_title_label.add_theme_font_size_override("font_size", title_size)
 	vbox.add_child(_title_label)
 
 	# Message
@@ -56,6 +61,8 @@ func _component_ready() -> void:
 	_message_label.name = "Message"
 	_message_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_message_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_message_label.add_theme_color_override("font_color", text_color)
+	_message_label.add_theme_font_size_override("font_size", body_size)
 	vbox.add_child(_message_label)
 
 	# OK button
