@@ -489,7 +489,8 @@ func build_godot_theme() -> Theme:
 	var slider_style := StyleBoxFlat.new()
 	slider_style.bg_color = c_background.lightened(0.1)
 	slider_style.set_corner_radius_all(r_sm)
-	slider_style.set_content_margin_individual(0, 4, 0, 4)
+	slider_style.content_margin_top = 4
+	slider_style.content_margin_bottom = 4
 	t.set_stylebox("slider", "HSlider", slider_style)
 
 	var slider_grabber := StyleBoxFlat.new()
