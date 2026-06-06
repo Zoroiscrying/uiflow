@@ -1,0 +1,48 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://addons/ui_flow/examples/scenes/player_character.gd" id="1"]
+
+[sub_resource type="CapsuleShape3D" id="1"]
+radius = 0.4
+height = 1.6
+
+[sub_resource type="CapsuleMesh" id="2"]
+radius = 0.4
+height = 1.6
+
+[sub_resource type="StandardMaterial3D" id="3"]
+albedo_color = Color(0.3, 0.5, 0.9, 1)
+metallic = 0.2
+roughness = 0.6
+
+[node name="PlayerCharacter" type="CharacterBody3D"]
+script = ExtResource("1")
+
+[node name="Collision" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+shape = SubResource("1")
+
+[node name="Model" type="Node3D" parent="."]
+
+[node name="Mesh" type="MeshInstance3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+mesh = SubResource("2")
+material_override = SubResource("3")
+
+[node name="Hat" type="MeshInstance3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, 0)
+
+[node name="HatMesh" type="BoxMesh" parent="Model/Hat"]
+size = Vector3(0.3, 0.1, 0.3)
+
+[node name="HatMat" type="StandardMaterial3D" parent="Model/Hat"]
+resource_local_to_scene = true
+albedo_color = Color(0.9, 0.6, 0.2, 1)
+
+[node name="CameraPivot" type="Node3D" parent="."]
+
+[node name="CameraArm" type="SpringArm3D" parent="CameraPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+spring_length = 8.0
+
+[node name="Camera" type="Camera3D" parent="CameraPivot/CameraArm"]

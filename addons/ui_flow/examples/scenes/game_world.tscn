@@ -1,0 +1,218 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="PackedScene" path="res://addons/ui_flow/examples/scenes/player_character.tscn" id="1"]
+
+[sub_resource type="ProceduralSkyMaterial" id="1"]
+
+[sub_resource type="Sky" id="2"]
+sky_material = SubResource("1")
+
+[sub_resource type="Environment" id="3"]
+background_mode = 2
+sky = SubResource("2")
+ambient_light_source = 2
+ambient_light_color = Color(0.15, 0.15, 0.2, 1)
+ambient_light_energy = 0.5
+tonemap_mode = 2
+
+[sub_resource type="PlaneMesh" id="4"]
+size = Vector2(30, 30)
+
+[sub_resource type="StandardMaterial3D" id="5"]
+albedo_color = Color(0.12, 0.12, 0.16, 1)
+
+[sub_resource type="WorldBoundaryShape3D" id="6"]
+
+[node name="GameWorld" type="Node3D"]
+
+[node name="Environment" type="WorldEnvironment" parent="."]
+environment = SubResource("3")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 0, 0)
+light_energy = 0.8
+light_color = Color(1, 0.95, 0.9, 1)
+shadow_enabled = true
+
+[node name="Ground" type="StaticBody3D" parent="."]
+
+[node name="Mesh" type="MeshInstance3D" parent="Ground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+mesh = SubResource("4")
+material_override = SubResource("5")
+
+[node name="Collision" type="CollisionShape3D" parent="Ground"]
+shape = SubResource("6")
+
+[node name="Pillars" type="Node3D" parent="."]
+
+[node name="Pillar1" type="StaticBody3D" parent="Pillars"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0.5, -3)
+
+[node name="Mesh" type="MeshInstance3D" parent="Pillars/Pillar1"]
+
+[node name="CylinderMesh" type="CylinderMesh" parent="Pillars/Pillar1/Mesh"]
+top_radius = 0.3
+bottom_radius = 0.35
+height = 2.0
+
+[node name="Collision" type="CollisionShape3D" parent="Pillars/Pillar1"]
+
+[node name="CylinderShape" type="CylinderShape3D" parent="Pillars/Pillar1/Collision"]
+radius = 0.35
+height = 2.0
+
+[node name="Pillar2" type="StaticBody3D" parent="Pillars"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, -5)
+
+[node name="Mesh" type="MeshInstance3D" parent="Pillars/Pillar2"]
+
+[node name="CylinderMesh" type="CylinderMesh" parent="Pillars/Pillar2/Mesh"]
+top_radius = 0.3
+bottom_radius = 0.35
+height = 2.0
+
+[node name="Collision" type="CollisionShape3D" parent="Pillars/Pillar2"]
+
+[node name="CylinderShape" type="CylinderShape3D" parent="Pillars/Pillar2/Collision"]
+radius = 0.35
+height = 2.0
+
+[node name="Pillar3" type="StaticBody3D" parent="Pillars"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0.5, -3)
+
+[node name="Mesh" type="MeshInstance3D" parent="Pillars/Pillar3"]
+
+[node name="CylinderMesh" type="CylinderMesh" parent="Pillars/Pillar3/Mesh"]
+top_radius = 0.3
+bottom_radius = 0.35
+height = 2.0
+
+[node name="Collision" type="CollisionShape3D" parent="Pillars/Pillar3"]
+
+[node name="CylinderShape" type="CylinderShape3D" parent="Pillars/Pillar3/Collision"]
+radius = 0.35
+height = 2.0
+
+[node name="FloatingObjects" type="Node3D" parent="."]
+
+[node name="BlueBox" type="MeshInstance3D" parent="FloatingObjects"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 2, -3)
+
+[node name="BoxMesh" type="BoxMesh" parent="FloatingObjects/BlueBox"]
+
+[node name="Material" type="StandardMaterial3D" parent="FloatingObjects/BlueBox"]
+albedo_color = Color(0.3, 0.5, 0.9, 1)
+emission_enabled = true
+emission = Color(0.3, 0.5, 0.9, 1)
+emission_energy_multiplier = 0.3
+
+[node name="OrangeSphere" type="MeshInstance3D" parent="FloatingObjects"]
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 2, -5)
+
+[node name="SphereMesh" type="SphereMesh" parent="FloatingObjects/OrangeSphere"]
+
+[node name="Material" type="StandardMaterial3D" parent="FloatingObjects/OrangeSphere"]
+albedo_color = Color(0.9, 0.6, 0.2, 1)
+emission_enabled = true
+emission = Color(0.9, 0.6, 0.2, 1)
+emission_energy_multiplier = 0.3
+
+[node name="GreenCylinder" type="MeshInstance3D" parent="FloatingObjects"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 2, -3)
+
+[node name="CylinderMesh" type="CylinderMesh" parent="FloatingObjects/GreenCylinder"]
+
+[node name="Material" type="StandardMaterial3D" parent="FloatingObjects/GreenCylinder"]
+albedo_color = Color(0.3, 0.8, 0.4, 1)
+emission_enabled = true
+emission = Color(0.3, 0.8, 0.4, 1)
+emission_energy_multiplier = 0.3
+
+[node name="RedTorus" type="MeshInstance3D" parent="FloatingObjects"]
+transform = Transform3D(0.4, 0, 0, 0, 0.4, 0, 0, 0, 0.4, 0, 2, 4)
+
+[node name="TorusMesh" type="TorusMesh" parent="FloatingObjects/RedTorus"]
+
+[node name="Material" type="StandardMaterial3D" parent="FloatingObjects/RedTorus"]
+albedo_color = Color(0.9, 0.3, 0.3, 1)
+emission_enabled = true
+emission = Color(0.9, 0.3, 0.3, 1)
+emission_energy_multiplier = 0.3
+
+[node name="Lights" type="Node3D" parent="."]
+
+[node name="BlueLight" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 3, -3)
+light_color = Color(0.3, 0.5, 0.9, 1)
+light_energy = 0.5
+omni_range = 8.0
+
+[node name="OrangeLight" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 3, 2)
+light_color = Color(0.9, 0.6, 0.2, 1)
+light_energy = 0.5
+omni_range = 8.0
+
+[node name="GreenLight" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 4)
+light_color = Color(0.3, 0.8, 0.4, 1)
+light_energy = 0.5
+omni_range = 8.0
+
+[node name="Walls" type="Node3D" parent="."]
+
+[node name="WallNorth" type="StaticBody3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, -10)
+
+[node name="Mesh" type="MeshInstance3D" parent="Walls/WallNorth"]
+
+[node name="BoxMesh" type="BoxMesh" parent="Walls/WallNorth/Mesh"]
+size = Vector3(20, 1.5, 0.3)
+
+[node name="Collision" type="CollisionShape3D" parent="Walls/WallNorth"]
+
+[node name="BoxShape" type="BoxShape3D" parent="Walls/WallNorth/Collision"]
+size = Vector3(20, 1.5, 0.3)
+
+[node name="WallSouth" type="StaticBody3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 10)
+
+[node name="Mesh" type="MeshInstance3D" parent="Walls/WallSouth"]
+
+[node name="BoxMesh" type="BoxMesh" parent="Walls/WallSouth/Mesh"]
+size = Vector3(20, 1.5, 0.3)
+
+[node name="Collision" type="CollisionShape3D" parent="Walls/WallSouth"]
+
+[node name="BoxShape" type="BoxShape3D" parent="Walls/WallSouth/Collision"]
+size = Vector3(20, 1.5, 0.3)
+
+[node name="WallWest" type="StaticBody3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0.5, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Walls/WallWest"]
+
+[node name="BoxMesh" type="BoxMesh" parent="Walls/WallWest/Mesh"]
+size = Vector3(0.3, 1.5, 20)
+
+[node name="Collision" type="CollisionShape3D" parent="Walls/WallWest"]
+
+[node name="BoxShape" type="BoxShape3D" parent="Walls/WallWest/Collision"]
+size = Vector3(0.3, 1.5, 20)
+
+[node name="WallEast" type="StaticBody3D" parent="Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0.5, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Walls/WallEast"]
+
+[node name="BoxMesh" type="BoxMesh" parent="Walls/WallEast/Mesh"]
+size = Vector3(0.3, 1.5, 20)
+
+[node name="Collision" type="CollisionShape3D" parent="Walls/WallEast"]
+
+[node name="BoxShape" type="BoxShape3D" parent="Walls/WallEast/Collision"]
+size = Vector3(0.3, 1.5, 20)
+
+[node name="Player" parent="." instance=ExtResource("1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3)
