@@ -87,8 +87,6 @@ func _ensure_page_container() -> void:
 		_page_container.grow_vertical = Control.GROW_DIRECTION_BOTH
 		ui_layer.add_child(_page_container)
 
-		print("UIFlow: Created page container, size = ", _page_container.size)
-
 	Router.setup(_page_container, Scenes, Transitions)
 	_apply_theme_to_container()
 
