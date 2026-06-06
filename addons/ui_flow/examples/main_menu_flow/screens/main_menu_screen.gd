@@ -17,15 +17,18 @@ func _ready() -> void:
 
 
 func _on_enter(_data: Dictionary = {}) -> void:
-	# Stagger animation for menu buttons
+	# Stagger fade-in for menu buttons
+	# Set all children invisible FIRST (synchronous, no flash)
+	for i in range($Center.get_child_count()):
+		$Center.get_child(i).modulate.a = 0.0
+
+	# Then animate them in one by one
 	var seq = UIFlow.sequencer()
 	for i in range($Center.get_child_count()):
 		var child = $Center.get_child(i)
-		child.modulate.a = 0.0
-		seq.add(child, UIFlowTweenProp.Prop.MODULATE_A, 0.0, 1.0, 0.2).delay(0.05 * i)
+		seq.add(child, UIFlowTweenProp.Prop.MODULATE_A, 0.0, 1.0, 0.15).delay(0.06 * i)
 	seq.play()
 
-	# Focus first button
 	UIFlow.set_default_focus($Center/PlayButton)
 
 

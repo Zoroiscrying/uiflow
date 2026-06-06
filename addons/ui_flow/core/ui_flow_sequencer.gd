@@ -13,7 +13,7 @@ class_name UIFlowSequencer extends RefCounted
 
 signal finished
 
-var _steps: Array[Dictionary] = [] # { node, prop, from, to, duration, ease, trans, delay }
+var _steps: Array[Dictionary] = [] # { node_ref (WeakRef), prop, from, to, duration, ease, trans, delay }
 var _is_playing: bool = false
 
 
@@ -28,7 +28,7 @@ func add(
 	trans_type: Tween.TransitionType = Tween.TRANS_LINEAR
 ) -> UIFlowSequencer:
 	_steps.append({
-		"node": node,
+		"node_ref": weakref(node),
 		"prop": prop,
 		"from": from,
 		"to": to,
@@ -63,8 +63,10 @@ func _play_next(index: int) -> void:
 		return
 
 	var step: Dictionary = _steps[index]
-	var node: Node = step["node"]
-	if not is_instance_valid(node):
+	var node_ref: WeakRef = step["node_ref"]
+	var node: Node = node_ref.get_ref() if node_ref else null
+
+	if not is_instance_valid(node) or not node.is_inside_tree():
 		_play_next(index + 1)
 		return
 
@@ -84,7 +86,8 @@ func _play_step(index: int) -> void:
 		return
 
 	var step: Dictionary = _steps[index]
-	var node: Node = step["node"]
+	var node_ref: WeakRef = step["node_ref"]
+	var node: Node = node_ref.get_ref() if node_ref else null
 
 	if not is_instance_valid(node) or not node.is_inside_tree():
 		_play_next(index + 1)

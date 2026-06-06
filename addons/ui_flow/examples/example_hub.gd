@@ -20,7 +20,7 @@ func _ready() -> void:
 		var example: Dictionary = _examples[i]
 		btn.text = example["title"]
 		btn.pressed.connect(func():
-			UIFlow.push(example["page_class"], {}, UIFlowTransitionType.Type.FADE)
+			UIFlow.push(example["page_class"], {}, UIFlowTransitionType.Type.NONE)
 		)
 
 	$Margin/Scroll/VBox/QuitButton.pressed.connect(func():
