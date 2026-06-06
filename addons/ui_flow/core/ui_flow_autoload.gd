@@ -51,11 +51,18 @@ func _ready() -> void:
 # ── Router shortcuts ─────────────────────────────────────────────────────────
 
 ## Push a page onto the navigation stack.
+## Returns the page instance for immediate custom initialization.
 ## [param page_class] is the GDScript class (e.g. SettingsPage).
 ## [param data] is passed to the page's [code]_on_enter()[/code] callback.
 ## [param transition] optionally overrides the default transition (a preset type or custom instance).
-func push(page_class: GDScript, data: Dictionary = {}, transition = null) -> void:
-	Router.push(page_class, data, transition)
+##
+## Example:
+## [codeblock]
+## var page: SettingsPage = UIFlow.push(SettingsPage) as SettingsPage
+## page.setup(my_config)
+## [/codeblock]
+func push(page_class: GDScript, data: Dictionary = {}, transition = null) -> Control:
+	return Router.push(page_class, data, transition)
 
 
 ## Pop the top page off the stack.
@@ -64,8 +71,9 @@ func pop(transition = null) -> void:
 
 
 ## Replace the top page with a new one (doesn't increase stack depth).
-func replace(page_class: GDScript, data: Dictionary = {}, transition = null) -> void:
-	Router.replace(page_class, data, transition)
+## Returns the new page instance.
+func replace(page_class: GDScript, data: Dictionary = {}, transition = null) -> Control:
+	return Router.replace(page_class, data, transition)
 
 
 ## Remove all pages and optionally push a new root page.
@@ -86,6 +94,25 @@ func stack_depth() -> int:
 ## Get the full navigation path as an array of class names.
 func navigation_path() -> Array[StringName]:
 	return Router.navigation_path()
+
+
+## Find a page instance in the stack by its class.
+## Returns null if the page is not in the stack.
+## Useful for accessing paused pages (covered by another page).
+##
+## Example:
+## [codeblock]
+## var settings: SettingsPage = UIFlow.get_page(SettingsPage) as SettingsPage
+## if settings:
+##     settings.refresh()
+## [/codeblock]
+func get_page(page_class: GDScript) -> Control:
+	return Router.get_page(page_class)
+
+
+## Check if a page of the given class is currently in the stack.
+func has_page(page_class: GDScript) -> bool:
+	return Router.has_page(page_class)
 
 
 # ── Scene registration shortcuts ─────────────────────────────────────────────

@@ -27,4 +27,7 @@ func _on_settings_pressed() -> void:
 
 
 func _on_shop_pressed() -> void:
-	UIFlow.push(ShopPage, {"npc_id": 1}, UIFlowTransitionType.Type.FADE)
+	# Push and get reference to the page instance
+	var shop: ShopPage = UIFlow.push(ShopPage, {}, UIFlowTransitionType.Type.FADE) as ShopPage
+	if shop:
+		shop.set_npc_id(1)  # Call custom methods directly

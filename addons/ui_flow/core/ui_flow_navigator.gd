@@ -22,13 +22,20 @@ func setup(p_container: Control, p_resolver: UIFlowSceneResolver, p_transition_m
 
 
 ## Push a new page onto the stack.
+## Returns the page instance, allowing immediate custom initialization.
 ## [param page_class] is the GDScript class (e.g. SettingsPage).
 ## [param data] is passed to the page's [code]_on_enter()[/code] callback.
 ## [param transition] optionally overrides the default transition.
-func push(page_class: GDScript, data: Dictionary = {}, transition = null) -> void:
+##
+## Example:
+## [codeblock]
+## var page: SettingsPage = UIFlow.push(SettingsPage) as SettingsPage
+## page.custom_init(some_data)
+## [/codeblock]
+func push(page_class: GDScript, data: Dictionary = {}, transition = null) -> Control:
 	var scene: PackedScene = _scene_resolver.resolve(page_class)
 	if scene == null:
-		return
+		return null
 
 	# Pause current top page
 	if _stack.size() > 0:
@@ -59,6 +66,8 @@ func push(page_class: GDScript, data: Dictionary = {}, transition = null) -> voi
 			page._on_enter(data)
 		page_pushed.emit(page_class, data)
 	)
+
+	return instance
 
 
 ## Pop the top page off the stack, revealing the one below.
@@ -97,7 +106,8 @@ func pop(transition = null) -> void:
 
 
 ## Replace the top page with a new one (doesn't increase stack depth).
-func replace(page_class: GDScript, data: Dictionary = {}, transition = null) -> void:
+## Returns the new page instance.
+func replace(page_class: GDScript, data: Dictionary = {}, transition = null) -> Control:
 	if _stack.is_empty():
 		push(page_class, data, transition)
 		return
@@ -140,6 +150,8 @@ func replace(page_class: GDScript, data: Dictionary = {}, transition = null) -> 
 		page_replaced.emit(old_class, page_class, data)
 	)
 
+	return instance
+
 
 ## Remove all pages from the stack, optionally pushing a new root page.
 func pop_to_root(transition = null) -> void:
@@ -172,6 +184,31 @@ func current_page_instance() -> Control:
 	if _stack.is_empty():
 		return null
 	return _stack.back()["instance"]
+
+
+## Find a page instance in the stack by its class.
+## Returns null if the page is not in the stack.
+## Useful for accessing pages that are paused (covered by another page).
+##
+## Example:
+## [codeblock]
+## var settings: SettingsPage = UIFlow.get_page(SettingsPage) as SettingsPage
+## if settings:
+##     settings.refresh()
+## [/codeblock]
+func get_page(page_class: GDScript) -> Control:
+	for entry in _stack:
+		if entry["class"] == page_class:
+			return entry["instance"]
+	return null
+
+
+## Check if a page of the given class is in the stack.
+func has_page(page_class: GDScript) -> bool:
+	for entry in _stack:
+		if entry["class"] == page_class:
+			return true
+	return false
 
 
 ## Get the current stack depth.
