@@ -78,10 +78,6 @@ func _ensure_page_container() -> void:
 
 		_page_container = Control.new()
 		_page_container.name = "UIFlowPageContainer"
-		# Explicitly set size to fill the screen
-		var win_size := DisplayServer.window_get_size()
-		_page_container.position = Vector2.ZERO
-		_page_container.size = Vector2(win_size)
 		_page_container.set_anchors_preset(Control.PRESET_FULL_RECT)
 		_page_container.grow_horizontal = Control.GROW_DIRECTION_BOTH
 		_page_container.grow_vertical = Control.GROW_DIRECTION_BOTH
