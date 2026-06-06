@@ -18,6 +18,7 @@ func _on_enter(_data: Dictionary = {}) -> void:
 	# Push HUD
 	var hud: HUDPage = UIFlow.push(HUDPage, {}, UIFlowTransitionType.Type.NONE) as HUDPage
 	hud.stats = _stats
+	hud.game_events = _game_events
 
 	# Connect action buttons
 	$Actions/Margin/Buttons/DamageButton.pressed.connect(func():

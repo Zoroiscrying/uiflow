@@ -1,5 +1,5 @@
 ## Example settings page — demonstrates push/pop with back navigation.
-extends UIFlowPage
+class_name SettingsPage extends UIFlowPage
 
 func _ready() -> void:
 	$VBox/AudioButton.pressed.connect(_on_audio_pressed)

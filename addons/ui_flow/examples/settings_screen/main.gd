@@ -7,5 +7,5 @@ func _ready() -> void:
 	if settings == null:
 		settings = SettingsData.new()
 
-	var page: SettingsPage = UIFlow.push(SettingsPage) as SettingsPage
+	var page: SettingsPageExample = UIFlow.push(SettingsPageExample) as SettingsPageExample
 	page.settings = settings

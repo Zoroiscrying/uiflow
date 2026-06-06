@@ -2,6 +2,7 @@
 class_name HUDPage extends UIFlowPage
 
 @export var stats: PlayerStats
+var game_events: GameEvents
 
 var _bindings: Array[UIFlowBindUtils.UIFlowBinding] = []
 
@@ -40,10 +41,11 @@ func _on_enter(_data: Dictionary = {}) -> void:
 			func(v): return "Lv. %d" % v)
 	)
 
-	# Listen to game events
-	GameEvents.player_died.connect(_on_player_died)
-	GameEvents.level_up.connect(_on_level_up)
-	GameEvents.item_acquired.connect(_on_item_acquired)
+	# Listen to game events (if instance provided)
+	if game_events:
+		game_events.player_died.connect(_on_player_died)
+		game_events.level_up.connect(_on_level_up)
+		game_events.item_acquired.connect(_on_item_acquired)
 
 	# Initialize display
 	$HUD/HealthBar.max_value = stats.max_health
@@ -56,9 +58,13 @@ func _on_exit() -> void:
 	for b in _bindings:
 		b.unbind()
 	_bindings.clear()
-	GameEvents.player_died.disconnect(_on_player_died)
-	GameEvents.level_up.disconnect(_on_level_up)
-	GameEvents.item_acquired.disconnect(_on_item_acquired)
+	if game_events:
+		if game_events.player_died.is_connected(_on_player_died):
+			game_events.player_died.disconnect(_on_player_died)
+		if game_events.level_up.is_connected(_on_level_up):
+			game_events.level_up.disconnect(_on_level_up)
+		if game_events.item_acquired.is_connected(_on_item_acquired):
+			game_events.item_acquired.disconnect(_on_item_acquired)
 
 
 func _on_player_died() -> void:
