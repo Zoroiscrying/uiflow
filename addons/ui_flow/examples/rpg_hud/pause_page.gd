@@ -4,7 +4,7 @@ class_name PausePage extends UIFlowPage
 func _ready() -> void:
 	$Panel/VBox/ResumeButton.pressed.connect(func(): UIFlow.pop())
 	$Panel/VBox/SettingsButton.pressed.connect(func():
-		UIFlow.push(SettingsPage, {}, UIFlowTransitionType.Type.SLIDE_LEFT)
+		UIFlow.push(SettingsPageExample, {}, UIFlowTransitionType.Type.SLIDE_LEFT)
 	)
 	$Panel/VBox/QuitButton.pressed.connect(func():
 		UIFlowUI.Confirm.show("Quit", "Return to main menu?",

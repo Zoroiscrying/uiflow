@@ -236,7 +236,7 @@ func _create_lights() -> void:
 	environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
 	environment.ambient_light_color = Color(0.08, 0.08, 0.12)
 	environment.ambient_light_energy = 0.4
-	environment.tonemap_mode = Environment.TONE_MAP_ACES
+	environment.tonemap_mode = Environment.TONE_MAP_ACES_FITTED
 	env.environment = environment
 	add_child(env)
 

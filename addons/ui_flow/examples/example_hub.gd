@@ -4,30 +4,18 @@
 class_name ExampleHub extends UIFlowPage
 
 ## Maps example titles to their wrapper data.
-const EXAMPLES: Array[Dictionary] = [
-	{
-		"title": "Main Menu Flow",
-		"page_class": MainMenuScreen,
-	},
-	{
-		"title": "Settings Screen",
-		"page_class": SettingsPageExample,
-	},
-	{
-		"title": "RPG HUD + Pause",
-		"page_class": RPGHudSetupPage,
-	},
-	{
-		"title": "Component Gallery",
-		"page_class": GalleryPage,
-	},
+var _examples: Array[Dictionary] = [
+	{"title": "Main Menu Flow", "page_class": MainMenuScreen},
+	{"title": "Settings Screen", "page_class": SettingsPageExample},
+	{"title": "RPG HUD + Pause", "page_class": RPGHudSetupPage},
+	{"title": "Component Gallery", "page_class": GalleryPage},
 ]
 
 
 func _ready() -> void:
-	for i in range(EXAMPLES.size()):
+	for i in range(_examples.size()):
 		var btn: Button = $Margin/Scroll/VBox/Buttons.get_child(i)
-		var example: Dictionary = EXAMPLES[i]
+		var example: Dictionary = _examples[i]
 		btn.text = example["title"]
 		btn.pressed.connect(func():
 			UIFlow.push(example["page_class"], {}, UIFlowTransitionType.Type.FADE)
