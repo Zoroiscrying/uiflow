@@ -1,2 +1,8 @@
 # Normalize EOL for all files that Git considers text files.
 * text=auto eol=lf
+
+# Exclude from Asset Library download
+/test            export-ignore
+/test/**         export-ignore
+/addons/gdUnit4  export-ignore
+/addons/gdUnit4/** export-ignore

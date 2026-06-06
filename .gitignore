@@ -11,3 +11,6 @@
 # OS
 .DS_Store
 Thumbs.db
+
+# GdUnit4
+/addons/gdUnit4/
