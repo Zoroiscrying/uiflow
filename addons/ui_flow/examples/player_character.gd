@@ -1,14 +1,9 @@
-## Player Character — simple 3D character with WASD movement and camera follow.
+## Player Character — WASD movement with fixed camera, no mouse capture.
+## Mouse remains free for UI interaction.
 extends CharacterBody3D
 
 const SPEED := 5.0
 const JUMP_VELOCITY := 4.5
-const MOUSE_SENSITIVITY := 0.002
-
-var _camera_pivot: Node3D
-var _camera: Camera3D
-var _yaw: float = 0.0
-var _pitch: float = -0.3
 
 
 func _ready() -> void:
@@ -36,45 +31,26 @@ func _ready() -> void:
 	mesh.material_override = mat
 	add_child(mesh)
 
-	# Camera pivot (follows rotation)
-	_camera_pivot = Node3D.new()
-	_camera_pivot.name = "CameraPivot"
-	add_child(_camera_pivot)
-
-	# Camera (offset behind and above)
-	_camera = Camera3D.new()
-	_camera.name = "Camera"
-	_camera.position = Vector3(0, 2.5, 5)
-	_camera_pivot.add_child(_camera)
-
-	# Add a hat/indicator on top
+	# Hat indicator
 	var hat := MeshInstance3D.new()
 	var box := BoxMesh.new()
 	box.size = Vector3(0.3, 0.1, 0.3)
 	hat.mesh = box
 	hat.position = Vector3(0, 1.7, 0)
-
 	var hat_mat := StandardMaterial3D.new()
 	hat_mat.albedo_color = Color(0.9, 0.6, 0.2)
 	hat.material_override = hat_mat
 	add_child(hat)
 
-	# Capture mouse for camera control
-	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	# Fixed camera — elevated behind-player view (no mouse control)
+	_camera = Camera3D.new()
+	_camera.name = "Camera"
+	_camera.position = Vector3(0, 8, 10)
+	_camera.look_at(Vector3(0, 0, 0))
+	add_child(_camera)
 
 
-func _unhandled_input(event: InputEvent) -> void:
-	# Mouse look
-	if event is InputEventMouseMotion:
-		_yaw -= event.relative.x * MOUSE_SENSITIVITY
-		_pitch = clampf(_pitch - event.relative.y * MOUSE_SENSITIVITY, -0.8, 0.3)
-
-	# Release mouse with Escape
-	if event.is_action_pressed("ui_cancel"):
-		if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
-			Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-		else:
-			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+var _camera: Camera3D
 
 
 func _physics_process(delta: float) -> void:
@@ -86,21 +62,18 @@ func _physics_process(delta: float) -> void:
 	if Input.is_action_just_pressed("ui_accept") and is_on_floor():
 		velocity.y = JUMP_VELOCITY
 
-	# Movement direction relative to camera
-	var input_dir := Vector2.ZERO
+	# WASD movement (world-relative, no camera rotation)
+	var direction := Vector3.ZERO
 	if Input.is_key_pressed(KEY_W) or Input.is_key_pressed(KEY_UP):
-		input_dir.y -= 1
+		direction.z -= 1
 	if Input.is_key_pressed(KEY_S) or Input.is_key_pressed(KEY_DOWN):
-		input_dir.y += 1
+		direction.z += 1
 	if Input.is_key_pressed(KEY_A) or Input.is_key_pressed(KEY_LEFT):
-		input_dir.x -= 1
+		direction.x -= 1
 	if Input.is_key_pressed(KEY_D) or Input.is_key_pressed(KEY_RIGHT):
-		input_dir.x += 1
+		direction.x += 1
 
-	input_dir = input_dir.normalized()
-
-	# Rotate movement by camera yaw
-	var direction := Vector3(input_dir.x, 0, input_dir.y).rotated(Vector3.UP, _yaw)
+	direction = direction.normalized()
 
 	if direction.length() > 0.01:
 		velocity.x = direction.x * SPEED
@@ -113,7 +86,3 @@ func _physics_process(delta: float) -> void:
 		velocity.z = move_toward(velocity.z, 0, SPEED * 0.2)
 
 	move_and_slide()
-
-	# Update camera pivot rotation
-	_camera_pivot.rotation.y = _yaw
-	_camera.rotation.x = _pitch
