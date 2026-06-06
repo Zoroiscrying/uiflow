@@ -1,78 +1,80 @@
 ## Gallery page — showcases all UIFlow components and transitions.
+##
+## UI is defined in .tscn with proper anchors, containers, and font sizes.
+## Code only handles signal connections and UIFlow API calls.
 extends UIFlowPage
 
 func _ready() -> void:
-	# Toast buttons
-	$Scroll/VBox/ToastSection/InfoButton.pressed.connect(func():
+	# Toast
+	$Margin/Scroll/VBox/ToastSection/Buttons/InfoBtn.pressed.connect(func():
 		UIFlowUI.Toast.show("This is an info message.", UIFlowToast.Type.INFO)
 	)
-	$Scroll/VBox/ToastSection/SuccessButton.pressed.connect(func():
+	$Margin/Scroll/VBox/ToastSection/Buttons/SuccessBtn.pressed.connect(func():
 		UIFlowUI.Toast.show("Operation succeeded!", UIFlowToast.Type.SUCCESS)
 	)
-	$Scroll/VBox/ToastSection/WarningButton.pressed.connect(func():
+	$Margin/Scroll/VBox/ToastSection/Buttons/WarningBtn.pressed.connect(func():
 		UIFlowUI.Toast.show("Warning: low memory.", UIFlowToast.Type.WARNING)
 	)
-	$Scroll/VBox/ToastSection/ErrorButton.pressed.connect(func():
+	$Margin/Scroll/VBox/ToastSection/Buttons/ErrorBtn.pressed.connect(func():
 		UIFlowUI.Toast.show("Connection failed!", UIFlowToast.Type.ERROR)
 	)
 
-	# Dialog buttons
-	$Scroll/VBox/DialogSection/ConfirmButton.pressed.connect(func():
+	# Dialogs
+	$Margin/Scroll/VBox/DialogSection/Buttons/ConfirmBtn.pressed.connect(func():
 		UIFlowUI.Confirm.show("Confirm Action", "Do you want to proceed?",
 			func(): UIFlowUI.Toast.show("Confirmed!", UIFlowToast.Type.SUCCESS),
 			func(): UIFlowUI.Toast.show("Canceled.", UIFlowToast.Type.INFO)
 		)
 	)
-	$Scroll/VBox/DialogSection/AlertButton.pressed.connect(func():
+	$Margin/Scroll/VBox/DialogSection/Buttons/AlertBtn.pressed.connect(func():
 		UIFlowUI.Alert.show("Information", "This is an alert dialog. Click OK to dismiss.")
 	)
 
-	# Transition buttons
-	$Scroll/VBox/TransitionSection/FadeButton.pressed.connect(func():
-		_demo_transition(UIFlowTransitionType.Type.FADE)
+	# Transitions
+	$Margin/Scroll/VBox/TransSection/Buttons/FadeBtn.pressed.connect(func():
+		_demo_transition(UIFlowTransitionType.Type.FADE, "Fade")
 	)
-	$Scroll/VBox/TransitionSection/SlideLeftButton.pressed.connect(func():
-		_demo_transition(UIFlowTransitionType.Type.SLIDE_LEFT)
+	$Margin/Scroll/VBox/TransSection/Buttons/SlideLBtn.pressed.connect(func():
+		_demo_transition(UIFlowTransitionType.Type.SLIDE_LEFT, "Slide Left")
 	)
-	$Scroll/VBox/TransitionSection/SlideRightButton.pressed.connect(func():
-		_demo_transition(UIFlowTransitionType.Type.SLIDE_RIGHT)
+	$Margin/Scroll/VBox/TransSection/Buttons/SlideRBtn.pressed.connect(func():
+		_demo_transition(UIFlowTransitionType.Type.SLIDE_RIGHT, "Slide Right")
 	)
-	$Scroll/VBox/TransitionSection/ScaleButton.pressed.connect(func():
-		_demo_transition(UIFlowTransitionType.Type.SCALE)
+	$Margin/Scroll/VBox/TransSection/Buttons/ScaleBtn.pressed.connect(func():
+		_demo_transition(UIFlowTransitionType.Type.SCALE, "Scale")
 	)
 
-	# Animation demo
-	$Scroll/VBox/AnimSection/BounceButton.pressed.connect(func():
+	# Animations
+	$Margin/Scroll/VBox/AnimSection/Buttons/BounceBtn.pressed.connect(func():
 		_demo_bounce()
 	)
-	$Scroll/VBox/AnimSection/StaggerButton.pressed.connect(func():
+	$Margin/Scroll/VBox/AnimSection/Buttons/StaggerBtn.pressed.connect(func():
 		_demo_stagger()
 	)
 
 
 func _on_enter(_data: Dictionary = {}) -> void:
-	UIFlow.set_default_focus($Scroll/VBox/ToastSection/InfoButton)
+	UIFlow.set_default_focus($Margin/Scroll/VBox/ToastSection/Buttons/InfoBtn)
 
 
-func _demo_transition(type: UIFlowTransitionType.Type) -> void:
+func _demo_transition(type: UIFlowTransitionType.Type, label: String) -> void:
 	var page: TransitionDemoPage = UIFlow.push(TransitionDemoPage, {}, type) as TransitionDemoPage
-	page.set_transition_name(UIFlowTransitionType.get_name(type))
+	page.set_transition_name(label)
 
 
 func _demo_bounce() -> void:
-	# Bounce the title
-	UIFlow.animate($Scroll/VBox/Title, UIFlowTweenProp.Prop.POSITION_Y,
-		$Scroll/VBox/Title.position.y - 20, $Scroll/VBox/Title.position.y,
+	var title: Control = $Margin/Scroll/VBox/Title
+	UIFlow.animate(title, UIFlowTweenProp.Prop.POSITION_Y,
+		title.position.y - 20, title.position.y,
 		0.4, Tween.EASE_OUT, Tween.TRANS_ELASTIC)
 
 
 func _demo_stagger() -> void:
-	# Stagger fade-in on toast section buttons
 	var buttons := [
-		$Scroll/VBox/ToastSection/InfoButton,
-		$Scroll/VBox/ToastSection/SuccessButton,
-		$Scroll/VBox/ToastSection/WarningButton,
-		$Scroll/VBox/ToastSection/ErrorButton,
+		$Margin/Scroll/VBox/ToastSection/Buttons/InfoBtn,
+		$Margin/Scroll/VBox/ToastSection/Buttons/SuccessBtn,
+		$Margin/Scroll/VBox/ToastSection/Buttons/WarningBtn,
+		$Margin/Scroll/VBox/ToastSection/Buttons/ErrorBtn,
 	]
 	var seq = UIFlow.sequencer()
 	for btn in buttons:

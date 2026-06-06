@@ -7,6 +7,8 @@ layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 script = ExtResource("1")
 
 [node name="BG" type="ColorRect" parent="."]
@@ -14,103 +16,134 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-color = Color(0.1, 0.1, 0.14, 1)
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.098, 0.098, 0.125, 1)
 
-[node name="VBox" type="VBoxContainer" parent="."]
+[node name="Margin" type="MarginContainer" parent="."]
 layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -200.0
-offset_top = -160.0
-offset_right = 200.0
-offset_bottom = 160.0
-theme_override_constants/separation = 10
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 40
+theme_override_constants/margin_top = 40
+theme_override_constants/margin_right = 40
+theme_override_constants/margin_bottom = 40
 
-[node name="Title" type="Label" parent="VBox"]
+[node name="Center" type="VBoxContainer" parent="Margin"]
 layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="Margin/Center"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
 text = "Settings"
 horizontal_alignment = 1
 
-[node name="MasterVolume" type="HBoxContainer" parent="VBox"]
+[node name="Sep" type="HSeparator" parent="Margin/Center"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="VBox/MasterVolume"]
+[node name="MasterVolume" type="HBoxContainer" parent="Margin/Center"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Label" type="Label" parent="Margin/Center/MasterVolume"]
 layout_mode = 2
 custom_minimum_size = Vector2(100, 0)
+theme_override_font_sizes/font_size = 14
 text = "Master"
 
-[node name="Slider" type="HSlider" parent="VBox/MasterVolume"]
+[node name="Slider" type="HSlider" parent="Margin/Center/MasterVolume"]
 layout_mode = 2
 size_flags_horizontal = 3
 value = 80.0
 
-[node name="Value" type="Label" parent="VBox/MasterVolume"]
+[node name="Value" type="Label" parent="Margin/Center/MasterVolume"]
 layout_mode = 2
-custom_minimum_size = Vector2(50, 0)
+custom_minimum_size = Vector2(48, 0)
+theme_override_font_sizes/font_size = 14
 text = "80%"
 
-[node name="MusicVolume" type="HBoxContainer" parent="VBox"]
+[node name="MusicVolume" type="HBoxContainer" parent="Margin/Center"]
 layout_mode = 2
+theme_override_constants/separation = 12
 
-[node name="Label" type="Label" parent="VBox/MusicVolume"]
+[node name="Label" type="Label" parent="Margin/Center/MusicVolume"]
 layout_mode = 2
 custom_minimum_size = Vector2(100, 0)
+theme_override_font_sizes/font_size = 14
 text = "Music"
 
-[node name="Slider" type="HSlider" parent="VBox/MusicVolume"]
+[node name="Slider" type="HSlider" parent="Margin/Center/MusicVolume"]
 layout_mode = 2
 size_flags_horizontal = 3
 value = 70.0
 
-[node name="Value" type="Label" parent="VBox/MusicVolume"]
+[node name="Value" type="Label" parent="Margin/Center/MusicVolume"]
 layout_mode = 2
-custom_minimum_size = Vector2(50, 0)
+custom_minimum_size = Vector2(48, 0)
+theme_override_font_sizes/font_size = 14
 text = "70%"
 
-[node name="SFXVolume" type="HBoxContainer" parent="VBox"]
+[node name="SFXVolume" type="HBoxContainer" parent="Margin/Center"]
 layout_mode = 2
+theme_override_constants/separation = 12
 
-[node name="Label" type="Label" parent="VBox/SFXVolume"]
+[node name="Label" type="Label" parent="Margin/Center/SFXVolume"]
 layout_mode = 2
 custom_minimum_size = Vector2(100, 0)
+theme_override_font_sizes/font_size = 14
 text = "SFX"
 
-[node name="Slider" type="HSlider" parent="VBox/SFXVolume"]
+[node name="Slider" type="HSlider" parent="Margin/Center/SFXVolume"]
 layout_mode = 2
 size_flags_horizontal = 3
 value = 90.0
 
-[node name="Value" type="Label" parent="VBox/SFXVolume"]
+[node name="Value" type="Label" parent="Margin/Center/SFXVolume"]
 layout_mode = 2
-custom_minimum_size = Vector2(50, 0)
+custom_minimum_size = Vector2(48, 0)
+theme_override_font_sizes/font_size = 14
 text = "90%"
 
-[node name="Fullscreen" type="HBoxContainer" parent="VBox"]
+[node name="Sep2" type="HSeparator" parent="Margin/Center"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="VBox/Fullscreen"]
+[node name="Fullscreen" type="HBoxContainer" parent="Margin/Center"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Label" type="Label" parent="Margin/Center/Fullscreen"]
 layout_mode = 2
 custom_minimum_size = Vector2(100, 0)
+theme_override_font_sizes/font_size = 14
 text = "Fullscreen"
 
-[node name="CheckButton" type="CheckButton" parent="VBox/Fullscreen"]
+[node name="CheckButton" type="CheckButton" parent="Margin/Center/Fullscreen"]
 layout_mode = 2
 
-[node name="VSync" type="HBoxContainer" parent="VBox"]
+[node name="VSync" type="HBoxContainer" parent="Margin/Center"]
 layout_mode = 2
+theme_override_constants/separation = 12
 
-[node name="Label" type="Label" parent="VBox/VSync"]
+[node name="Label" type="Label" parent="Margin/Center/VSync"]
 layout_mode = 2
 custom_minimum_size = Vector2(100, 0)
+theme_override_font_sizes/font_size = 14
 text = "VSync"
 
-[node name="CheckButton" type="CheckButton" parent="VBox/VSync"]
+[node name="CheckButton" type="CheckButton" parent="Margin/Center/VSync"]
 layout_mode = 2
 button_pressed = true
 
-[node name="BackButton" type="Button" parent="VBox"]
+[node name="Sep3" type="HSeparator" parent="Margin/Center"]
 layout_mode = 2
+
+[node name="BackButton" type="Button" parent="Margin/Center"]
+layout_mode = 2
+custom_minimum_size = Vector2(200, 40)
 text = "Back"
