@@ -70,14 +70,24 @@ func _ensure_page_container() -> void:
 	if _custom_ui_root:
 		_page_container = _custom_ui_root
 	else:
-		# Auto-create — add Control directly to the autoload node.
-		# In Godot, Controls render on top of 3D content by default.
+		# Auto-create — add a CanvasLayer with a Control inside.
+		var ui_layer := CanvasLayer.new()
+		ui_layer.name = "UIFlowPageLayer"
+		ui_layer.layer = 10
+		add_child(ui_layer)
+
 		_page_container = Control.new()
 		_page_container.name = "UIFlowPageContainer"
+		# Explicitly set size to fill the screen
+		var win_size := DisplayServer.window_get_size()
+		_page_container.position = Vector2.ZERO
+		_page_container.size = Vector2(win_size)
 		_page_container.set_anchors_preset(Control.PRESET_FULL_RECT)
 		_page_container.grow_horizontal = Control.GROW_DIRECTION_BOTH
 		_page_container.grow_vertical = Control.GROW_DIRECTION_BOTH
-		add_child(_page_container)
+		ui_layer.add_child(_page_container)
+
+		print("UIFlow: Created page container, size = ", _page_container.size)
 
 	Router.setup(_page_container, Scenes, Transitions)
 	_apply_theme_to_container()
