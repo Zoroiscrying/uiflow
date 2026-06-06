@@ -35,12 +35,17 @@ var _page_container: Control
 
 
 func _ready() -> void:
-	# Create page container (full-screen Control for pages)
+	# Create page container on a CanvasLayer to render above 3D content
+	var ui_layer := CanvasLayer.new()
+	ui_layer.name = "UIFlowPageLayer"
+	ui_layer.layer = 10
+	add_child(ui_layer)
+
 	_page_container = Control.new()
 	_page_container.name = "UIFlowPageContainer"
 	_page_container.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_page_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(_page_container)
+	ui_layer.add_child(_page_container)
 
 	# Initialize sub-systems
 	Scenes = UIFlowSceneResolver.new()
