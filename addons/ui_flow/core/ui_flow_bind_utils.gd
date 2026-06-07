@@ -12,7 +12,8 @@ class UIFlowBinding extends RefCounted:
 	func _init(sig: Signal, cb: Callable) -> void:
 		_signal = sig
 		_callable = cb
-		_signal.connect(_callable)
+		if not _signal.is_connected(_callable):
+			_signal.connect(_callable)
 
 	## Disconnect this binding.
 	func unbind() -> void:
