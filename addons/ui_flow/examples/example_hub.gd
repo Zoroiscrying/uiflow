@@ -20,7 +20,8 @@ func _ready() -> void:
 		var example: Dictionary = _examples[i]
 		btn.text = example["title"]
 		btn.pressed.connect(func():
-			UIFlow.push(example["page_class"], {}, UIFlowTransitionType.Type.NONE)
+			# overlay=true: ExampleHub stays visible behind the sub-page
+			UIFlow.push(example["page_class"], {}, UIFlowTransitionType.Type.FADE, null, true)
 		)
 
 	$Margin/Scroll/VBox/QuitButton.pressed.connect(func():

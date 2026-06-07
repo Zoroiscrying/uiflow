@@ -35,18 +35,22 @@ func setup(p_container: Control, p_resolver: UIFlowSceneResolver, p_transition_m
 ## # Or with page-level theme:
 ## UIFlow.push(SettingsPage, {}, null, shop_theme)
 ## [/codeblock]
-func push(page_class: GDScript, data: Dictionary = {}, transition = null, page_theme: UIFlowTheme = null) -> Control:
+## Push a new page onto the stack.
+## [param overlay] if true, the current page stays visible behind the new page.
+func push(page_class: GDScript, data: Dictionary = {}, transition = null, page_theme: UIFlowTheme = null, overlay: bool = false) -> Control:
 	var scene: PackedScene = _scene_resolver.resolve(page_class)
 	if scene == null:
 		return null
 
-	# Pause current top page — just hide it, don't animate
+	# Pause current top page
 	if _stack.size() > 0:
 		var current: Dictionary = _stack.back()
 		var current_page: UIFlowPage = current["instance"] as UIFlowPage
 		if current_page and current_page.has_method("_on_pause"):
 			current_page._on_pause()
-		current_page.visible = false
+		# Only hide if NOT overlay mode
+		if not overlay:
+			current_page.visible = false
 
 	# Instantiate and add new page (start fully transparent to prevent flash)
 	var instance: Control = scene.instantiate()
