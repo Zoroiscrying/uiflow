@@ -65,7 +65,7 @@ func show_toast(message: String, type: Type = Type.INFO, duration: float = DEFAU
 
 func _create_toast_node(message: String, type: Type) -> Control:
 	var panel := PanelContainer.new()
-	panel.custom_minimum_size = Vector2(250, 0)
+	panel.custom_minimum_size = Vector2(350, 0)
 
 	# Get theme values
 	var theme: UIFlowTheme = UIFlow.get_theme() if UIFlow else null

@@ -60,8 +60,11 @@ func _on_shown() -> void:
 
 
 func _demo_transition(type: UIFlowTransitionType.Type, label: String) -> void:
-	var page: TransitionDemoPage = UIFlow.push(TransitionDemoPage) as TransitionDemoPage
-	page.set_transition_name(label)
+	UIFlow.push(TransitionDemoPage, {
+		"transition_name": label,
+		"enter_preset": type,
+		"enter_duration": 0.3,
+	})
 
 
 func _demo_bounce() -> void:
