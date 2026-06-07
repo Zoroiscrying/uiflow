@@ -6,6 +6,14 @@ class_name SettingsPageExample extends UIFlowPage
 var _bindings: Array[UIFlowBindUtils.UIFlowBinding] = []
 
 
+func _ready() -> void:
+	$Margin/Center/BackButton.pressed.connect(_on_back_pressed)
+
+
+func _on_back_pressed() -> void:
+	UIFlow.pop()
+
+
 func _on_enter(_data: Dictionary = {}) -> void:
 	if settings == null:
 		settings = SettingsData.new()
