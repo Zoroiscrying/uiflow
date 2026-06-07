@@ -1,8 +1,6 @@
-## Main menu — central hub with navigation to other screens.
-## Button connections are in the .tscn scene (Inspector signals).
+## Main menu - central hub with navigation to other screens.
+## Button connections via Inspector signals in .tscn.
 class_name MainMenuScreen extends UIFlowPage
-
-var _stagger_done: bool = false
 
 
 func _on_play_pressed() -> void:

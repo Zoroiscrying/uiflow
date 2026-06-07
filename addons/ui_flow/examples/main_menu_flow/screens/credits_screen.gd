@@ -1,9 +1,6 @@
 ## Credits screen - simple page with back navigation.
+## BackButton connected via Inspector signal in .tscn.
 class_name CreditsScreen extends UIFlowPage
-
-
-func _ready() -> void:
-	$Center/BackButton.pressed.connect(_on_back_pressed)
 
 
 func _on_back_pressed() -> void:

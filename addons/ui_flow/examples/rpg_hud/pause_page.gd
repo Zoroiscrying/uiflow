@@ -1,11 +1,6 @@
 ## Pause menu - modal overlay with Resume/Settings/Quit.
+## Button connections via Inspector signals in .tscn.
 class_name PausePage extends UIFlowPage
-
-
-func _ready() -> void:
-	$Panel/VBox/ResumeButton.pressed.connect(_on_resume_pressed)
-	$Panel/VBox/SettingsButton.pressed.connect(_on_settings_pressed)
-	$Panel/VBox/QuitButton.pressed.connect(_on_quit_pressed)
 
 
 func _on_resume_pressed() -> void:
