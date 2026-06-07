@@ -44,7 +44,7 @@ func get_interaction_prompts() -> Array:
 func _unhandled_input(event: InputEvent) -> void:
 	if not _player_in_range or page_scene_path.is_empty():
 		return
-	if event.is_action_pressed("ui_accept"):
+	if event.is_action_pressed("interact"):
 		var scene: PackedScene = load(page_scene_path) as PackedScene
 		if scene:
 			var instance: Control = scene.instantiate()
