@@ -1,15 +1,19 @@
 ## Pause menu — modal overlay with Resume/Settings/Quit.
+## Button connections via Inspector signals.
 class_name PausePage extends UIFlowPage
 
-func _ready() -> void:
-	$Panel/VBox/ResumeButton.pressed.connect(func(): UIFlow.pop())
-	$Panel/VBox/SettingsButton.pressed.connect(func():
-		UIFlow.push(SettingsPageExample, {}, UIFlowTransitionType.Type.SLIDE_LEFT)
-	)
-	$Panel/VBox/QuitButton.pressed.connect(func():
-		UIFlowUI.Confirm.show_confirm("Quit", "Return to main menu?",
-			func(): UIFlow.pop_to_root()
-		)
+
+func _on_resume_pressed() -> void:
+	UIFlow.pop()
+
+
+func _on_settings_pressed() -> void:
+	UIFlow.push(SettingsPageExample, {}, UIFlowTransitionType.Type.SLIDE_LEFT)
+
+
+func _on_quit_pressed() -> void:
+	UIFlowUI.Confirm.show_confirm("Quit", "Return to main menu?",
+		func(): UIFlow.pop_to_root()
 	)
 
 
