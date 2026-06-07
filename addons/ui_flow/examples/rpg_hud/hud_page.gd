@@ -68,12 +68,12 @@ func _on_closed() -> void:
 
 
 func _on_player_died() -> void:
-	UIFlowUI.Toast.show_toast("You died!", UIFlowToast.Type.ERROR)
+	UIFlowUI.Toast.show_toast("You died!", "error")
 
 
 func _on_level_up(new_level: int) -> void:
-	UIFlowUI.Toast.show_toast("Level Up! Now level %d" % new_level, UIFlowToast.Type.SUCCESS)
+	UIFlowUI.Toast.show_toast("Level Up! Now level %d" % new_level, "success")
 
 
 func _on_item_acquired(item_id: StringName, count: int) -> void:
-	UIFlowUI.Toast.show_toast("Got %s x%d" % [item_id, count], UIFlowToast.Type.INFO)
+	UIFlowUI.Toast.show_toast("Got %s x%d" % [item_id, count], "info")

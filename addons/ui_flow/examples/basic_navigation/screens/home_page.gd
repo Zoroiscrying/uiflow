@@ -28,6 +28,6 @@ func _on_settings_pressed() -> void:
 
 func _on_shop_pressed() -> void:
 	# Push and get reference to the page instance
-	var shop: ShopPage = UIFlow.push(ShopPage, {}) as ShopPage
+	var shop: BasicShopPage = UIFlow.push(BasicShopPage, {}) as BasicShopPage
 	if shop:
 		shop.set_npc_id(1)  # Call custom methods directly

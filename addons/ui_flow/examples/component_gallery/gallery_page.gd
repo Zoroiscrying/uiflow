@@ -5,23 +5,23 @@ class_name GalleryPage extends UIFlowPage
 func _ready() -> void:
 	# Toast
 	$Margin/Scroll/VBox/ToastSection/Buttons/InfoBtn.pressed.connect(func():
-		UIFlowUI.Toast.show_toast("This is an info message.", UIFlowToast.Type.INFO)
+		UIFlowUI.Toast.show_toast("This is an info message.", "info")
 	)
 	$Margin/Scroll/VBox/ToastSection/Buttons/SuccessBtn.pressed.connect(func():
-		UIFlowUI.Toast.show_toast("Operation succeeded!", UIFlowToast.Type.SUCCESS)
+		UIFlowUI.Toast.show_toast("Operation succeeded!", "success")
 	)
 	$Margin/Scroll/VBox/ToastSection/Buttons/WarningBtn.pressed.connect(func():
-		UIFlowUI.Toast.show_toast("Warning: low memory.", UIFlowToast.Type.WARNING)
+		UIFlowUI.Toast.show_toast("Warning: low memory.", "warning")
 	)
 	$Margin/Scroll/VBox/ToastSection/Buttons/ErrorBtn.pressed.connect(func():
-		UIFlowUI.Toast.show_toast("Connection failed!", UIFlowToast.Type.ERROR)
+		UIFlowUI.Toast.show_toast("Connection failed!", "error")
 	)
 
 	# Dialogs
 	$Margin/Scroll/VBox/DialogSection/Buttons/ConfirmBtn.pressed.connect(func():
 		UIFlowUI.Confirm.show_confirm("Confirm Action", "Do you want to proceed?",
-			func(): UIFlowUI.Toast.show_toast("Confirmed!", UIFlowToast.Type.SUCCESS),
-			func(): UIFlowUI.Toast.show_toast("Canceled.", UIFlowToast.Type.INFO)
+			func(): UIFlowUI.Toast.show_toast("Confirmed!", "success"),
+			func(): UIFlowUI.Toast.show_toast("Canceled.", "info")
 		)
 	)
 	$Margin/Scroll/VBox/DialogSection/Buttons/AlertBtn.pressed.connect(func():
