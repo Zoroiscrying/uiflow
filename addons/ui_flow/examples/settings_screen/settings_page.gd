@@ -17,6 +17,14 @@ func _ready() -> void:
 	exit_transition = fade
 
 
+func _on_back_pressed() -> void:
+	UIFlow.pop()
+
+
+func _on_back() -> void:
+	UIFlow.pop()
+
+
 func _on_opened(_data: Dictionary = {}) -> void:
 	if settings == null:
 		settings = SettingsData.new()
