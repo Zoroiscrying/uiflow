@@ -48,4 +48,5 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
 		if not UIFlow.has_page(PausePage):
 			UIFlow.push(PausePage)
-		get_viewport().set_input_as_handled()
+			get_viewport().set_input_as_handled()
+		# If PausePage already exists, don't consume — let InputHandler close it
