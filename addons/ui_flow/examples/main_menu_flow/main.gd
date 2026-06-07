@@ -4,4 +4,4 @@
 extends Control
 
 func _ready() -> void:
-	UIFlow.push(TitleScreen, {}, UIFlowTransitionType.Type.NONE)
+	UIFlow.push(TitleScreen, {})

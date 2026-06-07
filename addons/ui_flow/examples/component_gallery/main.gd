@@ -2,4 +2,4 @@
 extends Control
 
 func _ready() -> void:
-	UIFlow.push(GalleryPage, {}, UIFlowTransitionType.Type.NONE)
+	UIFlow.push(GalleryPage, {})

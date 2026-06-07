@@ -5,4 +5,4 @@ extends Control
 
 func _ready() -> void:
 	# Push the home page as the initial screen
-	UIFlow.push(HomePage, {}, UIFlowTransitionType.Type.NONE)
+	UIFlow.push(HomePage, {})

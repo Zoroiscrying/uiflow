@@ -16,7 +16,7 @@ func _on_opened(_data: Dictionary = {}) -> void:
 	_stats = PlayerStats.new()
 
 	# Push HUD
-	var hud: HUDPage = UIFlow.push(HUDPage, {}, UIFlowTransitionType.Type.NONE) as HUDPage
+	var hud: HUDPage = UIFlow.push(HUDPage, {}) as HUDPage
 	hud.stats = _stats
 	hud.game_events = _game_events
 
@@ -48,7 +48,7 @@ func _on_opened(_data: Dictionary = {}) -> void:
 func _on_back() -> void:
 	if UIFlow.has_page(PausePage):
 		return
-	UIFlow.push(PausePage, {}, UIFlowTransitionType.Type.NONE)
+	UIFlow.push(PausePage, {})
 
 
 func _on_closed() -> void:

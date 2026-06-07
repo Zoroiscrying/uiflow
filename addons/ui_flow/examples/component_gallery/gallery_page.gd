@@ -60,7 +60,7 @@ func _on_shown() -> void:
 
 
 func _demo_transition(type: UIFlowTransitionType.Type, label: String) -> void:
-	var page: TransitionDemoPage = UIFlow.push(TransitionDemoPage, {}, type) as TransitionDemoPage
+	var page: TransitionDemoPage = UIFlow.push(TransitionDemoPage) as TransitionDemoPage
 	page.set_transition_name(label)
 
 

@@ -25,7 +25,7 @@ func _ready() -> void:
 	# Set up back button to open pause menu instead of popping HUD
 	UIFlow.set_back_callback(func():
 		if UIFlow.current_page() != PausePage:
-			UIFlow.push(PausePage, {}, UIFlowTransitionType.Type.FADE)
+			UIFlow.push(PausePage, {})
 	)
 
 	# Connect action buttons

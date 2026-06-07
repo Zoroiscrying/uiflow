@@ -20,12 +20,12 @@ func _on_play_pressed() -> void:
 
 func _on_settings_pressed() -> void:
 	print("MainMenuScreen: Settings pressed!")
-	var page = UIFlow.push(SettingsMenuScreen, {}, UIFlowTransitionType.Type.FADE)
+	var page = UIFlow.push(SettingsMenuScreen, {})
 	print("MainMenuScreen: push result = ", page)
 
 
 func _on_credits_pressed() -> void:
-	UIFlow.push(CreditsScreen, {}, UIFlowTransitionType.Type.FADE)
+	UIFlow.push(CreditsScreen, {})
 
 
 func _on_quit_pressed() -> void:

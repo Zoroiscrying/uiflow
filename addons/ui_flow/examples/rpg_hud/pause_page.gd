@@ -17,7 +17,7 @@ func _on_resume_pressed() -> void:
 
 
 func _on_settings_pressed() -> void:
-	UIFlow.push(SettingsPageExample, {}, UIFlowTransitionType.Type.SLIDE_LEFT)
+	UIFlow.push(SettingsPageExample, {})
 
 
 func _on_quit_pressed() -> void:

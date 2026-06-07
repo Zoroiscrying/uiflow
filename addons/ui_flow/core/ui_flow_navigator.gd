@@ -1,43 +1,24 @@
 ## Navigation stack manager for UIFlow pages.
-## Manages push/pop/replace operations and page lifecycle callbacks.
+## Manages push/pop/replace operations and page lifecycle.
+## Pages handle their own animations via _on_opened/_on_closed callbacks.
 class_name UIFlowNavigator extends Node
 
-## Emitted when a page is pushed onto the stack.
 signal page_pushed(page_class: GDScript, data: Dictionary)
-## Emitted when the top page is popped.
 signal page_popped(page_class: GDScript)
-## Emitted when the top page is replaced.
-signal page_replaced(old_class: GDScript, new_class: GDScript, data: Dictionary)
 
-var _stack: Array[Dictionary] = [] # Each entry: { "class": GDScript, "instance": Control, "scene": PackedScene }
+var _stack: Array[Dictionary] = [] # { "class": GDScript, "instance": Control, "scene": PackedScene }
 var _scene_resolver: UIFlowSceneResolver
-var _transition_manager: UIFlowTransitionManager
-var _container: Control # Parent node for page instances
+var _container: Control
 
 
-func setup(p_container: Control, p_resolver: UIFlowSceneResolver, p_transition_manager: UIFlowTransitionManager) -> void:
+func setup(p_container: Control, p_resolver: UIFlowSceneResolver) -> void:
 	_container = p_container
 	_scene_resolver = p_resolver
-	_transition_manager = p_transition_manager
 
 
 ## Push a new page onto the stack.
-## Returns the page instance, allowing immediate custom initialization.
-## [param page_class] is the GDScript class (e.g. SettingsPage).
-## [param data] is passed to the page's [code]_on_enter()[/code] callback.
-## [param transition] optionally overrides the default transition.
-## [param page_theme] optionally applies a UIFlowTheme to this page only.
-##
-## Example:
-## [codeblock]
-## var page: SettingsPage = UIFlow.push(SettingsPage) as SettingsPage
-## page.custom_init(some_data)
-## # Or with page-level theme:
-## UIFlow.push(SettingsPage, {}, null, shop_theme)
-## [/codeblock]
-## Push a new page onto the stack.
-## Pages stack on top of each other. Previous pages stay visible underneath.
-func push(page_class: GDScript, data: Dictionary = {}, transition = null, page_theme: UIFlowTheme = null) -> Control:
+## Returns the page instance.
+func push(page_class: GDScript, data: Dictionary = {}, page_theme: UIFlowTheme = null) -> Control:
 	var scene: PackedScene = _scene_resolver.resolve(page_class)
 	if scene == null:
 		return null
@@ -49,16 +30,15 @@ func push(page_class: GDScript, data: Dictionary = {}, transition = null, page_t
 		if current_page and current_page.has_method("_on_hidden"):
 			current_page._on_hidden()
 
-	# Instantiate new page (start transparent for transition)
+	# Instantiate and add to tree
 	var instance: Control = scene.instantiate()
-	instance.modulate.a = 0.0
-	instance.visible = false
+	instance.visible = true
+	instance.modulate.a = 1.0
 	_container.add_child(instance)
 
-	# Apply page-level theme if provided
+	# Apply theme
 	if page_theme:
-		var godot_theme: Theme = page_theme.build_godot_theme()
-		instance.theme = godot_theme
+		instance.theme = page_theme.build_godot_theme()
 
 	_stack.push_back({
 		"class": page_class,
@@ -66,32 +46,27 @@ func push(page_class: GDScript, data: Dictionary = {}, transition = null, page_t
 		"scene": scene,
 	})
 
-	# Call _on_created (once, on first instantiation)
+	# Lifecycle
 	var page: UIFlowPage = instance as UIFlowPage
 	if page and page.has_method("_on_created"):
 		page._on_created(data)
+	if page and page.has_method("_on_opened"):
+		page._on_opened(data)
 
-	# Play enter transition
-	var resolved_transition = _resolve_transition(transition)
-	_transition_manager.play_enter(instance, resolved_transition, func():
-		if page and page.has_method("_on_opened"):
-			page._on_opened(data)
-		page_pushed.emit(page_class, data)
-	)
-
+	page_pushed.emit(page_class, data)
 	return instance
 
 
-## Push a pre-instantiated page instance onto the stack.
-func push_instance(instance: Control, data: Dictionary = {}, transition = null) -> Control:
+## Push a pre-instantiated page instance.
+func push_instance(instance: Control, data: Dictionary = {}) -> Control:
 	if _stack.size() > 0:
 		var current: Dictionary = _stack.back()
 		var current_page: UIFlowPage = current["instance"] as UIFlowPage
 		if current_page and current_page.has_method("_on_hidden"):
 			current_page._on_hidden()
 
-	instance.modulate.a = 0.0
-	instance.visible = false
+	instance.visible = true
+	instance.modulate.a = 1.0
 	_container.add_child(instance)
 
 	_stack.push_back({
@@ -103,20 +78,15 @@ func push_instance(instance: Control, data: Dictionary = {}, transition = null) 
 	var page: UIFlowPage = instance as UIFlowPage
 	if page and page.has_method("_on_created"):
 		page._on_created(data)
+	if page and page.has_method("_on_opened"):
+		page._on_opened(data)
 
-	var resolved_transition = _resolve_transition(transition)
-	_transition_manager.play_enter(instance, resolved_transition, func():
-		if page and page.has_method("_on_opened"):
-			page._on_opened(data)
-		page_pushed.emit(instance.get_script(), data)
-	)
-
+	page_pushed.emit(instance.get_script(), data)
 	return instance
 
 
 ## Pop the top page off the stack.
-## The page below is already visible (pages stack, never hidden).
-func pop(transition = null) -> void:
+func pop() -> void:
 	if _stack.is_empty():
 		push_warning("UIFlow: Navigation stack is empty, cannot pop.")
 		return
@@ -125,124 +95,54 @@ func pop(transition = null) -> void:
 	var top_instance: Control = top["instance"]
 	var top_class: GDScript = top["class"]
 
-	# Play exit transition, then remove
-	var resolved_transition = _resolve_transition(transition)
-	_transition_manager.play_exit(top_instance, resolved_transition, func():
-		# Lifecycle: closed
-		var page: UIFlowPage = top_instance as UIFlowPage
-		if page and page.has_method("_on_closed"):
-			page._on_closed()
+	# Lifecycle
+	var page: UIFlowPage = top_instance as UIFlowPage
+	if page and page.has_method("_on_closed"):
+		page._on_closed()
+	if page and page.has_method("_on_destroyed"):
+		page._on_destroyed()
 
-		# Lifecycle: destroyed
-		if page and page.has_method("_on_destroyed"):
-			page._on_destroyed()
+	# Remove from tree
+	_container.remove_child(top_instance)
+	top_instance.queue_free()
 
-		# Remove from tree
-		_container.remove_child(top_instance)
-		top_instance.queue_free()
+	# Notify page below
+	if _stack.size() > 0:
+		var below: Dictionary = _stack.back()
+		var below_page: UIFlowPage = below["instance"] as UIFlowPage
+		if below_page and below_page.has_method("_on_shown"):
+			below_page._on_shown()
 
-		# Notify page below it's active again
-		if _stack.size() > 0:
-			var below: Dictionary = _stack.back()
-			var below_page: UIFlowPage = below["instance"] as UIFlowPage
-			if below_page and below_page.has_method("_on_shown"):
-				below_page._on_shown()
-
-		page_popped.emit(top_class)
-	)
+	page_popped.emit(top_class)
 
 
-## Replace the top page with a new one (doesn't increase stack depth).
-## Returns the new page instance.
-func replace(page_class: GDScript, data: Dictionary = {}, transition = null) -> Control:
+## Replace the top page with a new one.
+func replace(page_class: GDScript, data: Dictionary = {}, page_theme: UIFlowTheme = null) -> Control:
 	if _stack.is_empty():
-		push(page_class, data, transition)
-		return
+		return push(page_class, data, page_theme)
 
-	var old: Dictionary = _stack.back()
-	var old_class: GDScript = old["class"]
-
-	# Pop without lifecycle callback (we'll handle it)
+	# Pop old page (without lifecycle — we handle it here)
+	var old: Dictionary = _stack.pop_back()
 	var old_instance: Control = old["instance"]
-	_stack.pop_back()
-
-	var resolved_transition = _resolve_transition(transition)
-	_transition_manager.play_exit(old_instance, resolved_transition, func():
-		var page: UIFlowPage = old_instance as UIFlowPage
-		if page and page.has_method("_on_exit"):
-			page._on_exit()
-		_container.remove_child(old_instance)
-		old_instance.queue_free()
-	)
+	var old_page: UIFlowPage = old_instance as UIFlowPage
+	if old_page and old_page.has_method("_on_closed"):
+		old_page._on_closed()
+	if old_page and old_page.has_method("_on_destroyed"):
+		old_page._on_destroyed()
+	_container.remove_child(old_instance)
+	old_instance.queue_free()
 
 	# Push new page
-	var scene: PackedScene = _scene_resolver.resolve(page_class)
-	if scene == null:
-		return
-
-	var instance: Control = scene.instantiate()
-	_container.add_child(instance)
-	instance.visible = false
-
-	_stack.push_back({
-		"class": page_class,
-		"instance": instance,
-		"scene": scene,
-	})
-
-	_transition_manager.play_enter(instance, resolved_transition, func():
-		var page: UIFlowPage = instance as UIFlowPage
-		if page and page.has_method("_on_enter"):
-			page._on_enter(data)
-		page_replaced.emit(old_class, page_class, data)
-	)
-
-	return instance
+	return push(page_class, data, page_theme)
 
 
-## Remove all pages from the stack, optionally pushing a new root page.
-func pop_to_root(transition = null) -> void:
+## Remove all pages except the root.
+func pop_to_root() -> void:
 	while _stack.size() > 1:
-		var top: Dictionary = _stack.pop_back()
-		var page: UIFlowPage = top["instance"] as UIFlowPage
-		if page and page.has_method("_on_exit"):
-			page._on_exit()
-		_container.remove_child(top["instance"])
-		top["instance"].queue_free()
-
-	# Resume root page
-	if _stack.size() > 0:
-		var root_inst: Control = _stack.back()["instance"]
-		root_inst.visible = true
-		var root_page: UIFlowPage = root_inst as UIFlowPage
-		if root_page and root_page.has_method("_on_resume"):
-			root_page._on_resume()
+		pop()
 
 
-## Get the class of the current top page.
-func current_page_class() -> GDScript:
-	if _stack.is_empty():
-		return null
-	return _stack.back()["class"]
-
-
-## Get the current top page instance.
-func current_page_instance() -> Control:
-	if _stack.is_empty():
-		return null
-	return _stack.back()["instance"]
-
-
-## Find a page instance in the stack by its class.
-## Returns null if the page is not in the stack.
-## Useful for accessing pages that are paused (covered by another page).
-##
-## Example:
-## [codeblock]
-## var settings: SettingsPage = UIFlow.get_page(SettingsPage) as SettingsPage
-## if settings:
-##     settings.refresh()
-## [/codeblock]
+## Find a page instance by class.
 func get_page(page_class: GDScript) -> Control:
 	for entry in _stack:
 		if entry["class"] == page_class:
@@ -250,7 +150,7 @@ func get_page(page_class: GDScript) -> Control:
 	return null
 
 
-## Check if a page of the given class is in the stack.
+## Check if a page is in the stack.
 func has_page(page_class: GDScript) -> bool:
 	for entry in _stack:
 		if entry["class"] == page_class:
@@ -258,36 +158,28 @@ func has_page(page_class: GDScript) -> bool:
 	return false
 
 
-## Get the current stack depth.
+## Get current top page class.
+func current_page_class() -> GDScript:
+	if _stack.is_empty():
+		return null
+	return _stack.back()["class"]
+
+
+## Get current top page instance.
+func current_page_instance() -> Control:
+	if _stack.is_empty():
+		return null
+	return _stack.back()["instance"]
+
+
+## Get stack depth.
 func depth() -> int:
 	return _stack.size()
 
 
-## Get the full navigation path as an array of class names.
+## Get navigation path.
 func navigation_path() -> Array[StringName]:
 	var path: Array[StringName] = []
 	for entry in _stack:
-		var cls: GDScript = entry["class"]
-		path.append(cls.get_global_name())
+		path.append(entry["class"].get_global_name())
 	return path
-
-
-func _resolve_transition(transition) -> UIFlowTransitionBase:
-	if transition == null:
-		return _transition_manager.default_transition()
-	# Direct instance
-	if transition is UIFlowTransitionBase:
-		return transition
-	# UIFlowTransition resource (.tres)
-	if transition is UIFlowTransition:
-		return transition.create_instance()
-	# Enum type (lookup preset)
-	if transition is UIFlowTransitionType.Type:
-		return _transition_manager.get_preset(transition)
-	# String name (custom preset lookup)
-	if transition is String:
-		var custom: UIFlowTransition = _transition_manager.get_custom_preset(transition)
-		if custom:
-			return custom.create_instance()
-	push_warning("UIFlow: Invalid transition type, using default.")
-	return _transition_manager.default_transition()

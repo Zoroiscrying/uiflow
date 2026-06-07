@@ -8,5 +8,5 @@ func _on_opened(_data: Dictionary = {}) -> void:
 
 	# Auto-navigate to main menu after a short delay
 	get_tree().create_timer(1.5).timeout.connect(func():
-		UIFlow.push(MainMenuScreen, {}, UIFlowTransitionType.Type.FADE)
+		UIFlow.push(MainMenuScreen, {})
 	)

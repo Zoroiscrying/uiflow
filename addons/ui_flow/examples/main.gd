@@ -8,4 +8,4 @@ extends Node3D
 func _ready() -> void:
 	await get_tree().process_frame
 	# MainHUD is always the bottom layer, never popped
-	UIFlow.push(MainHUD, {}, UIFlowTransitionType.Type.NONE)
+	UIFlow.push(MainHUD, {})

@@ -23,11 +23,11 @@ func _on_shown() -> void:
 
 
 func _on_settings_pressed() -> void:
-	UIFlow.push(SettingsPage, {}, UIFlowTransitionType.Type.SLIDE_LEFT)
+	UIFlow.push(SettingsPage, {})
 
 
 func _on_shop_pressed() -> void:
 	# Push and get reference to the page instance
-	var shop: ShopPage = UIFlow.push(ShopPage, {}, UIFlowTransitionType.Type.FADE) as ShopPage
+	var shop: ShopPage = UIFlow.push(ShopPage, {}) as ShopPage
 	if shop:
 		shop.set_npc_id(1)  # Call custom methods directly
