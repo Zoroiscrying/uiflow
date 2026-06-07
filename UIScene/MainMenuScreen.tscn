@@ -81,7 +81,3 @@ custom_minimum_size = Vector2(240, 44)
 theme_override_font_sizes/font_size = 16
 text = "Quit"
 
-[connection signal="pressed" from="Center/PlayButton" to="." method="_on_play_pressed"]
-[connection signal="pressed" from="Center/SettingsButton" to="." method="_on_settings_pressed"]
-[connection signal="pressed" from="Center/CreditsButton" to="." method="_on_credits_pressed"]
-[connection signal="pressed" from="Center/QuitButton" to="." method="_on_quit_pressed"]

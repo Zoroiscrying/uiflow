@@ -1,20 +1,8 @@
-## Gallery page — showcases all UIFlow components and transitions.
+## Gallery page - showcases all UIFlow components and transitions.
 class_name GalleryPage extends UIFlowPage
 
-var _connected: bool = false
 
-
-func _on_enter(_data: Dictionary = {}) -> void:
-	UIFlow.set_default_focus($Margin/Scroll/VBox/ToastSection/Buttons/InfoBtn)
-
-	if _connected:
-		return
-	_connected = true
-
-
-func _on_resume() -> void:
-	UIFlow.set_default_focus($Margin/Scroll/VBox/ToastSection/Buttons/InfoBtn)
-
+func _ready() -> void:
 	# Toast
 	$Margin/Scroll/VBox/ToastSection/Buttons/InfoBtn.pressed.connect(func():
 		UIFlowUI.Toast.show_toast("This is an info message.", UIFlowToast.Type.INFO)
@@ -63,6 +51,14 @@ func _on_resume() -> void:
 	)
 
 
+func _on_enter(_data: Dictionary = {}) -> void:
+	UIFlow.set_default_focus($Margin/Scroll/VBox/ToastSection/Buttons/InfoBtn)
+
+
+func _on_resume() -> void:
+	UIFlow.set_default_focus($Margin/Scroll/VBox/ToastSection/Buttons/InfoBtn)
+
+
 func _demo_transition(type: UIFlowTransitionType.Type, label: String) -> void:
 	var page: TransitionDemoPage = UIFlow.push(TransitionDemoPage, {}, type) as TransitionDemoPage
 	page.set_transition_name(label)
@@ -70,7 +66,6 @@ func _demo_transition(type: UIFlowTransitionType.Type, label: String) -> void:
 
 func _demo_bounce() -> void:
 	var title: Control = $Margin/Scroll/VBox/Title
-	# Use offset_top for container-managed controls (position is managed by layout)
 	var original: float = title.offset_top
 	title.offset_top = original - 20
 	var tween: Tween = title.create_tween()

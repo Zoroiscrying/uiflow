@@ -63,6 +63,3 @@ layout_mode = 2
 custom_minimum_size = Vector2(220, 40)
 text = "Quit to Menu"
 
-[connection signal="pressed" from="Panel/VBox/ResumeButton" to="." method="_on_resume_pressed"]
-[connection signal="pressed" from="Panel/VBox/SettingsButton" to="." method="_on_settings_pressed"]
-[connection signal="pressed" from="Panel/VBox/QuitButton" to="." method="_on_quit_pressed"]
