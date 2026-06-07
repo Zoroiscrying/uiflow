@@ -25,7 +25,10 @@ enum Position {
 }
 
 ## Screen position for toast stack.
-@export var position: Position = Position.TOP_RIGHT
+@export var toast_position: Position = Position.TOP_RIGHT:
+	set(v):
+		toast_position = v
+		_update_position()
 
 ## Maximum visible toasts at once.
 @export var max_visible: int = 5
@@ -96,7 +99,7 @@ func register_type(type_name: String, type: UIFlowToastType) -> void:
 ## [param message] is the text to display.
 ## [param type_name] is the registered type name (default: "info").
 ## [param duration] overrides the type's default duration (-1 = use type default).
-func show(message: String, type_name: String = "info", duration: float = -1.0) -> void:
+func show_toast(message: String, type_name: String = "info", duration: float = -1.0) -> void:
 	var toast_type: UIFlowToastType = _types.get(type_name, _types["info"])
 
 	# Enforce max visible
@@ -180,7 +183,7 @@ func _update_position() -> void:
 	_container.offset_top = 16
 	_container.offset_bottom = -16
 
-	match position:
+	match toast_position:
 		Position.TOP_RIGHT:
 			_container.alignment = BoxContainer.ALIGNMENT_END
 			_container.grow_vertical = Control.GROW_DIRECTION_BEGIN
