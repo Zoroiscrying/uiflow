@@ -1,16 +1,18 @@
-## Toast notification component — temporary auto-dismissing messages.
+## UIFlowToast — toast notification manager.
 ##
-## Access via [code]UIFlow.Toast.show("message")[/code].
-## Attach to a CanvasLayer node to ensure it renders above all UI.
-class_name UIFlowToast extends UIFlowComponent
-
-## Toast severity levels.
-enum Type {
-	INFO,
-	SUCCESS,
-	WARNING,
-	ERROR,
-}
+## Manages toast display with type registration and extensibility.
+##
+## Built-in types: "info", "success", "warning", "error"
+## Register custom types: UIFlowUI.Toast.register_type("achievement", my_type)
+##
+## Usage:
+## [codeblock]
+## UIFlowUI.Toast.show("Hello!")
+## UIFlowUI.Toast.show("Saved!", "success")
+## UIFlowUI.Toast.show("Boss Defeated!", "achievement", 5.0)
+## [/codeblock]
+@tool
+class_name UIFlowToast extends Control
 
 ## Toast position on screen.
 enum Position {
@@ -22,16 +24,27 @@ enum Position {
 	BOTTOM_LEFT,
 }
 
-const DEFAULT_DURATION := 3.0
-const DEFAULT_POSITION := Position.TOP_RIGHT
-const TOAST_SCENE := "res://addons/ui_flow/components/toast.tscn"
+## Screen position for toast stack.
+@export var position: Position = Position.TOP_RIGHT
 
-var _toasts: Array[Control] = []
+## Maximum visible toasts at once.
+@export var max_visible: int = 5
+
+## Default display duration (overridden by type's default_duration).
+@export var default_duration: float = 3.0
+
+## Animation duration for fade in/out.
+@export var anim_duration: float = 0.2
+
+# ── Internal ─────────────────────────────────────────────────────────────────
+
 var _container: VBoxContainer
-var _position: Position = DEFAULT_POSITION
+var _types: Dictionary = {}  # String -> UIFlowToastType
+var _active_toasts: Array[Control] = []
 
 
-func _component_ready() -> void:
+func _ready() -> void:
+	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_container = VBoxContainer.new()
 	_container.name = "ToastContainer"
 	_container.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -39,103 +52,135 @@ func _component_ready() -> void:
 	_container.add_theme_constant_override("separation", 8)
 	add_child(_container)
 	_update_position()
+	_register_defaults()
 
 
-## Show a toast message.
+func _register_defaults() -> void:
+	# Info
+	var info := UIFlowToastType.new()
+	info.bg_color = Color(0.2, 0.3, 0.5, 0.95)
+	info.text_color = Color.WHITE
+	info.label = "Info"
+	_types["info"] = info
+
+	# Success
+	var success := UIFlowToastType.new()
+	success.bg_color = Color(0.2, 0.5, 0.3, 0.95)
+	success.text_color = Color.WHITE
+	success.label = "Success"
+	_types["success"] = success
+
+	# Warning
+	var warning := UIFlowToastType.new()
+	warning.bg_color = Color(0.5, 0.4, 0.2, 0.95)
+	warning.text_color = Color.WHITE
+	warning.label = "Warning"
+	_types["warning"] = warning
+
+	# Error
+	var error := UIFlowToastType.new()
+	error.bg_color = Color(0.5, 0.2, 0.2, 0.95)
+	error.text_color = Color.WHITE
+	error.label = "Error"
+	_types["error"] = error
+
+
+# ── Public API ───────────────────────────────────────────────────────────────
+
+## Register a custom toast type.
+func register_type(type_name: String, type: UIFlowToastType) -> void:
+	_types[type_name] = type
+
+
+## Show a toast notification.
 ## [param message] is the text to display.
-## [param type] is the severity level (affects color).
-## [param duration] is how long the toast stays visible (seconds).
-## [param pos] overrides the default position.
-func show_toast(message: String, type: Type = Type.INFO, duration: float = DEFAULT_DURATION, pos: int = -1) -> void:
-	if pos >= 0:
-		_position = pos as Position
-		_update_position()
+## [param type_name] is the registered type name (default: "info").
+## [param duration] overrides the type's default duration (-1 = use type default).
+func show(message: String, type_name: String = "info", duration: float = -1.0) -> void:
+	var toast_type: UIFlowToastType = _types.get(type_name, _types["info"])
 
-	var toast_node: Control = _create_toast_node(message, type)
-	_container.add_child(toast_node)
-	_toasts.append(toast_node)
+	# Enforce max visible
+	while _active_toasts.size() >= max_visible:
+		var oldest: Control = _active_toasts.pop_front()
+		if is_instance_valid(oldest):
+			oldest.queue_free()
 
-	# Animate in
-	toast_node.modulate.a = 0.0
-	var tween: Tween = toast_node.create_tween()
-	tween.tween_property(toast_node, "modulate:a", 1.0, 0.2)
+	# Create toast item
+	var item: UIFlowToastItem
+	if toast_type.custom_scene:
+		item = toast_type.custom_scene.instantiate() as UIFlowToastItem
+	else:
+		item = UIFlowToastItem.new()
 
-	# Auto-dismiss
-	var timer := get_tree().create_timer(duration)
-	timer.timeout.connect(func(): _dismiss_toast(toast_node))
+	item.setup(message, toast_type)
+	_container.add_child(item)
+	_active_toasts.append(item)
 
+	# Fade in
+	item.modulate.a = 0.0
+	var tree: SceneTree = get_tree()
+	if tree:
+		var tween: Tween = tree.create_tween()
+		tween.tween_property(item, "modulate:a", 1.0, anim_duration)
 
-func _create_toast_node(message: String, type: Type) -> Control:
-	var panel := PanelContainer.new()
-	panel.custom_minimum_size = Vector2(350, 0)
+	# Auto dismiss
+	var dismiss_duration: float = duration if duration > 0.0 else toast_type.default_duration
+	if dismiss_duration > 0.0:
+		tree.create_timer(dismiss_duration).timeout.connect(func():
+			_dismiss(item)
+		)
 
-	# Get theme values
-	var theme: UIFlowTheme = UIFlow.get_theme() if UIFlow else null
-	var radius: int = theme.radius_md if theme else 8
-	var pad: int = theme.spacing_md if theme else 12
-	var font_size: int = theme.font_size_body if theme else 14
-	var text_color: Color = theme.on_surface if theme else Color.WHITE
-
-	# Style based on type — derive from theme semantic colors
-	var bg_color: Color
-	match type:
-		Type.INFO:
-			bg_color = (theme.info if theme else Color(0.4, 0.7, 0.9)).darkened(0.3)
-		Type.SUCCESS:
-			bg_color = (theme.success if theme else Color(0.3, 0.8, 0.4)).darkened(0.3)
-		Type.WARNING:
-			bg_color = (theme.warning if theme else Color(0.9, 0.7, 0.2)).darkened(0.3)
-		Type.ERROR:
-			bg_color = (theme.error if theme else Color(0.9, 0.3, 0.3)).darkened(0.3)
-	bg_color.a = 0.95
-
-	var style := StyleBoxFlat.new()
-	style.set_corner_radius_all(radius)
-	style.content_margin_left = pad
-	style.content_margin_right = pad
-	style.content_margin_top = int(pad * 0.7)
-	style.content_margin_bottom = int(pad * 0.7)
-	style.bg_color = bg_color
-	panel.add_theme_stylebox_override("panel", style)
-
-	var label := Label.new()
-	label.text = message
-	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	label.add_theme_color_override("font_color", text_color)
-	label.add_theme_font_size_override("font_size", font_size)
-	panel.add_child(label)
-
-	return panel
+	# Play sound
+	if toast_type.sound:
+		var player := AudioStreamPlayer.new()
+		player.stream = toast_type.sound
+		add_child(player)
+		player.play()
+		player.finished.connect(player.queue_free)
 
 
-func _dismiss_toast(toast_node: Control) -> void:
-	if not is_instance_valid(toast_node) or not toast_node.is_inside_tree():
+## Dismiss a specific toast immediately.
+func dismiss(item: Control) -> void:
+	_dismiss(item)
+
+
+## Dismiss all active toasts.
+func dismiss_all() -> void:
+	for item in _active_toasts.duplicate():
+		_dismiss(item)
+
+
+# ── Internal ─────────────────────────────────────────────────────────────────
+
+func _dismiss(item: Control) -> void:
+	if not is_instance_valid(item) or not item.is_inside_tree():
 		return
 
-	var tree: SceneTree = toast_node.get_tree()
-	if tree == null:
-		return
-	var tween: Tween = tree.create_tween()
-	tween.tween_property(toast_node, "modulate:a", 0.0, 0.2)
-	tween.finished.connect(func():
-		_toasts.erase(toast_node)
-		if is_instance_valid(toast_node):
-			toast_node.queue_free()
-	)
+	_active_toasts.erase(item)
+
+	var tree: SceneTree = get_tree()
+	if tree:
+		var tween: Tween = tree.create_tween()
+		tween.tween_property(item, "modulate:a", 0.0, anim_duration)
+		tween.finished.connect(func():
+			if is_instance_valid(item):
+				item.queue_free()
+		)
+	else:
+		item.queue_free()
 
 
 func _update_position() -> void:
 	if _container == null:
 		return
 
-	# Always fill parent, use alignment for positioning
 	_container.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_container.offset_left = 16
 	_container.offset_right = -16
 	_container.offset_top = 16
 	_container.offset_bottom = -16
 
-	match _position:
+	match position:
 		Position.TOP_RIGHT:
 			_container.alignment = BoxContainer.ALIGNMENT_END
 			_container.grow_vertical = Control.GROW_DIRECTION_BEGIN
