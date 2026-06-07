@@ -17,7 +17,7 @@ func play_enter(node: Control, callback: Callable = Callable()) -> void:
 	node.position.x = node.get_viewport_rect().size.x
 	node.visible = true
 	node.modulate.a = 1.0
-	var tween: Tween = node.create_tween()
+	var tween: Tween = node.get_tree().create_tween()
 	tween.tween_property(node, "position:x", target_x, duration).set_ease(ease_type).set_trans(trans_type)
 	if callback.is_valid():
 		tween.finished.connect(callback, CONNECT_ONE_SHOT)
@@ -25,7 +25,7 @@ func play_enter(node: Control, callback: Callable = Callable()) -> void:
 
 func play_exit(node: Control, callback: Callable = Callable()) -> void:
 	var target_x: float = -node.get_viewport_rect().size.x
-	var tween: Tween = node.create_tween()
+	var tween: Tween = node.get_tree().create_tween()
 	tween.tween_property(node, "position:x", target_x, duration).set_ease(ease_type).set_trans(trans_type)
 	if callback.is_valid():
 		tween.finished.connect(callback, CONNECT_ONE_SHOT)
