@@ -36,21 +36,19 @@ func setup(p_container: Control, p_resolver: UIFlowSceneResolver, p_transition_m
 ## UIFlow.push(SettingsPage, {}, null, shop_theme)
 ## [/codeblock]
 ## Push a new page onto the stack.
-## [param overlay] if true, the current page stays visible behind the new page.
+## [param overlay] if true, the current page stays visible behind the new page permanently.
 func push(page_class: GDScript, data: Dictionary = {}, transition = null, page_theme: UIFlowTheme = null, overlay: bool = false) -> Control:
 	var scene: PackedScene = _scene_resolver.resolve(page_class)
 	if scene == null:
 		return null
 
-	# Pause current top page
+	# Pause current top page (but keep it visible during transition)
+	var previous_page: UIFlowPage = null
 	if _stack.size() > 0:
 		var current: Dictionary = _stack.back()
-		var current_page: UIFlowPage = current["instance"] as UIFlowPage
-		if current_page and current_page.has_method("_on_pause"):
-			current_page._on_pause()
-		# Only hide if NOT overlay mode
-		if not overlay:
-			current_page.visible = false
+		previous_page = current["instance"] as UIFlowPage
+		if previous_page and previous_page.has_method("_on_pause"):
+			previous_page._on_pause()
 
 	# Instantiate and add new page (start fully transparent to prevent flash)
 	var instance: Control = scene.instantiate()
@@ -73,6 +71,9 @@ func push(page_class: GDScript, data: Dictionary = {}, transition = null, page_t
 	var resolved_transition = _resolve_transition(transition)
 	var page: UIFlowPage = instance as UIFlowPage
 	_transition_manager.play_enter(instance, resolved_transition, func():
+		# Hide previous page AFTER transition completes (unless overlay)
+		if previous_page and not overlay:
+			previous_page.visible = false
 		if page and page.has_method("_on_enter"):
 			page._on_enter(data)
 		page_pushed.emit(page_class, data)
