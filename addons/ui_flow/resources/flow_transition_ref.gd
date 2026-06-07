@@ -33,7 +33,11 @@ enum Source { NONE, PRESET, SCRIPT, ANIMATION }
 @export_group("Custom Source")
 
 ## Custom GDScript extending UIFlowTransitionBase.
-@export var script: GDScript = null
+@export var custom_script: GDScript = null:
+	set(v):
+		custom_script = v
+		if v:
+			source = Source.SCRIPT
 
 ## Godot Animation resource (.tres).
 @export var animation: Animation = null
@@ -74,9 +78,9 @@ func _create_preset() -> UIFlowTransitionBase:
 
 
 func _create_from_script() -> UIFlowTransitionBase:
-	if script == null:
+	if custom_script == null:
 		return UIFlowTransitionNone.new()
-	var instance = script.new()
+	var instance = custom_script.new()
 	if instance is UIFlowTransitionBase:
 		return instance
 	push_warning("UIFlowTransitionRef: Script does not extend UIFlowTransitionBase")
