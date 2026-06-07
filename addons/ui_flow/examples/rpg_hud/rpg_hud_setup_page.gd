@@ -51,14 +51,10 @@ func _on_enter(_data: Dictionary = {}) -> void:
 
 func _set_pause_back() -> void:
 	UIFlow.set_back_callback(func():
-		if _is_pausing:
+		# Don't push if PausePage is already in the stack
+		if UIFlow.has_page(PausePage):
 			return
-		if UIFlow.current_page() == PausePage:
-			return
-		_is_pausing = true
 		UIFlow.push(PausePage, {}, UIFlowTransitionType.Type.FADE)
-		# Reset flag after a short delay
-		get_tree().create_timer(0.5).timeout.connect(func(): _is_pausing = false)
 	)
 
 
