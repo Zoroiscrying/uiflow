@@ -42,11 +42,9 @@ func _add_prompt(text: String) -> void:
 	label.text = text
 	label.add_theme_font_size_override("font_size", 14)
 	_prompt_bar.add_child(label)
+# Esc handling is in _on_back() — managed by InputManager
 
-
-func _unhandled_input(event: InputEvent) -> void:
-	if event.is_action_pressed("ui_cancel"):
-		if not UIFlow.has_page(PausePage):
-			UIFlow.push(PausePage)
-			get_viewport().set_input_as_handled()
-		# If PausePage already exists, don't consume — let InputHandler close it
+## When MainHUD is topmost and Esc is pressed, open Pause menu.
+func _on_back() -> void:
+	if not UIFlow.has_page(PausePage):
+		UIFlow.push(PausePage)
