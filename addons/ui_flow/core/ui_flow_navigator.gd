@@ -82,6 +82,38 @@ func push(page_class: GDScript, data: Dictionary = {}, transition = null, page_t
 	return instance
 
 
+## Push a pre-instantiated page instance onto the stack.
+func push_instance(instance: Control, data: Dictionary = {}, transition = null) -> Control:
+	if _stack.size() > 0:
+		var current: Dictionary = _stack.back()
+		var current_page: UIFlowPage = current["instance"] as UIFlowPage
+		if current_page and current_page.has_method("_on_hidden"):
+			current_page._on_hidden()
+
+	instance.modulate.a = 0.0
+	instance.visible = false
+	_container.add_child(instance)
+
+	_stack.push_back({
+		"class": instance.get_script(),
+		"instance": instance,
+		"scene": null,
+	})
+
+	var page: UIFlowPage = instance as UIFlowPage
+	if page and page.has_method("_on_created"):
+		page._on_created(data)
+
+	var resolved_transition = _resolve_transition(transition)
+	_transition_manager.play_enter(instance, resolved_transition, func():
+		if page and page.has_method("_on_opened"):
+			page._on_opened(data)
+		page_pushed.emit(instance.get_script(), data)
+	)
+
+	return instance
+
+
 ## Pop the top page off the stack.
 ## The page below is already visible (pages stack, never hidden).
 func pop(transition = null) -> void:

@@ -1,22 +1,51 @@
-## Main HUD - shows hint text, opens ExampleHub on Esc.
+## Main HUD — always visible, shows prompts and handles Esc.
 class_name MainHUD extends UIFlowPage
 
-var _examples_open: bool = false
+var _nearby_interactive: Node = null
+
+@onready var _prompt_bar: HBoxContainer = $PromptBar/Margin/HBox
+@onready var _prompt_container: PanelContainer = $PromptBar
+
+
+func _on_created(_data: Dictionary = {}) -> void:
+	_prompt_container.visible = false
 
 
 func _on_opened(_data: Dictionary = {}) -> void:
-	_examples_open = false
-	$HintPanel.visible = true
+	_update_prompts()
 
 
-func _on_shown() -> void:
-	_examples_open = false
-	$HintPanel.visible = true
+## Called by interactive objects when player enters/exits range.
+func set_nearby_interactive(object: Node) -> void:
+	_nearby_interactive = object
+	_update_prompts()
+
+
+func _update_prompts() -> void:
+	for child in _prompt_bar.get_children():
+		child.queue_free()
+
+	if _nearby_interactive == null:
+		_prompt_container.visible = false
+		return
+
+	_prompt_container.visible = true
+	_add_prompt("[Esc] Pause")
+
+	if _nearby_interactive.has_method("get_interaction_prompts"):
+		for prompt in _nearby_interactive.get_interaction_prompts():
+			_add_prompt(prompt)
+
+
+func _add_prompt(text: String) -> void:
+	var label := Label.new()
+	label.text = text
+	label.add_theme_font_size_override("font_size", 14)
+	_prompt_bar.add_child(label)
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if event.is_action_pressed("ui_cancel") and not _examples_open:
-		_examples_open = true
-		$HintPanel.visible = false
-		UIFlow.push(ExampleHub, {}, UIFlowTransitionType.Type.FADE)
+	if event.is_action_pressed("ui_cancel"):
+		if not UIFlow.has_page(PausePage):
+			UIFlow.push(PausePage)
 		get_viewport().set_input_as_handled()

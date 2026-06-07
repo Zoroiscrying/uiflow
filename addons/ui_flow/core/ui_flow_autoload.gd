@@ -109,6 +109,13 @@ func push(page_class: GDScript, data: Dictionary = {}, transition = null, page_t
 	return Router.push(page_class, data, transition, page_theme)
 
 
+## Push a pre-instantiated page instance onto the stack.
+## Use this when you have a Control node ready (e.g., from a PackedScene).
+func push_instance(instance: Control, data: Dictionary = {}, transition = null) -> Control:
+	_ensure_page_container()
+	return Router.push_instance(instance, data, transition)
+
+
 ## Pop the top page off the stack.
 func pop(transition = null) -> void:
 	Router.pop(transition)

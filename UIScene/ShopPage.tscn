@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
-[ext_resource type="Script" path="res://addons/ui_flow/examples/basic_navigation/screens/shop_page.gd" id="1"]
+[ext_resource type="Script" path="res://addons/ui_flow/examples/shop_page.gd" id="1"]
+[ext_resource type="Script" path="res://addons/ui_flow/core/ui_flow_input_action_node.gd" id="2"]
 
 [node name="ShopPage" type="Control"]
 layout_mode = 3
@@ -10,39 +11,78 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1")
+is_modal = true
 
-[node name="Background" type="ColorRect" parent="."]
+[node name="CloseAction" type="Node" parent="."]
+script = ExtResource("2")
+action_name = &"close"
+action_type = 0
+godot_action = &"ui_cancel"
+label = "Close"
+
+[node name="Dimmer" type="ColorRect" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-color = Color(0.15, 0.2, 0.15, 1)
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.5)
 
-[node name="VBox" type="VBoxContainer" parent="."]
+[node name="Panel" type="PanelContainer" parent="."]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -150.0
-offset_top = -100.0
-offset_right = 150.0
-offset_bottom = 100.0
+offset_left = -250.0
+offset_top = -180.0
+offset_right = 250.0
+offset_bottom = 180.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/separation = 20
 
-[node name="Title" type="Label" parent="VBox"]
+[node name="VBox" type="VBoxContainer" parent="Panel"]
 layout_mode = 2
-text = "Shop Page"
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="Title" type="Label" parent="Panel/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Shop"
 horizontal_alignment = 1
 
-[node name="NpcLabel" type="Label" parent="VBox"]
+[node name="Desc" type="Label" parent="Panel/VBox"]
 layout_mode = 2
-text = "NPC: ?"
+theme_override_font_sizes/font_size = 14
+text = "Welcome! Browse our wares."
 horizontal_alignment = 1
+modulate = Color(1, 1, 1, 0.7)
 
-[node name="BackButton" type="Button" parent="VBox"]
+[node name="Sep" type="HSeparator" parent="Panel/VBox"]
 layout_mode = 2
-text = "Back"
+
+[node name="Item1" type="Button" parent="Panel/VBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(300, 36)
+text = "Health Potion - 50 Gold"
+
+[node name="Item2" type="Button" parent="Panel/VBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(300, 36)
+text = "Mana Potion - 50 Gold"
+
+[node name="Item3" type="Button" parent="Panel/VBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(300, 36)
+text = "Iron Sword - 200 Gold"
+
+[node name="Sep2" type="HSeparator" parent="Panel/VBox"]
+layout_mode = 2
+
+[node name="CloseButton" type="Button" parent="Panel/VBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(200, 36)
+text = "Close"

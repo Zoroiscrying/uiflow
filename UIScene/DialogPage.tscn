@@ -1,0 +1,66 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://addons/ui_flow/examples/dialog_page.gd" id="1"]
+[ext_resource type="Script" path="res://addons/ui_flow/core/ui_flow_input_action_node.gd" id="2"]
+
+[node name="DialogPage" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1")
+is_modal = true
+
+[node name="ContinueAction" type="Node" parent="."]
+script = ExtResource("2")
+action_name = &"continue"
+action_type = 0
+godot_action = &"ui_accept"
+label = "Continue"
+
+[node name="Dimmer" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.3)
+
+[node name="DialogBox" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -160.0
+offset_left = 40.0
+offset_right = -40.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="VBox" type="VBoxContainer" parent="DialogBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Speaker" type="Label" parent="DialogBox/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "NPC"
+
+[node name="Text" type="RichTextLabel" parent="DialogBox/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+bbcode_enabled = true
+text = "Hello, traveler! Welcome to our village."
+fit_content = true
+
+[node name="Prompt" type="Label" parent="DialogBox/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "[Enter] Continue"
+horizontal_alignment = 2
+modulate = Color(1, 1, 1, 0.5)

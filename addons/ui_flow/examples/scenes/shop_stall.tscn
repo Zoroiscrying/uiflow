@@ -1,0 +1,26 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://addons/ui_flow/examples/scenes/interactive_object.gd" id="1"]
+
+[sub_resource type="BoxShape3D" id="1"]
+size = Vector3(3, 2, 3)
+
+[sub_resource type="BoxMesh" id="2"]
+size = Vector3(2, 1.5, 2)
+
+[sub_resource type="StandardMaterial3D" id="3"]
+albedo_color = Color(0.6, 0.4, 0.2, 1)
+
+[node name="ShopStall" type="Area3D"]
+script = ExtResource("1")
+page_class = null
+display_name = "Shop"
+key_prompt = "[E] Open"
+
+[node name="Collision" type="CollisionShape3D" parent="."]
+shape = SubResource("1")
+
+[node name="Mesh" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0)
+mesh = SubResource("2")
+material_override = SubResource("3")
