@@ -34,6 +34,8 @@ var _position: Position = DEFAULT_POSITION
 func _component_ready() -> void:
 	_container = VBoxContainer.new()
 	_container.name = "ToastContainer"
+	_container.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_container.add_theme_constant_override("separation", 8)
 	add_child(_container)
 	_update_position()
@@ -107,14 +109,18 @@ func _create_toast_node(message: String, type: Type) -> Control:
 
 
 func _dismiss_toast(toast_node: Control) -> void:
-	if not is_instance_valid(toast_node):
+	if not is_instance_valid(toast_node) or not toast_node.is_inside_tree():
 		return
 
-	var tween: Tween = toast_node.create_tween()
+	var tree: SceneTree = toast_node.get_tree()
+	if tree == null:
+		return
+	var tween: Tween = tree.create_tween()
 	tween.tween_property(toast_node, "modulate:a", 0.0, 0.2)
 	tween.finished.connect(func():
 		_toasts.erase(toast_node)
-		toast_node.queue_free()
+		if is_instance_valid(toast_node):
+			toast_node.queue_free()
 	)
 
 
@@ -122,26 +128,29 @@ func _update_position() -> void:
 	if _container == null:
 		return
 
-	# Reset anchors
-	_container.set_anchors_preset(Control.PRESET_TOP_RIGHT)
+	# Always fill parent, use alignment for positioning
+	_container.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_container.offset_left = 16
+	_container.offset_right = -16
+	_container.offset_top = 16
+	_container.offset_bottom = -16
 
 	match _position:
 		Position.TOP_RIGHT:
-			_container.set_anchors_preset(Control.PRESET_TOP_RIGHT)
+			_container.alignment = BoxContainer.ALIGNMENT_END
+			_container.grow_vertical = Control.GROW_DIRECTION_BEGIN
 		Position.TOP_CENTER:
-			_container.set_anchors_preset(Control.PRESET_TOP_WIDE)
-			_container.grow_horizontal = Control.GROW_DIRECTION_BOTH
+			_container.alignment = BoxContainer.ALIGNMENT_CENTER
+			_container.grow_vertical = Control.GROW_DIRECTION_BEGIN
 		Position.TOP_LEFT:
-			_container.set_anchors_preset(Control.PRESET_TOP_LEFT)
+			_container.alignment = BoxContainer.ALIGNMENT_BEGIN
+			_container.grow_vertical = Control.GROW_DIRECTION_BEGIN
 		Position.BOTTOM_RIGHT:
-			_container.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
+			_container.alignment = BoxContainer.ALIGNMENT_END
+			_container.grow_vertical = Control.GROW_DIRECTION_END
 		Position.BOTTOM_CENTER:
-			_container.set_anchors_preset(Control.PRESET_BOTTOM_WIDE)
-			_container.grow_horizontal = Control.GROW_DIRECTION_BOTH
+			_container.alignment = BoxContainer.ALIGNMENT_CENTER
+			_container.grow_vertical = Control.GROW_DIRECTION_END
 		Position.BOTTOM_LEFT:
-			_container.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
-
-	_container.offset_left = 10
-	_container.offset_right = -10
-	_container.offset_top = 10
-	_container.offset_bottom = -10
+			_container.alignment = BoxContainer.ALIGNMENT_BEGIN
+			_container.grow_vertical = Control.GROW_DIRECTION_END
