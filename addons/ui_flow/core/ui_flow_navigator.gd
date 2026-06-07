@@ -52,8 +52,17 @@ func push(page_class: GDScript, data: Dictionary = {}, page_theme: UIFlowTheme =
 	var page: UIFlowPage = instance as UIFlowPage
 	if page and page.has_method("_on_created"):
 		page._on_created(data)
+
+	# Play enter animation (from @export config)
+	if page:
+		page._play_enter_animation()
+
 	if page and page.has_method("_on_opened"):
 		page._on_opened(data)
+
+	# Auto-focus (from @export default_focus_path)
+	if page:
+		page._apply_default_focus()
 
 	page_pushed.emit(page_class, data)
 	page_opened.emit(page_class)
@@ -98,8 +107,12 @@ func pop() -> void:
 	var top_instance: Control = top["instance"]
 	var top_class: GDScript = top["class"]
 
-	# Lifecycle
+	# Play exit animation (from @export config)
 	var page: UIFlowPage = top_instance as UIFlowPage
+	if page:
+		page._play_exit_animation()
+
+	# Lifecycle
 	if page and page.has_method("_on_closed"):
 		page._on_closed()
 	if page and page.has_method("_on_destroyed"):
