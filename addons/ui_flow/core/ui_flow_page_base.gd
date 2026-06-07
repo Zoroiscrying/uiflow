@@ -8,14 +8,30 @@
 ## 4. [code]_on_shown()[/code] — Page above popped, this page visible again
 ## 5. [code]_on_closed()[/code] — Page removed from stack
 ## 6. [code]_on_destroyed()[/code] — Page about to be freed
+##
+## Input Actions:
+## Add UIInputActionNode children in the scene tree to declare inputs.
+## The page auto-discovers them. Use get_action("name") to access.
 class_name UIFlowPage extends Control
 
 ## If true, this page intercepts all input. Lower pages don't receive back/cancel.
-## Set to true for modal dialogs (pause menu, confirm dialog, etc.)
 @export var is_modal: bool = false
 
-## Input actions registered for this page.
-var _input_actions: Array[UIInputAction] = []
+## Cached action nodes (auto-discovered from children).
+var _action_nodes: Dictionary = {}  # StringName -> UIInputActionNode
+
+
+func _ready() -> void:
+	_discover_actions()
+
+
+## Auto-discover UIInputActionNode children.
+func _discover_actions() -> void:
+	_action_nodes.clear()
+	for child in get_children():
+		if child is UIInputActionNode:
+			_action_nodes[child.action_name] = child
+
 
 ## Override: called once when the page is first instantiated.
 func _on_created(_data: Dictionary = {}) -> void:
@@ -42,30 +58,22 @@ func _on_destroyed() -> void:
 	pass
 
 
-# ── Input Action Management ──────────────────────────────────────────────────
+# ── Input Action Access ──────────────────────────────────────────────────────
 
-## Add an input action to this page.
-## Returns the UIInputAction for further configuration.
-func add_action(
-	action_name: StringName,
-	action_type: int,
-	godot_action: StringName,
-	label: String = "",
-) -> UIInputAction:
-	var action := UIInputAction.new(action_name, action_type, godot_action, label)
-	_input_actions.append(action)
-	return action
+## Get an action node by name. Returns null if not found.
+func get_action(action_name: StringName) -> UIInputActionNode:
+	return _action_nodes.get(action_name, null)
 
 
-## Get all registered input actions.
-func get_input_actions() -> Array[UIInputAction]:
-	return _input_actions
+## Get all action nodes on this page.
+func get_all_actions() -> Array:
+	return _action_nodes.values()
 
 
-## Get enabled input actions (for UI prompts).
-func get_enabled_actions() -> Array[UIInputAction]:
-	var result: Array[UIInputAction] = []
-	for action in _input_actions:
+## Get enabled action nodes (for UI prompts).
+func get_enabled_actions() -> Array:
+	var result: Array = []
+	for action in _action_nodes.values():
 		if action.enabled:
 			result.append(action)
 	return result
@@ -73,24 +81,24 @@ func get_enabled_actions() -> Array[UIInputAction]:
 
 ## Enable/disable an action by name.
 func set_action_enabled(action_name: StringName, enabled: bool) -> void:
-	for action in _input_actions:
-		if action.action_name == action_name:
-			action.enabled = enabled
-			return
+	var action := get_action(action_name)
+	if action:
+		action.enabled = enabled
 
 
-## Check if a button action is pressed (routes through InputManager).
+## Check if a button action is currently pressed.
 func is_action_pressed(action_name: StringName) -> bool:
-	for action in _input_actions:
-		if action.action_name == action_name and action.action_type == UIInputAction.Type.BUTTON:
-			return Input.is_action_pressed(action.godot_action)
+	var action := get_action(action_name)
+	if action and action.enabled and action.action_type == UIInputActionNode.Type.BUTTON:
+		return Input.is_action_pressed(action.godot_action)
 	return false
 
 
-## Get input prompts for this page (label + icon for each action).
+## Get input prompts for UI display.
+## Returns Array of { "label": String, "icon": Texture2D, "enabled": bool }
 func get_input_prompts() -> Array:
 	var prompts: Array = []
-	for action in _input_actions:
+	for action in _action_nodes.values():
 		prompts.append({
 			"label": action.label,
 			"icon": action.icon,
