@@ -45,8 +45,12 @@ func _unhandled_input(event: InputEvent) -> void:
 	if not _player_in_range or page_scene_path.is_empty():
 		return
 	if event.is_action_pressed("interact"):
+		# Don't open if any modal page is already open
+		var top_page: Control = UIFlow.Router.current_page_instance()
+		if top_page and top_page is UIFlowPage and (top_page as UIFlowPage).is_modal:
+			return
 		var scene: PackedScene = load(page_scene_path) as PackedScene
 		if scene:
 			var instance: Control = scene.instantiate()
 			UIFlow.push_instance(instance)
-		get_viewport().set_input_as_handled()
+			get_viewport().set_input_as_handled()

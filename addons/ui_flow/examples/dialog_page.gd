@@ -19,5 +19,12 @@ func _on_opened(data: Dictionary = {}) -> void:
 	tween.tween_property($DialogBox, "modulate:a", 1.0, 0.2)
 
 
+## Esc or Enter both close the dialog.
 func _on_back() -> void:
 	UIFlow.pop()
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("ui_accept"):
+		UIFlow.pop()
+		get_viewport().set_input_as_handled()
