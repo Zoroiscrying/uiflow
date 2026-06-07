@@ -21,6 +21,11 @@ func setup(p_container: Control, p_resolver: UIFlowSceneResolver) -> void:
 ## Push a new page onto the stack.
 ## Returns the page instance.
 func push(page_class: GDScript, data: Dictionary = {}, page_theme: UIFlowTheme = null) -> Control:
+	# No-op if page is already in stack — return existing instance
+	var existing := get_page(page_class)
+	if existing:
+		return existing
+
 	var scene: PackedScene = _scene_resolver.resolve(page_class)
 	if scene == null:
 		return null
