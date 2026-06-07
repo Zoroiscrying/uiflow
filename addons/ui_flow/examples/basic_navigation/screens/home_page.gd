@@ -6,19 +6,19 @@ func _ready() -> void:
 	$VBox/ShopButton.pressed.connect(_on_shop_pressed)
 
 
-func _on_enter(_data: Dictionary = {}) -> void:
+func _on_opened(_data: Dictionary = {}) -> void:
 	print("[HomePage] Enter")
 
 
-func _on_exit() -> void:
+func _on_closed() -> void:
 	print("[HomePage] Exit")
 
 
-func _on_pause() -> void:
+func _on_hidden() -> void:
 	print("[HomePage] Pause")
 
 
-func _on_resume() -> void:
+func _on_shown() -> void:
 	print("[HomePage] Resume")
 
 

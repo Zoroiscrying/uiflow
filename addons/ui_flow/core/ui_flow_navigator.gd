@@ -42,12 +42,12 @@ func push(page_class: GDScript, data: Dictionary = {}, transition = null, page_t
 	if scene == null:
 		return null
 
-	# Notify current top page it's being paused
+	# Notify current top page it's being hidden
 	if _stack.size() > 0:
 		var current: Dictionary = _stack.back()
 		var current_page: UIFlowPage = current["instance"] as UIFlowPage
-		if current_page and current_page.has_method("_on_pause"):
-			current_page._on_pause()
+		if current_page and current_page.has_method("_on_hidden"):
+			current_page._on_hidden()
 
 	# Instantiate new page (start transparent for transition)
 	var instance: Control = scene.instantiate()
@@ -66,12 +66,16 @@ func push(page_class: GDScript, data: Dictionary = {}, transition = null, page_t
 		"scene": scene,
 	})
 
+	# Call _on_created (once, on first instantiation)
+	var page: UIFlowPage = instance as UIFlowPage
+	if page and page.has_method("_on_created"):
+		page._on_created(data)
+
 	# Play enter transition
 	var resolved_transition = _resolve_transition(transition)
-	var page: UIFlowPage = instance as UIFlowPage
 	_transition_manager.play_enter(instance, resolved_transition, func():
-		if page and page.has_method("_on_enter"):
-			page._on_enter(data)
+		if page and page.has_method("_on_opened"):
+			page._on_opened(data)
 		page_pushed.emit(page_class, data)
 	)
 
@@ -92,10 +96,14 @@ func pop(transition = null) -> void:
 	# Play exit transition, then remove
 	var resolved_transition = _resolve_transition(transition)
 	_transition_manager.play_exit(top_instance, resolved_transition, func():
-		# Lifecycle callback
+		# Lifecycle: closed
 		var page: UIFlowPage = top_instance as UIFlowPage
-		if page and page.has_method("_on_exit"):
-			page._on_exit()
+		if page and page.has_method("_on_closed"):
+			page._on_closed()
+
+		# Lifecycle: destroyed
+		if page and page.has_method("_on_destroyed"):
+			page._on_destroyed()
 
 		# Remove from tree
 		_container.remove_child(top_instance)
@@ -105,8 +113,8 @@ func pop(transition = null) -> void:
 		if _stack.size() > 0:
 			var below: Dictionary = _stack.back()
 			var below_page: UIFlowPage = below["instance"] as UIFlowPage
-			if below_page and below_page.has_method("_on_resume"):
-				below_page._on_resume()
+			if below_page and below_page.has_method("_on_shown"):
+				below_page._on_shown()
 
 		page_popped.emit(top_class)
 	)

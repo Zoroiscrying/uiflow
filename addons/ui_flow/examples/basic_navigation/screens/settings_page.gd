@@ -6,19 +6,19 @@ func _ready() -> void:
 	$VBox/BackButton.pressed.connect(_on_back_pressed)
 
 
-func _on_enter(_data: Dictionary = {}) -> void:
+func _on_opened(_data: Dictionary = {}) -> void:
 	print("[SettingsPage] Enter")
 
 
-func _on_exit() -> void:
+func _on_closed() -> void:
 	print("[SettingsPage] Exit")
 
 
-func _on_pause() -> void:
+func _on_hidden() -> void:
 	print("[SettingsPage] Pause")
 
 
-func _on_resume() -> void:
+func _on_shown() -> void:
 	print("[SettingsPage] Resume")
 
 

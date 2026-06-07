@@ -26,7 +26,7 @@ func _on_quit_pressed() -> void:
 	)
 
 
-func _on_enter(_data: Dictionary = {}) -> void:
+func _on_opened(_data: Dictionary = {}) -> void:
 	UIFlow.set_default_focus(_resume_button)
 
 	# Animate panel appearance
@@ -40,5 +40,5 @@ func _on_enter(_data: Dictionary = {}) -> void:
 	tween.tween_property($Panel, "scale", Vector2.ONE, 0.2).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
 
 
-func _on_resume() -> void:
+func _on_shown() -> void:
 	UIFlow.set_default_focus(_resume_button)

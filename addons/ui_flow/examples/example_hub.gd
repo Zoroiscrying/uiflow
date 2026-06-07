@@ -30,9 +30,9 @@ func _ready() -> void:
 	)
 
 
-func _on_enter(_data: Dictionary = {}) -> void:
+func _on_opened(_data: Dictionary = {}) -> void:
 	UIFlow.set_default_focus($Margin/Scroll/VBox/Buttons.get_child(0) as Button)
 
 
-func _on_resume() -> void:
+func _on_shown() -> void:
 	UIFlow.set_default_focus($Margin/Scroll/VBox/Buttons.get_child(0) as Button)

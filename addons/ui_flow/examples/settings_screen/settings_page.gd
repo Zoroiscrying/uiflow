@@ -11,7 +11,7 @@ func _on_back_pressed() -> void:
 	UIFlow.pop()
 
 
-func _on_enter(_data: Dictionary = {}) -> void:
+func _on_opened(_data: Dictionary = {}) -> void:
 	if settings == null:
 		settings = SettingsData.new()
 
@@ -62,7 +62,7 @@ func _on_enter(_data: Dictionary = {}) -> void:
 	UIFlow.set_default_focus($Margin/Center/MasterVolume/Slider)
 
 
-func _on_exit() -> void:
+func _on_closed() -> void:
 	for b in _bindings:
 		b.unbind()
 	_bindings.clear()

@@ -10,14 +10,14 @@ func set_npc_id(id: int) -> void:
 	$VBox/NpcLabel.text = "NPC ID: %d" % id
 
 
-func _on_enter(data: Dictionary = {}) -> void:
+func _on_opened(data: Dictionary = {}) -> void:
 	print("[ShopPage] Enter with data: ", data)
 	# Also support data passed via push()
 	if data.has("npc_id"):
 		set_npc_id(data["npc_id"])
 
 
-func _on_exit() -> void:
+func _on_closed() -> void:
 	print("[ShopPage] Exit")
 
 

@@ -7,7 +7,7 @@ var game_events: GameEvents
 var _bindings: Array[UIFlowBindUtils.UIFlowBinding] = []
 
 
-func _on_enter(_data: Dictionary = {}) -> void:
+func _on_opened(_data: Dictionary = {}) -> void:
 	if stats == null:
 		return
 
@@ -54,7 +54,7 @@ func _on_enter(_data: Dictionary = {}) -> void:
 	$HUD/ManaBar.value = stats.mana
 
 
-func _on_exit() -> void:
+func _on_closed() -> void:
 	for b in _bindings:
 		b.unbind()
 	_bindings.clear()

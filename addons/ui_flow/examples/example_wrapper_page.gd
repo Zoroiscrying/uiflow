@@ -7,7 +7,7 @@ extends UIFlowPage
 var _example_scene: Control
 
 
-func _on_enter(data: Dictionary = {}) -> void:
+func _on_opened(data: Dictionary = {}) -> void:
 	var scene_name: String = data.get("scene_name", "")
 	var title: String = data.get("title", "Example")
 
@@ -43,7 +43,7 @@ func _on_enter(data: Dictionary = {}) -> void:
 	$VBox/Header/BackButton.pressed.connect(_on_back)
 
 
-func _on_exit() -> void:
+func _on_closed() -> void:
 	if _example_scene and is_instance_valid(_example_scene):
 		$VBox/Content.remove_child(_example_scene)
 		_example_scene.queue_free()

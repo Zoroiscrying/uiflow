@@ -4,12 +4,12 @@ class_name MainHUD extends UIFlowPage
 var _examples_open: bool = false
 
 
-func _on_enter(_data: Dictionary = {}) -> void:
+func _on_opened(_data: Dictionary = {}) -> void:
 	_examples_open = false
 	$HintPanel.visible = true
 
 
-func _on_resume() -> void:
+func _on_shown() -> void:
 	_examples_open = false
 	$HintPanel.visible = true
 

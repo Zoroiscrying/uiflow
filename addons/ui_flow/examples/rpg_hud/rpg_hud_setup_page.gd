@@ -7,7 +7,7 @@ var _stats: PlayerStats
 var _is_pausing: bool = false
 
 
-func _on_enter(_data: Dictionary = {}) -> void:
+func _on_opened(_data: Dictionary = {}) -> void:
 	_is_pausing = false
 
 	# Create event bus
@@ -58,12 +58,12 @@ func _set_pause_back() -> void:
 	)
 
 
-func _on_exit() -> void:
+func _on_closed() -> void:
 	UIFlow.reset_back_callback()
 	if _game_events:
 		_game_events.queue_free()
 
 
-func _on_resume() -> void:
+func _on_shown() -> void:
 	_is_pausing = false
 	_set_pause_back()

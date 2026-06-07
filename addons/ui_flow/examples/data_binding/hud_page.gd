@@ -6,7 +6,7 @@ extends UIFlowPage
 var _bindings: Array[UIFlowBindUtils.UIFlowBinding] = []
 
 
-func _on_enter(_data: Dictionary = {}) -> void:
+func _on_opened(_data: Dictionary = {}) -> void:
 	if player_data == null:
 		push_warning("HUDPage: player_data not set!")
 		return
@@ -41,7 +41,7 @@ func _on_enter(_data: Dictionary = {}) -> void:
 	$VBox/LowHealthWarning.visible = player_data.health < 30.0
 
 
-func _on_exit() -> void:
+func _on_closed() -> void:
 	# Clean up bindings
 	for binding in _bindings:
 		binding.unbind()

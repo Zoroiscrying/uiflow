@@ -12,5 +12,5 @@ func _on_back_pressed() -> void:
 	UIFlow.pop()
 
 
-func _on_enter(_data: Dictionary = {}) -> void:
+func _on_opened(_data: Dictionary = {}) -> void:
 	UIFlow.set_default_focus(_back_button)

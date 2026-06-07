@@ -34,7 +34,7 @@ func _on_quit_pressed() -> void:
 	)
 
 
-func _on_enter(_data: Dictionary = {}) -> void:
+func _on_opened(_data: Dictionary = {}) -> void:
 	# Stagger fade-in for menu buttons
 	for i in range($Center.get_child_count()):
 		$Center.get_child(i).modulate.a = 0.0
@@ -48,5 +48,5 @@ func _on_enter(_data: Dictionary = {}) -> void:
 	UIFlow.set_default_focus(_play_button)
 
 
-func _on_resume() -> void:
+func _on_shown() -> void:
 	UIFlow.set_default_focus(_play_button)
