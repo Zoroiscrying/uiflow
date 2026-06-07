@@ -65,7 +65,7 @@ alignment = 1
 
 [node name="Title" type="Label" parent="Panel/VBox"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 24
+theme_override_font_sizes/font_size = 30
 text = "PAUSED"
 horizontal_alignment = 1
 

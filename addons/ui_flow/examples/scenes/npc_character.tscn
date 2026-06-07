@@ -1,0 +1,38 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://addons/ui_flow/examples/scenes/interactive_object.gd" id="1"]
+
+[sub_resource type="CapsuleShape3D" id="1"]
+radius = 0.4
+height = 1.6
+
+[sub_resource type="CapsuleMesh" id="2"]
+radius = 0.4
+height = 1.6
+
+[sub_resource type="StandardMaterial3D" id="3"]
+albedo_color = Color(0.8, 0.6, 0.3, 1)
+
+[node name="NPC" type="Area3D"]
+script = ExtResource("1")
+page_scene_path = "res://UIScene/DialogPage.tscn"
+display_name = "Talk"
+key_prompt = "[E] Talk"
+
+[node name="Collision" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+shape = SubResource("1")
+
+[node name="Mesh" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+mesh = SubResource("2")
+material_override = SubResource("3")
+
+[node name="Hat" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, 0)
+
+[node name="HatMesh" type="BoxMesh" parent="Hat"]
+size = Vector3(0.3, 0.1, 0.3)
+
+[node name="HatMat" type="StandardMaterial3D" parent="Hat"]
+albedo_color = Color(0.2, 0.5, 0.8, 1)

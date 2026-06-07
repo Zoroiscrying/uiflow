@@ -1,0 +1,26 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://addons/ui_flow/examples/scenes/interactive_object.gd" id="1"]
+
+[sub_resource type="BoxShape3D" id="1"]
+size = Vector3(2, 2.5, 1)
+
+[sub_resource type="BoxMesh" id="2"]
+size = Vector3(1.5, 2, 0.1)
+
+[sub_resource type="StandardMaterial3D" id="3"]
+albedo_color = Color(0.5, 0.35, 0.2, 1)
+
+[node name="BulletinBoard" type="Area3D"]
+script = ExtResource("1")
+page_scene_path = "res://UIScene/GalleryPage.tscn"
+display_name = "Gallery"
+key_prompt = "[E] View Gallery"
+
+[node name="Collision" type="CollisionShape3D" parent="."]
+shape = SubResource("1")
+
+[node name="Board" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+mesh = SubResource("2")
+material_override = SubResource("3")

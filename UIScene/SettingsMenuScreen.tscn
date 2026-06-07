@@ -46,13 +46,13 @@ alignment = 1
 
 [node name="Title" type="Label" parent="Center"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 24
+theme_override_font_sizes/font_size = 30
 text = "Settings"
 horizontal_alignment = 1
 
 [node name="DepthLabel" type="Label" parent="Center"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 22
 text = "Stack depth: ?"
 horizontal_alignment = 1
 modulate = Color(1, 1, 1, 0.6)

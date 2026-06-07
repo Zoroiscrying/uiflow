@@ -44,13 +44,13 @@ theme_override_constants/separation = 16
 
 [node name="Title" type="Label" parent="Margin/Scroll/VBox"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 32
+theme_override_font_sizes/font_size = 40
 text = "UI Flow — Examples"
 horizontal_alignment = 1
 
 [node name="Subtitle" type="Label" parent="Margin/Scroll/VBox"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 22
 text = "Select an example to see UIFlow in action."
 horizontal_alignment = 1
 modulate = Color(1, 1, 1, 0.5)
@@ -65,48 +65,48 @@ theme_override_constants/separation = 10
 [node name="Btn0" type="Button" parent="Margin/Scroll/VBox/Buttons"]
 layout_mode = 2
 custom_minimum_size = Vector2(0, 48)
-theme_override_font_sizes/font_size = 16
+theme_override_font_sizes/font_size = 20
 text = "Main Menu Flow"
 
 [node name="Desc0" type="Label" parent="Margin/Scroll/VBox/Buttons"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 20
 text = "Title → Menu → Settings/Credits. Push/pop with transitions."
 modulate = Color(1, 1, 1, 0.4)
 
 [node name="Btn1" type="Button" parent="Margin/Scroll/VBox/Buttons"]
 layout_mode = 2
 custom_minimum_size = Vector2(0, 48)
-theme_override_font_sizes/font_size = 16
+theme_override_font_sizes/font_size = 20
 text = "Settings Screen"
 
 [node name="Desc1" type="Label" parent="Margin/Scroll/VBox/Buttons"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 20
 text = "Slider/toggle binding, live value display."
 modulate = Color(1, 1, 1, 0.4)
 
 [node name="Btn2" type="Button" parent="Margin/Scroll/VBox/Buttons"]
 layout_mode = 2
 custom_minimum_size = Vector2(0, 48)
-theme_override_font_sizes/font_size = 16
+theme_override_font_sizes/font_size = 20
 text = "RPG HUD + Pause"
 
 [node name="Desc2" type="Label" parent="Margin/Scroll/VBox/Buttons"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 20
 text = "Health/mana bars, EventBus, pause modal, toast notifications."
 modulate = Color(1, 1, 1, 0.4)
 
 [node name="Btn3" type="Button" parent="Margin/Scroll/VBox/Buttons"]
 layout_mode = 2
 custom_minimum_size = Vector2(0, 48)
-theme_override_font_sizes/font_size = 16
+theme_override_font_sizes/font_size = 20
 text = "Component Gallery"
 
 [node name="Desc3" type="Label" parent="Margin/Scroll/VBox/Buttons"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 20
 text = "Toast, Confirm, Alert, all transitions, sequencer animations."
 modulate = Color(1, 1, 1, 0.4)
 
@@ -115,7 +115,7 @@ layout_mode = 2
 
 [node name="ControlsHint" type="Label" parent="Margin/Scroll/VBox"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 20
 text = "3D Controls: WASD to move · Mouse to look · Space to jump · Esc to release mouse"
 horizontal_alignment = 1
 modulate = Color(1, 1, 1, 0.35)
@@ -124,5 +124,5 @@ modulate = Color(1, 1, 1, 0.35)
 layout_mode = 2
 custom_minimum_size = Vector2(200, 44)
 size_flags_horizontal = 4
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 22
 text = "Quit"

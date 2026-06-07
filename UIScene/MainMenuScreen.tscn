@@ -53,13 +53,13 @@ alignment = 1
 
 [node name="Title" type="Label" parent="Center"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 32
+theme_override_font_sizes/font_size = 40
 text = "UI Flow Demo"
 horizontal_alignment = 1
 
 [node name="Subtitle" type="Label" parent="Center"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 22
 text = "Main Menu Example"
 horizontal_alignment = 1
 modulate = Color(1, 1, 1, 0.5)
@@ -71,19 +71,19 @@ custom_minimum_size = Vector2(0, 16)
 [node name="PlayButton" type="Button" parent="Center"]
 layout_mode = 2
 custom_minimum_size = Vector2(240, 44)
-theme_override_font_sizes/font_size = 16
+theme_override_font_sizes/font_size = 20
 text = "Play"
 
 [node name="SettingsButton" type="Button" parent="Center"]
 layout_mode = 2
 custom_minimum_size = Vector2(240, 44)
-theme_override_font_sizes/font_size = 16
+theme_override_font_sizes/font_size = 20
 text = "Settings"
 
 [node name="CreditsButton" type="Button" parent="Center"]
 layout_mode = 2
 custom_minimum_size = Vector2(240, 44)
-theme_override_font_sizes/font_size = 16
+theme_override_font_sizes/font_size = 20
 text = "Credits"
 
 [node name="Spacer2" type="Control" parent="Center"]
@@ -93,7 +93,7 @@ custom_minimum_size = Vector2(0, 16)
 [node name="QuitButton" type="Button" parent="Center"]
 layout_mode = 2
 custom_minimum_size = Vector2(240, 44)
-theme_override_font_sizes/font_size = 16
+theme_override_font_sizes/font_size = 20
 text = "Quit"
 
 

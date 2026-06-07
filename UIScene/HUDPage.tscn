@@ -27,12 +27,12 @@ theme_override_constants/separation = 6
 
 [node name="LevelLabel" type="Label" parent="HUD/Content"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 16
+theme_override_font_sizes/font_size = 20
 text = "Lv. 1"
 
 [node name="HealthLabel" type="Label" parent="HUD/Content"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 20
 text = "HP: 100 / 100"
 
 [node name="HealthBar" type="ProgressBar" parent="HUD/Content"]
@@ -42,7 +42,7 @@ value = 100.0
 
 [node name="ManaLabel" type="Label" parent="HUD/Content"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 20
 text = "MP: 50 / 50"
 
 [node name="ManaBar" type="ProgressBar" parent="HUD/Content"]
@@ -52,5 +52,5 @@ value = 50.0
 
 [node name="GoldLabel" type="Label" parent="HUD/Content"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 22
 text = "Gold: 0"

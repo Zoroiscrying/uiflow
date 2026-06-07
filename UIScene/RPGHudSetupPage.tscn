@@ -45,29 +45,29 @@ alignment = 1
 [node name="DamageButton" type="Button" parent="Actions/Margin/Buttons"]
 layout_mode = 2
 custom_minimum_size = Vector2(0, 36)
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 20
 text = "Damage -20"
 
 [node name="HealButton" type="Button" parent="Actions/Margin/Buttons"]
 layout_mode = 2
 custom_minimum_size = Vector2(0, 36)
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 20
 text = "Heal +30"
 
 [node name="ManaButton" type="Button" parent="Actions/Margin/Buttons"]
 layout_mode = 2
 custom_minimum_size = Vector2(0, 36)
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 20
 text = "Use Mana -10"
 
 [node name="GoldButton" type="Button" parent="Actions/Margin/Buttons"]
 layout_mode = 2
 custom_minimum_size = Vector2(0, 36)
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 20
 text = "Earn Gold +25"
 
 [node name="LevelButton" type="Button" parent="Actions/Margin/Buttons"]
 layout_mode = 2
 custom_minimum_size = Vector2(0, 36)
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 20
 text = "Level Up"

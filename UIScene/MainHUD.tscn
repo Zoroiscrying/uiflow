@@ -29,13 +29,13 @@ layout_mode = 2
 
 [node name="Title" type="Label" parent="TopBar/Margin/HBox"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 22
 text = "UI Flow Demo"
 
 [node name="Hint" type="Label" parent="TopBar/Margin/HBox"]
 layout_mode = 2
 size_flags_horizontal = 10
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 20
 text = "Esc: Pause | WASD: Move | Right-click: Look"
 horizontal_alignment = 2
 modulate = Color(1, 1, 1, 0.5)

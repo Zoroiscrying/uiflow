@@ -40,7 +40,7 @@ theme_override_constants/separation = 12
 
 [node name="Title" type="Label" parent="Margin/Center"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 24
+theme_override_font_sizes/font_size = 30
 text = "Settings"
 horizontal_alignment = 1
 
@@ -54,7 +54,7 @@ theme_override_constants/separation = 12
 [node name="Label" type="Label" parent="Margin/Center/MasterVolume"]
 layout_mode = 2
 custom_minimum_size = Vector2(100, 0)
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 22
 text = "Master"
 
 [node name="Slider" type="HSlider" parent="Margin/Center/MasterVolume"]
@@ -65,7 +65,7 @@ value = 80.0
 [node name="Value" type="Label" parent="Margin/Center/MasterVolume"]
 layout_mode = 2
 custom_minimum_size = Vector2(48, 0)
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 22
 text = "80%"
 
 [node name="MusicVolume" type="HBoxContainer" parent="Margin/Center"]
@@ -75,7 +75,7 @@ theme_override_constants/separation = 12
 [node name="Label" type="Label" parent="Margin/Center/MusicVolume"]
 layout_mode = 2
 custom_minimum_size = Vector2(100, 0)
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 22
 text = "Music"
 
 [node name="Slider" type="HSlider" parent="Margin/Center/MusicVolume"]
@@ -86,7 +86,7 @@ value = 70.0
 [node name="Value" type="Label" parent="Margin/Center/MusicVolume"]
 layout_mode = 2
 custom_minimum_size = Vector2(48, 0)
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 22
 text = "70%"
 
 [node name="SFXVolume" type="HBoxContainer" parent="Margin/Center"]
@@ -96,7 +96,7 @@ theme_override_constants/separation = 12
 [node name="Label" type="Label" parent="Margin/Center/SFXVolume"]
 layout_mode = 2
 custom_minimum_size = Vector2(100, 0)
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 22
 text = "SFX"
 
 [node name="Slider" type="HSlider" parent="Margin/Center/SFXVolume"]
@@ -107,7 +107,7 @@ value = 90.0
 [node name="Value" type="Label" parent="Margin/Center/SFXVolume"]
 layout_mode = 2
 custom_minimum_size = Vector2(48, 0)
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 22
 text = "90%"
 
 [node name="Sep2" type="HSeparator" parent="Margin/Center"]
@@ -120,7 +120,7 @@ theme_override_constants/separation = 12
 [node name="Label" type="Label" parent="Margin/Center/Fullscreen"]
 layout_mode = 2
 custom_minimum_size = Vector2(100, 0)
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 22
 text = "Fullscreen"
 
 [node name="CheckButton" type="CheckButton" parent="Margin/Center/Fullscreen"]
@@ -133,7 +133,7 @@ theme_override_constants/separation = 12
 [node name="Label" type="Label" parent="Margin/Center/VSync"]
 layout_mode = 2
 custom_minimum_size = Vector2(100, 0)
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 22
 text = "VSync"
 
 [node name="CheckButton" type="CheckButton" parent="Margin/Center/VSync"]
