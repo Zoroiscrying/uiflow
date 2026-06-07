@@ -1,13 +1,10 @@
 ## Settings page — demonstrates two-way data binding with sliders and toggles.
+## BackButton connected via Inspector signal in .tscn.
 class_name SettingsPageExample extends UIFlowPage
 
 @export var settings: SettingsData
 
 var _bindings: Array[UIFlowBindUtils.UIFlowBinding] = []
-
-
-func _ready() -> void:
-	$Margin/Center/BackButton.pressed.connect(_on_back_pressed)
 
 
 func _on_back_pressed() -> void:
