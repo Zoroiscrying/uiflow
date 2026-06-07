@@ -55,9 +55,10 @@ func _set_pause_back() -> void:
 		if _is_pausing or UIFlow.has_page(PausePage):
 			return
 		_is_pausing = true
-		UIFlow.push(PausePage, {}, UIFlowTransitionType.Type.FADE)
-		# Reset guard after transition completes
-		get_tree().create_timer(0.5).timeout.connect(func(): _is_pausing = false)
+		# Use NONE transition — PausePage handles its own animation internally
+		UIFlow.push(PausePage, {}, UIFlowTransitionType.Type.NONE)
+		# Reset guard after a delay (prevent rapid re-trigger)
+		get_tree().create_timer(0.3).timeout.connect(func(): _is_pausing = false)
 	)
 
 
@@ -68,5 +69,8 @@ func _on_closed() -> void:
 
 
 func _on_shown() -> void:
-	_is_pausing = false
+	# Set guard to prevent immediate re-trigger after PausePage is popped
+	_is_pausing = true
 	_set_pause_back()
+	# Allow pause again after a short delay
+	get_tree().create_timer(0.5).timeout.connect(func(): _is_pausing = false)
