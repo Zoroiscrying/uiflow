@@ -69,8 +69,11 @@ func _on_closed() -> void:
 
 
 func _on_shown() -> void:
-	# Set guard to prevent immediate re-trigger after PausePage is popped
+	# Disable back completely during cooldown to prevent autoload + callback conflict
+	UIFlow.set_back_enabled(false)
 	_is_pausing = true
-	_set_pause_back()
-	# Allow pause again after a short delay
-	get_tree().create_timer(0.5).timeout.connect(func(): _is_pausing = false)
+	get_tree().create_timer(0.5).timeout.connect(func():
+		_is_pausing = false
+		_set_pause_back()
+		UIFlow.set_back_enabled(true)
+	)
