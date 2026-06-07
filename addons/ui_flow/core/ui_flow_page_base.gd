@@ -21,17 +21,12 @@ class_name UIFlowPage extends Control
 ## If true, this page intercepts all input. Lower pages don't receive back/cancel.
 @export var is_modal: bool = false
 
-## Animation played when this page is pushed onto the stack.
-@export var enter_animation: UIFlowTransitionType.Type = UIFlowTransitionType.Type.NONE
+## Transition played when this page is pushed onto the stack.
+## Configure in Inspector: preset type, custom script, or Animation resource.
+@export var enter_transition: UIFlowTransitionRef = null
 
-## Duration of the enter animation in seconds.
-@export_range(0.0, 2.0, 0.05) var enter_duration: float = 0.3
-
-## Animation played when this page is popped from the stack.
-@export var exit_animation: UIFlowTransitionType.Type = UIFlowTransitionType.Type.NONE
-
-## Duration of the exit animation in seconds.
-@export_range(0.0, 2.0, 0.05) var exit_duration: float = 0.3
+## Transition played when this page is popped from the stack.
+@export var exit_transition: UIFlowTransitionRef = null
 
 ## NodePath to the control that should receive focus when the page opens.
 @export var default_focus_path: NodePath = ""
@@ -87,28 +82,21 @@ func _apply_default_focus() -> void:
 
 
 ## Called by Navigator before _on_opened. Plays enter animation.
-## Returns a Tween that completes when the animation finishes (or null if none).
-func _play_enter_animation() -> Tween:
-	if enter_animation == UIFlowTransitionType.Type.NONE:
-		return null
-	var transition: UIFlowTransitionBase = UIFlow.Transitions.get_preset(enter_animation)
+func _play_enter_animation() -> void:
+	if enter_transition == null or enter_transition.source == UIFlowTransitionRef.Source.NONE:
+		return
+	var transition: UIFlowTransitionBase = enter_transition.create_instance()
 	if transition:
-		var tween = UIFlowAnimator.animate(
-			self, UIFlowTweenProp.Prop.MODULATE_A, 0.0, 1.0, enter_duration
-		)
-		return tween
-	return null
+		transition.play_enter(self)
 
 
 ## Called by Navigator before removal. Plays exit animation.
-## Returns a Tween that completes when the animation finishes (or null if none).
-func _play_exit_animation() -> Tween:
-	if exit_animation == UIFlowTransitionType.Type.NONE:
-		return null
-	var tween = UIFlowAnimator.animate(
-		self, UIFlowTweenProp.Prop.MODULATE_A, 1.0, 0.0, exit_duration
-	)
-	return tween
+func _play_exit_animation() -> void:
+	if exit_transition == null or exit_transition.source == UIFlowTransitionRef.Source.NONE:
+		return
+	var transition: UIFlowTransitionBase = exit_transition.create_instance()
+	if transition:
+		transition.play_exit(self)
 
 
 # ── Input Action Access ──────────────────────────────────────────────────────
