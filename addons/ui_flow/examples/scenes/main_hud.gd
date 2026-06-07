@@ -1,4 +1,4 @@
-## Main HUD — shows hint text, opens ExampleHub on Esc.
+## Main HUD - shows hint text, opens ExampleHub on Esc.
 class_name MainHUD extends UIFlowPage
 
 var _examples_open: bool = false
