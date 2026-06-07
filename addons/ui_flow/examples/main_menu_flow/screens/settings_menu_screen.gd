@@ -4,7 +4,9 @@ class_name SettingsMenuScreen extends UIFlowPage
 
 
 func _on_back_pressed() -> void:
+	print("SettingsMenuScreen: Back pressed! Stack depth: ", UIFlow.stack_depth())
 	UIFlow.pop()
+	print("SettingsMenuScreen: Pop done. Stack depth: ", UIFlow.stack_depth())
 
 
 func _on_enter(_data: Dictionary = {}) -> void:
