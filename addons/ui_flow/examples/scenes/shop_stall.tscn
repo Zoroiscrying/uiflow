@@ -1,27 +1,53 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://addons/ui_flow/examples/scenes/interactive_object.gd" id="1"]
 
 [sub_resource type="BoxShape3D" id="1"]
-size = Vector3(3, 2, 3)
+size = Vector3(3, 2.5, 3)
 
 [sub_resource type="BoxMesh" id="2"]
-size = Vector3(2, 1.5, 2)
+size = Vector3(2, 1.2, 1.5)
 
 [sub_resource type="StandardMaterial3D" id="3"]
-albedo_color = Color(0.6, 0.4, 0.2, 1)
+albedo_color = Color(0.45, 0.28, 0.15, 1)
+roughness = 0.8
+
+[sub_resource type="BoxMesh" id="4"]
+size = Vector3(2.2, 0.1, 1.7)
+
+[sub_resource type="StandardMaterial3D" id="5"]
+albedo_color = Color(0.55, 0.35, 0.18, 1)
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="6"]
+size = Vector3(1.8, 0.8, 0.05)
+
+[sub_resource type="StandardMaterial3D" id="7"]
+albedo_color = Color(0.9, 0.6, 0.15, 1)
+emission_enabled = true
+emission = Color(0.9, 0.6, 0.15, 1)
+emission_energy_multiplier = 0.4
 
 [node name="ShopStall" type="Area3D"]
 script = ExtResource("1")
 page_scene_path = "res://UIScene/ShopPage.tscn"
 display_name = "Shop"
 key_prompt = "[E] Open"
-godot_action = &"interact"
 
 [node name="Collision" type="CollisionShape3D" parent="."]
 shape = SubResource("1")
 
-[node name="Mesh" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0)
+[node name="Base" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
 mesh = SubResource("2")
 material_override = SubResource("3")
+
+[node name="Counter" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.25, 0)
+mesh = SubResource("4")
+material_override = SubResource("5")
+
+[node name="Sign" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0, -0.6)
+mesh = SubResource("6")
+material_override = SubResource("7")

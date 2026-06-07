@@ -1,5 +1,6 @@
 [gd_scene format=3 uid="uid://c4r22so8kesxg"]
 
+[ext_resource type="Script" path="res://addons/ui_flow/examples/scenes/game_world.gd" id="0"]
 [ext_resource type="PackedScene" path="res://addons/ui_flow/examples/scenes/player_character.tscn" id="1"]
 [ext_resource type="PackedScene" path="res://addons/ui_flow/examples/scenes/shop_stall.tscn" id="2"]
 [ext_resource type="PackedScene" path="res://addons/ui_flow/examples/scenes/npc_character.tscn" id="3"]
@@ -78,6 +79,7 @@ size = Vector3(20, 1.5, 0.3)
 size = Vector3(20, 1.5, 0.3)
 
 [node name="GameWorld" type="Node3D" unique_id=1212282582]
+script = ExtResource("0")
 
 [node name="Environment" type="WorldEnvironment" parent="." unique_id=1881650473]
 environment = SubResource("1")

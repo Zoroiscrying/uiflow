@@ -1,5 +1,4 @@
 ## Settings page — demonstrates two-way data binding with sliders and toggles.
-## BackButton connected via Inspector signal in .tscn.
 class_name SettingsPageExample extends UIFlowPage
 
 @export var settings: SettingsData
@@ -7,8 +6,15 @@ class_name SettingsPageExample extends UIFlowPage
 var _bindings: Array[UIFlowBindUtils.UIFlowBinding] = []
 
 
-func _on_back_pressed() -> void:
-	UIFlow.pop()
+func _ready() -> void:
+	$Margin/Center/BackButton.pressed.connect(_on_back_pressed)
+	# Fade in/out animation
+	var fade := UIFlowTransitionRef.new()
+	fade.source = UIFlowTransitionRef.Source.PRESET
+	fade.preset = UIFlowTransitionType.Type.FADE
+	fade.duration = 0.25
+	enter_transition = fade
+	exit_transition = fade
 
 
 func _on_opened(_data: Dictionary = {}) -> void:
