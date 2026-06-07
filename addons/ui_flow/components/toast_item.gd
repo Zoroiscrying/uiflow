@@ -26,9 +26,13 @@ func _on_setup() -> void:
 
 ## Override this to completely replace the default content layout.
 func _build_content() -> void:
+	# Ensure PanelContainer expands to fill available width
+	size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	custom_minimum_size = Vector2(300, 0)
+
 	var hbox := HBoxContainer.new()
+	hbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	hbox.add_theme_constant_override("separation", 8)
-	hbox.alignment = BoxContainer.ALIGNMENT_CENTER
 	add_child(hbox)
 
 	# Icon
@@ -51,6 +55,7 @@ func _build_content() -> void:
 	var label_node := Label.new()
 	label_node.text = message
 	label_node.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	label_node.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	label_node.add_theme_color_override("font_color", toast_type.text_color)
 	label_node.add_theme_font_size_override("font_size", toast_type.font_size)
 	hbox.add_child(label_node)
