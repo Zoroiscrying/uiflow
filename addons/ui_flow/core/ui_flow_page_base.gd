@@ -10,14 +10,15 @@
 ## 6. [code]_on_destroyed()[/code] — Page about to be freed
 class_name UIFlowPage extends Control
 
+## If true, this page intercepts all input. Lower pages don't receive back/cancel.
+## Set to true for modal dialogs (pause menu, confirm dialog, etc.)
+@export var is_modal: bool = false
+
 ## Override: called once when the page is first instantiated.
-## [param data] is the dictionary passed via [code]UIFlow.push(MyPage, data)[/code].
 func _on_created(_data: Dictionary = {}) -> void:
 	pass
 
 ## Override: called when this page is pushed onto the navigation stack.
-## May be called multiple times if the page is reused.
-## [param data] is the dictionary passed via [code]UIFlow.push(MyPage, data)[/code].
 func _on_opened(_data: Dictionary = {}) -> void:
 	pass
 

@@ -4,12 +4,9 @@ class_name RPGHudSetupPage extends UIFlowPage
 
 var _game_events: GameEvents
 var _stats: PlayerStats
-var _is_pausing: bool = false
 
 
 func _on_opened(_data: Dictionary = {}) -> void:
-	_is_pausing = false
-
 	# Create event bus
 	_game_events = GameEvents.new()
 	_game_events.name = "GameEvents"
@@ -46,34 +43,14 @@ func _on_opened(_data: Dictionary = {}) -> void:
 		_game_events.level_up.emit(_stats.level)
 	)
 
-	_set_pause_back()
 
-
-func _set_pause_back() -> void:
-	UIFlow.set_back_callback(func():
-		# Guard: don't push if PausePage is already in stack OR being pushed
-		if _is_pausing or UIFlow.has_page(PausePage):
-			return
-		_is_pausing = true
-		# Use NONE transition — PausePage handles its own animation internally
-		UIFlow.push(PausePage, {}, UIFlowTransitionType.Type.NONE)
-		# Reset guard after a delay (prevent rapid re-trigger)
-		get_tree().create_timer(0.3).timeout.connect(func(): _is_pausing = false)
-	)
+## Handle back button — push PausePage instead of popping.
+func _on_back() -> void:
+	if UIFlow.has_page(PausePage):
+		return
+	UIFlow.push(PausePage, {}, UIFlowTransitionType.Type.NONE)
 
 
 func _on_closed() -> void:
-	UIFlow.reset_back_callback()
 	if _game_events:
 		_game_events.queue_free()
-
-
-func _on_shown() -> void:
-	# Disable back completely during cooldown to prevent autoload + callback conflict
-	UIFlow.set_back_enabled(false)
-	_is_pausing = true
-	get_tree().create_timer(0.5).timeout.connect(func():
-		_is_pausing = false
-		_set_pause_back()
-		UIFlow.set_back_enabled(true)
-	)

@@ -50,6 +50,7 @@ func _ready() -> void:
 	FlowInput = UIFlowInputHandler.new()
 	FlowInput.name = "UIFlowInputHandler"
 	add_child(FlowInput)
+	FlowInput.setup(Router)
 	FlowInput.back_pressed.connect(_on_back_pressed)
 
 
@@ -88,9 +89,9 @@ func _ensure_page_container() -> void:
 
 
 func _on_back_pressed() -> void:
-	# Only pop if there's more than 1 page (protect root page)
-	if stack_depth() > 1:
-		pop()
+	# No page handled back — this is the root level
+	# Override this behavior by connecting to FlowInput.back_pressed
+	pass
 
 
 # ── Router shortcuts ─────────────────────────────────────────────────────────
@@ -247,24 +248,9 @@ func bind_slider(slider: Range, sig: Signal, setter: Callable) -> UIFlowBindUtil
 
 # ── Input shortcuts ──────────────────────────────────────────────────────────
 
-## Set a custom back/cancel callback.
-func set_back_callback(callback: Callable) -> void:
-	FlowInput.set_custom_callback(callback)
-
-
-## Reset back behavior to default (auto-pop).
-func reset_back_callback() -> void:
-	FlowInput.reset_callback()
-
-
 ## Set the default focus node for the current page.
 func set_default_focus(node: Control) -> void:
 	FlowInput.set_default_focus(node)
-
-
-## Enable or disable back/cancel handling.
-func set_back_enabled(value: bool) -> void:
-	FlowInput.set_enabled(value)
 
 
 # ── Theme shortcuts ──────────────────────────────────────────────────────────
