@@ -5,6 +5,8 @@ class_name UIFlowNavigator extends Node
 
 signal page_pushed(page_class: GDScript, data: Dictionary)
 signal page_popped(page_class: GDScript)
+signal page_opened(page_class: GDScript)   # Emitted when _on_opened completes
+signal page_closed(page_class: GDScript)   # Emitted when _on_closed completes
 
 var _stack: Array[Dictionary] = [] # { "class": GDScript, "instance": Control, "scene": PackedScene }
 var _scene_resolver: UIFlowSceneResolver
@@ -54,6 +56,7 @@ func push(page_class: GDScript, data: Dictionary = {}, page_theme: UIFlowTheme =
 		page._on_opened(data)
 
 	page_pushed.emit(page_class, data)
+	page_opened.emit(page_class)
 	return instance
 
 
@@ -114,6 +117,7 @@ func pop() -> void:
 			below_page._on_shown()
 
 	page_popped.emit(top_class)
+	page_closed.emit(top_class)
 
 
 ## Replace the top page with a new one.

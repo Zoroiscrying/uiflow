@@ -18,6 +18,14 @@ var _page_container: Control
 var _custom_ui_root: Control = null
 
 
+# ── Signals (forwarded from Router) ─────────────────────────────────────────
+
+## Emitted when a page's _on_opened completes (awaitable).
+signal page_opened(page_class: GDScript)
+## Emitted when a page's _on_closed completes (awaitable).
+signal page_closed(page_class: GDScript)
+
+
 func _ready() -> void:
 	Scenes = UIFlowSceneResolver.new()
 	ThemeHelper = UIFlowThemeHelper.new()
@@ -25,6 +33,8 @@ func _ready() -> void:
 	Router = UIFlowNavigator.new()
 	Router.name = "UIFlowNavigator"
 	add_child(Router)
+	Router.page_opened.connect(func(c): page_opened.emit(c))
+	Router.page_closed.connect(func(c): page_closed.emit(c))
 
 	FlowInput = UIFlowInputHandler.new()
 	FlowInput.name = "UIFlowInputHandler"
