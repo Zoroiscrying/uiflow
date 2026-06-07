@@ -11,10 +11,24 @@ class_name UIFlowInputHandler extends Node
 signal back_pressed
 
 var _navigator: UIFlowNavigator = null
+var _default_focus_node: WeakRef = null
 
 
 func setup(navigator: UIFlowNavigator) -> void:
 	_navigator = navigator
+
+
+## Set the default focus node for the current page.
+func set_default_focus(node: Control) -> void:
+	_default_focus_node = weakref(node)
+	if node and is_instance_valid(node) and node.is_inside_tree():
+		node.grab_focus()
+
+
+## Grab focus on a specific node.
+func grab_focus(node: Control) -> void:
+	if node and is_instance_valid(node) and node.is_inside_tree():
+		node.grab_focus()
 
 
 func _unhandled_input(event: InputEvent) -> void:
