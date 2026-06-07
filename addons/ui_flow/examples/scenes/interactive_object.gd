@@ -22,7 +22,7 @@ func _ready() -> void:
 
 
 func _on_body_entered(body: Node3D) -> void:
-	if body.name == "PlayerCharacter":
+	if body.is_in_group("player"):
 		_player_in_range = true
 		_main_hud = UIFlow.get_page(MainHUD) as MainHUD
 		if _main_hud:
@@ -30,7 +30,7 @@ func _on_body_entered(body: Node3D) -> void:
 
 
 func _on_body_exited(body: Node3D) -> void:
-	if body.name == "PlayerCharacter":
+	if body.is_in_group("player"):
 		_player_in_range = false
 		if _main_hud:
 			_main_hud.set_nearby_interactive(null)

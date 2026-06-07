@@ -15,10 +15,11 @@ var _pitch: float = -0.5
 
 
 func _ready() -> void:
+	add_to_group("player")
 	_camera_arm.rotation.x = _pitch
 
 
-func _unhandled_input(event: InputEvent) -> void:
+func _input(event: InputEvent) -> void:
 	# Right-mouse-drag → rotate camera
 	if event is InputEventMouseMotion and Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
 		_yaw -= event.relative.x * MOUSE_SENSITIVITY
