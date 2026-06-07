@@ -36,21 +36,20 @@ func setup(p_container: Control, p_resolver: UIFlowSceneResolver, p_transition_m
 ## UIFlow.push(SettingsPage, {}, null, shop_theme)
 ## [/codeblock]
 ## Push a new page onto the stack.
-## [param overlay] if true, the current page stays visible behind the new page permanently.
-func push(page_class: GDScript, data: Dictionary = {}, transition = null, page_theme: UIFlowTheme = null, overlay: bool = false) -> Control:
+## Pages stack on top of each other. Previous pages stay visible underneath.
+func push(page_class: GDScript, data: Dictionary = {}, transition = null, page_theme: UIFlowTheme = null) -> Control:
 	var scene: PackedScene = _scene_resolver.resolve(page_class)
 	if scene == null:
 		return null
 
-	# Pause current top page (but keep it visible during transition)
-	var previous_page: UIFlowPage = null
+	# Notify current top page it's being paused
 	if _stack.size() > 0:
 		var current: Dictionary = _stack.back()
-		previous_page = current["instance"] as UIFlowPage
-		if previous_page and previous_page.has_method("_on_pause"):
-			previous_page._on_pause()
+		var current_page: UIFlowPage = current["instance"] as UIFlowPage
+		if current_page and current_page.has_method("_on_pause"):
+			current_page._on_pause()
 
-	# Instantiate and add new page (start fully transparent to prevent flash)
+	# Instantiate new page (start transparent for transition)
 	var instance: Control = scene.instantiate()
 	instance.modulate.a = 0.0
 	instance.visible = false
@@ -71,9 +70,6 @@ func push(page_class: GDScript, data: Dictionary = {}, transition = null, page_t
 	var resolved_transition = _resolve_transition(transition)
 	var page: UIFlowPage = instance as UIFlowPage
 	_transition_manager.play_enter(instance, resolved_transition, func():
-		# Hide previous page AFTER transition completes (unless overlay)
-		if previous_page and not overlay:
-			previous_page.visible = false
 		if page and page.has_method("_on_enter"):
 			page._on_enter(data)
 		page_pushed.emit(page_class, data)
@@ -82,7 +78,8 @@ func push(page_class: GDScript, data: Dictionary = {}, transition = null, page_t
 	return instance
 
 
-## Pop the top page off the stack, revealing the one below.
+## Pop the top page off the stack.
+## The page below is already visible (pages stack, never hidden).
 func pop(transition = null) -> void:
 	if _stack.is_empty():
 		push_warning("UIFlow: Navigation stack is empty, cannot pop.")
@@ -92,10 +89,10 @@ func pop(transition = null) -> void:
 	var top_instance: Control = top["instance"]
 	var top_class: GDScript = top["class"]
 
-	# Play exit transition
+	# Play exit transition, then remove
 	var resolved_transition = _resolve_transition(transition)
 	_transition_manager.play_exit(top_instance, resolved_transition, func():
-		# Call lifecycle callback
+		# Lifecycle callback
 		var page: UIFlowPage = top_instance as UIFlowPage
 		if page and page.has_method("_on_exit"):
 			page._on_exit()
@@ -104,13 +101,10 @@ func pop(transition = null) -> void:
 		_container.remove_child(top_instance)
 		top_instance.queue_free()
 
-		# Resume the page below
+		# Notify page below it's active again
 		if _stack.size() > 0:
 			var below: Dictionary = _stack.back()
-			var below_instance: Control = below["instance"]
-			below_instance.visible = true
-			below_instance.modulate.a = 1.0
-			var below_page: UIFlowPage = below_instance as UIFlowPage
+			var below_page: UIFlowPage = below["instance"] as UIFlowPage
 			if below_page and below_page.has_method("_on_resume"):
 				below_page._on_resume()
 

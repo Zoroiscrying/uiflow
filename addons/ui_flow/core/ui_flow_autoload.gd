@@ -103,9 +103,9 @@ func _on_back_pressed() -> void:
 ## var page: SettingsPage = UIFlow.push(SettingsPage) as SettingsPage
 ## page.setup(my_config)
 ## [/codeblock]
-func push(page_class: GDScript, data: Dictionary = {}, transition = null, page_theme: UIFlowTheme = null, overlay: bool = false) -> Control:
+func push(page_class: GDScript, data: Dictionary = {}, transition = null, page_theme: UIFlowTheme = null) -> Control:
 	_ensure_page_container()
-	return Router.push(page_class, data, transition, page_theme, overlay)
+	return Router.push(page_class, data, transition, page_theme)
 
 
 ## Pop the top page off the stack.
