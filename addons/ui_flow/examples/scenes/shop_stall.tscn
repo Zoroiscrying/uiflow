@@ -13,7 +13,7 @@ albedo_color = Color(0.6, 0.4, 0.2, 1)
 
 [node name="ShopStall" type="Area3D"]
 script = ExtResource("1")
-page_class = null
+page_scene_path = "res://UIScene/ShopPage.tscn"
 display_name = "Shop"
 key_prompt = "[E] Open"
 
