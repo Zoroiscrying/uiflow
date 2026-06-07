@@ -58,5 +58,4 @@ layout_mode = 2
 custom_minimum_size = Vector2(200, 40)
 text = "Back"
 
-[connection signal="pressed" from="Center/BackButton" to="." method="_on_back_pressed"]
 

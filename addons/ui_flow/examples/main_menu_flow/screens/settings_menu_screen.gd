@@ -1,12 +1,15 @@
 ## Settings menu placeholder - shows navigation depth.
-## BackButton connected via Inspector signal in .tscn.
 class_name SettingsMenuScreen extends UIFlowPage
+
+@onready var _back_button: Button = $Center/BackButton
+
+
+func _ready() -> void:
+	_back_button.pressed.connect(_on_back_pressed)
 
 
 func _on_back_pressed() -> void:
-	print("SettingsMenuScreen: Back pressed! Stack depth: ", UIFlow.stack_depth())
 	UIFlow.pop()
-	print("SettingsMenuScreen: Pop done. Stack depth: ", UIFlow.stack_depth())
 
 
 func _on_enter(_data: Dictionary = {}) -> void:

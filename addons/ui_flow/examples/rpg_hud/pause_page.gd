@@ -1,6 +1,15 @@
 ## Pause menu - modal overlay with Resume/Settings/Quit.
-## Button connections via Inspector signals in .tscn.
 class_name PausePage extends UIFlowPage
+
+@onready var _resume_button: Button = $Panel/VBox/ResumeButton
+@onready var _settings_button: Button = $Panel/VBox/SettingsButton
+@onready var _quit_button: Button = $Panel/VBox/QuitButton
+
+
+func _ready() -> void:
+	_resume_button.pressed.connect(_on_resume_pressed)
+	_settings_button.pressed.connect(_on_settings_pressed)
+	_quit_button.pressed.connect(_on_quit_pressed)
 
 
 func _on_resume_pressed() -> void:
@@ -18,7 +27,7 @@ func _on_quit_pressed() -> void:
 
 
 func _on_enter(_data: Dictionary = {}) -> void:
-	UIFlow.set_default_focus($Panel/VBox/ResumeButton)
+	UIFlow.set_default_focus(_resume_button)
 
 	# Animate panel appearance
 	$Dimmer.modulate.a = 0.0
@@ -32,4 +41,4 @@ func _on_enter(_data: Dictionary = {}) -> void:
 
 
 func _on_resume() -> void:
-	UIFlow.set_default_focus($Panel/VBox/ResumeButton)
+	UIFlow.set_default_focus(_resume_button)
