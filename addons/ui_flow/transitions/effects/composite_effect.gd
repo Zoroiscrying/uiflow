@@ -1,5 +1,8 @@
 ## Composite effect — plays multiple effects simultaneously.
 ##
+## Effects run in parallel. Each effect manages its own tween.
+## Supports nesting: CompositeEffect can contain SequencedEffect and vice versa.
+##
 ## Usage:
 ## [codeblock]
 ## var composite = UIFlowCompositeEffect.new()
@@ -22,15 +25,18 @@ func play_enter(node: Control, callback: Callable = Callable()) -> void:
 		return
 
 	node.visible = true
-	var tween := _create_tween(node)
-	if tween:
-		tween.set_parallel(true)
-		for effect in effects:
-			if effect is UIFlowTransitionEffect:
-				_apply_enter(tween, node, effect)
-		tween.finished.connect(func(): _on_finished(callback), CONNECT_ONE_SHOT)
-	else:
-		_on_finished(callback)
+	var remaining := effects.size()
+
+	for effect_res in effects:
+		if effect_res == null or not (effect_res is UIFlowTransitionEffect):
+			remaining -= 1
+			continue
+		var effect: UIFlowTransitionEffect = effect_res
+		effect.play_enter(node, func():
+			remaining -= 1
+			if remaining <= 0:
+				_on_finished(callback)
+		)
 
 
 func play_exit(node: Control, callback: Callable = Callable()) -> void:
@@ -38,36 +44,15 @@ func play_exit(node: Control, callback: Callable = Callable()) -> void:
 		_on_finished(callback)
 		return
 
-	var tween := _create_tween(node)
-	if tween:
-		tween.set_parallel(true)
-		for effect in effects:
-			if effect is UIFlowTransitionEffect:
-				_apply_exit(tween, node, effect)
-		tween.finished.connect(func(): _on_finished(callback), CONNECT_ONE_SHOT)
-	else:
-		_on_finished(callback)
+	var remaining := effects.size()
 
-
-func _apply_enter(tween: Tween, node: Control, effect: UIFlowTransitionEffect) -> void:
-	if effect is UIFlowFadeEffect:
-		node.modulate.a = 0.0
-		tween.tween_property(node, "modulate:a", 1.0, effect.duration).set_ease(effect.ease_type).set_trans(effect.trans_type)
-	elif effect is UIFlowSlideEffect:
-		var vp_size := node.get_viewport_rect().size if node.is_inside_tree() else Vector2(1920, 1080)
-		var target := node.position
-		node.position = target + effect._get_offset(vp_size)
-		tween.tween_property(node, "position", target, effect.duration).set_ease(effect.ease_type).set_trans(effect.trans_type)
-	elif effect is UIFlowScaleEffect:
-		node.scale = effect.from_scale
-		tween.tween_property(node, "scale", Vector2.ONE, effect.duration).set_ease(effect.ease_type).set_trans(effect.trans_type)
-
-
-func _apply_exit(tween: Tween, node: Control, effect: UIFlowTransitionEffect) -> void:
-	if effect is UIFlowFadeEffect:
-		tween.tween_property(node, "modulate:a", 0.0, effect.duration).set_ease(effect.ease_type).set_trans(effect.trans_type)
-	elif effect is UIFlowSlideEffect:
-		var vp_size := node.get_viewport_rect().size if node.is_inside_tree() else Vector2(1920, 1080)
-		tween.tween_property(node, "position", node.position + effect._get_offset(vp_size), effect.duration).set_ease(effect.ease_type).set_trans(effect.trans_type)
-	elif effect is UIFlowScaleEffect:
-		tween.tween_property(node, "scale", effect.from_scale, effect.duration).set_ease(effect.ease_type).set_trans(effect.trans_type)
+	for effect_res in effects:
+		if effect_res == null or not (effect_res is UIFlowTransitionEffect):
+			remaining -= 1
+			continue
+		var effect: UIFlowTransitionEffect = effect_res
+		effect.play_exit(node, func():
+			remaining -= 1
+			if remaining <= 0:
+				_on_finished(callback)
+		)
