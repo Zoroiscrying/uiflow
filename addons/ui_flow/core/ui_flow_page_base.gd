@@ -91,12 +91,18 @@ func _play_enter_animation() -> void:
 
 
 ## Called by Navigator before removal. Plays exit animation.
-func _play_exit_animation() -> void:
+## [param on_complete] is called when the animation finishes.
+func _play_exit_animation(on_complete: Callable = Callable()) -> void:
 	if exit_transition == null:
+		if on_complete.is_valid():
+			on_complete.call()
 		return
 	var effect = exit_transition.get_exit_effect()
 	if effect:
-		effect.play_exit(self)
+		effect.play_exit(self, on_complete)
+	else:
+		if on_complete.is_valid():
+			on_complete.call()
 
 
 # ── Input Action Access ──────────────────────────────────────────────────────

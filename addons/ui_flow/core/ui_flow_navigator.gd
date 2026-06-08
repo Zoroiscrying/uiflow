@@ -112,20 +112,28 @@ func pop() -> void:
 	var top_instance: Control = top["instance"]
 	var top_class: GDScript = top["class"]
 
-	# Play exit animation (from @export config)
+	# Play exit animation, then clean up
 	var page: UIFlowPage = top_instance as UIFlowPage
 	if page:
-		page._play_exit_animation()
+		page._play_exit_animation(func():
+			_cleanup_after_pop(top_instance, top_class)
+		)
+	else:
+		_cleanup_after_pop(top_instance, top_class)
 
+
+func _cleanup_after_pop(top_instance: Control, top_class: GDScript) -> void:
 	# Lifecycle
+	var page: UIFlowPage = top_instance as UIFlowPage
 	if page and page.has_method("_on_closed"):
 		page._on_closed()
 	if page and page.has_method("_on_destroyed"):
 		page._on_destroyed()
 
 	# Remove from tree
-	_container.remove_child(top_instance)
-	top_instance.queue_free()
+	if is_instance_valid(top_instance) and top_instance.is_inside_tree():
+		_container.remove_child(top_instance)
+		top_instance.queue_free()
 
 	# Notify page below
 	if _stack.size() > 0:

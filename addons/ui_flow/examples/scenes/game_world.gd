@@ -82,7 +82,9 @@ func _add_rocks() -> void:
 		rock.material_override = rock_mat
 		rock.position = rock_positions[i]
 		rock.position.y = 0.2
-		rock.scale = Vector3(1.0 + (i % 2) * 0.3, 0.6, 1.0 + (i % 3) * 0.2)
+		# Uniform scale (Jolt doesn't support non-uniform)
+		var s := 0.6 + (i % 3) * 0.15
+		rock.scale = Vector3(s, s, s)
 
 		var body := StaticBody3D.new()
 		var col := CollisionShape3D.new()
