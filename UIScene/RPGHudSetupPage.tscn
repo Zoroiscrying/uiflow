@@ -1,6 +1,15 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://addons/ui_flow/examples/rpg_hud/rpg_hud_setup_page.gd" id="1"]
+[ext_resource type="Script" path="res://addons/ui_flow/resources/flow_transition_ref.gd" id="2"]
+
+[sub_resource type="Resource" id="1"]
+script = ExtResource("2")
+source = 1
+preset = 1
+duration = 0.3
+ease_type = 1
+trans_type = 0
 
 [node name="RPGHudSetupPage" type="Control"]
 layout_mode = 3
@@ -10,6 +19,8 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1")
+enter_transition = SubResource("1")
+exit_transition = SubResource("1")
 
 [node name="BG" type="ColorRect" parent="."]
 layout_mode = 1

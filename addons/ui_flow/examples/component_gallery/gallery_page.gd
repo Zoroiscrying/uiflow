@@ -3,20 +3,6 @@ class_name GalleryPage extends UIFlowPage
 
 
 func _ready() -> void:
-	# Slide up animation
-	var slide := UIFlowTransitionRef.new()
-	slide.source = UIFlowTransitionRef.Source.PRESET
-	slide.preset = UIFlowTransitionType.Type.SLIDE_UP
-	slide.duration = 0.3
-	slide.ease_type = Tween.EASE_OUT
-	slide.trans_type = Tween.TRANS_BACK
-	enter_transition = slide
-
-	var fade := UIFlowTransitionRef.new()
-	fade.source = UIFlowTransitionRef.Source.PRESET
-	fade.preset = UIFlowTransitionType.Type.FADE
-	fade.duration = 0.2
-	exit_transition = fade
 	# Toast
 	$Margin/Scroll/VBox/ToastSection/Buttons/InfoBtn.pressed.connect(func():
 		UIFlowUI.Toast.show_toast("This is an info message.", "info")

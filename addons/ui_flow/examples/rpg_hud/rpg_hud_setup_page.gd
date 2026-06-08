@@ -7,13 +7,7 @@ var _stats: PlayerStats
 
 
 func _ready() -> void:
-	# Fade in
-	var fade := UIFlowTransitionRef.new()
-	fade.source = UIFlowTransitionRef.Source.PRESET
-	fade.preset = UIFlowTransitionType.Type.FADE
-	fade.duration = 0.3
-	enter_transition = fade
-	exit_transition = fade
+	pass
 
 
 func _on_opened(_data: Dictionary = {}) -> void:

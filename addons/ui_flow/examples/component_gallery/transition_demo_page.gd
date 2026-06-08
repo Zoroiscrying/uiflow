@@ -13,12 +13,6 @@ class_name TransitionDemoPage extends UIFlowPage
 
 func _ready() -> void:
 	_back_button.pressed.connect(func(): UIFlow.pop())
-	# Default exit animation
-	var fade := UIFlowTransitionRef.new()
-	fade.source = UIFlowTransitionRef.Source.PRESET
-	fade.preset = UIFlowTransitionType.Type.FADE
-	fade.duration = 0.2
-	exit_transition = fade
 
 
 func _on_created(data: Dictionary = {}) -> void:
