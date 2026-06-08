@@ -84,16 +84,10 @@ func _apply_default_focus() -> void:
 ## Called by Navigator after _on_opened. Plays enter animation.
 func _play_enter_animation() -> void:
 	if enter_transition == null:
-		# No animation — show immediately
-		visible = true
-		modulate.a = 1.0
 		return
 	var effect = enter_transition.get_enter_effect()
 	if effect:
 		effect.play_enter(self)
-	else:
-		visible = true
-		modulate.a = 1.0
 
 
 ## Called by Navigator before removal. Plays exit animation.
