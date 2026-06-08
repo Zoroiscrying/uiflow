@@ -1,5 +1,4 @@
 ## Fade effect — animates node opacity only.
-@tool
 class_name UIFlowFadeEffect extends UIFlowTransitionEffect
 
 ## Target opacity for enter animation.

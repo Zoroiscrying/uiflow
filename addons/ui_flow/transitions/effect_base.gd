@@ -21,7 +21,6 @@
 ## func play_exit(node: Control, callback: Callable) -> void:
 ##     # ... reverse animation ...
 ## [/codeblock]
-@tool
 class_name UIFlowTransitionEffect extends Resource
 
 ## If true, the node starts invisible and the effect controls visibility.

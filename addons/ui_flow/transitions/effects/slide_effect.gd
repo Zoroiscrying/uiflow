@@ -1,5 +1,4 @@
 ## Slide effect — animates node position only.
-@tool
 class_name UIFlowSlideEffect extends UIFlowTransitionEffect
 
 enum Direction { LEFT, RIGHT, UP, DOWN }

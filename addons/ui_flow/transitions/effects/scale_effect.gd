@@ -1,5 +1,4 @@
 ## Scale effect — animates node scale only.
-@tool
 class_name UIFlowScaleEffect extends UIFlowTransitionEffect
 
 ## Start scale (used when from_current=false).

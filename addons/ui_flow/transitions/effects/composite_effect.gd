@@ -12,7 +12,6 @@
 ## ]
 ## composite.duration = 0.3
 ## [/codeblock]
-@tool
 class_name UIFlowCompositeEffect extends UIFlowTransitionEffect
 
 ## Array of UIFlowTransitionEffect to play simultaneously.

@@ -9,7 +9,6 @@
 ## ]
 ## # Slide in first, then fade in
 ## [/codeblock]
-@tool
 class_name UIFlowSequencedEffect extends UIFlowTransitionEffect
 
 ## Array of UIFlowTransitionEffect to play in sequence.
