@@ -1,8 +1,17 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene format=3 uid="uid://bq67kfnu4v672"]
 
-[ext_resource type="Script" path="res://addons/ui_flow/examples/settings_screen/settings_page.gd" id="1"]
+[ext_resource type="Script" uid="uid://dte6fgg2v3f40" path="res://addons/ui_flow/examples/settings_screen/settings_page.gd" id="1"]
+[ext_resource type="Script" path="res://addons/ui_flow/resources/flow_transition_ref.gd" id="2"]
 
-[node name="SettingsPageExample" type="Control"]
+[sub_resource type="Resource" script_class="UIFlowTransitionRef" id="1"]
+script = ExtResource("2")
+source = 1
+preset = 1
+duration = 0.25
+ease_type = 1
+trans_type = 0
+
+[node name="SettingsPageExample" type="Control" unique_id=1271032890]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -10,8 +19,10 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1")
+enter_transition = SubResource("1")
+exit_transition = SubResource("1")
 
-[node name="BG" type="ColorRect" parent="."]
+[node name="BG" type="ColorRect" parent="." unique_id=565258103]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -20,7 +31,7 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.098, 0.098, 0.125, 1)
 
-[node name="Margin" type="MarginContainer" parent="."]
+[node name="Margin" type="MarginContainer" parent="." unique_id=411469426]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -32,120 +43,118 @@ theme_override_constants/margin_top = 40
 theme_override_constants/margin_right = 40
 theme_override_constants/margin_bottom = 40
 
-[node name="Center" type="VBoxContainer" parent="Margin"]
+[node name="Center" type="VBoxContainer" parent="Margin" unique_id=208242345]
 layout_mode = 2
-size_flags_horizontal = 4
-size_flags_vertical = 4
 theme_override_constants/separation = 12
 
-[node name="Title" type="Label" parent="Margin/Center"]
+[node name="Title" type="Label" parent="Margin/Center" unique_id=321080365]
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
 text = "Settings"
 horizontal_alignment = 1
 
-[node name="Sep" type="HSeparator" parent="Margin/Center"]
+[node name="Sep" type="HSeparator" parent="Margin/Center" unique_id=581148872]
 layout_mode = 2
 
-[node name="MasterVolume" type="HBoxContainer" parent="Margin/Center"]
+[node name="MasterVolume" type="HBoxContainer" parent="Margin/Center" unique_id=168310372]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="Label" type="Label" parent="Margin/Center/MasterVolume"]
-layout_mode = 2
+[node name="Label" type="Label" parent="Margin/Center/MasterVolume" unique_id=80834979]
 custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "Master"
 
-[node name="Slider" type="HSlider" parent="Margin/Center/MasterVolume"]
+[node name="Slider" type="HSlider" parent="Margin/Center/MasterVolume" unique_id=1549292033]
 layout_mode = 2
 size_flags_horizontal = 3
 value = 80.0
 
-[node name="Value" type="Label" parent="Margin/Center/MasterVolume"]
-layout_mode = 2
+[node name="Value" type="Label" parent="Margin/Center/MasterVolume" unique_id=1511284048]
 custom_minimum_size = Vector2(48, 0)
+layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "80%"
 
-[node name="MusicVolume" type="HBoxContainer" parent="Margin/Center"]
+[node name="MusicVolume" type="HBoxContainer" parent="Margin/Center" unique_id=871720586]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="Label" type="Label" parent="Margin/Center/MusicVolume"]
-layout_mode = 2
+[node name="Label" type="Label" parent="Margin/Center/MusicVolume" unique_id=2107262426]
 custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "Music"
 
-[node name="Slider" type="HSlider" parent="Margin/Center/MusicVolume"]
+[node name="Slider" type="HSlider" parent="Margin/Center/MusicVolume" unique_id=1435178438]
 layout_mode = 2
 size_flags_horizontal = 3
 value = 70.0
 
-[node name="Value" type="Label" parent="Margin/Center/MusicVolume"]
-layout_mode = 2
+[node name="Value" type="Label" parent="Margin/Center/MusicVolume" unique_id=1010418548]
 custom_minimum_size = Vector2(48, 0)
+layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "70%"
 
-[node name="SFXVolume" type="HBoxContainer" parent="Margin/Center"]
+[node name="SFXVolume" type="HBoxContainer" parent="Margin/Center" unique_id=1544826244]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="Label" type="Label" parent="Margin/Center/SFXVolume"]
-layout_mode = 2
+[node name="Label" type="Label" parent="Margin/Center/SFXVolume" unique_id=952614443]
 custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "SFX"
 
-[node name="Slider" type="HSlider" parent="Margin/Center/SFXVolume"]
+[node name="Slider" type="HSlider" parent="Margin/Center/SFXVolume" unique_id=1840449816]
 layout_mode = 2
 size_flags_horizontal = 3
 value = 90.0
 
-[node name="Value" type="Label" parent="Margin/Center/SFXVolume"]
-layout_mode = 2
+[node name="Value" type="Label" parent="Margin/Center/SFXVolume" unique_id=1790306282]
 custom_minimum_size = Vector2(48, 0)
+layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "90%"
 
-[node name="Sep2" type="HSeparator" parent="Margin/Center"]
+[node name="Sep2" type="HSeparator" parent="Margin/Center" unique_id=1171428740]
 layout_mode = 2
 
-[node name="Fullscreen" type="HBoxContainer" parent="Margin/Center"]
+[node name="Fullscreen" type="HBoxContainer" parent="Margin/Center" unique_id=1810513822]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="Label" type="Label" parent="Margin/Center/Fullscreen"]
-layout_mode = 2
+[node name="Label" type="Label" parent="Margin/Center/Fullscreen" unique_id=319464008]
 custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "Fullscreen"
 
-[node name="CheckButton" type="CheckButton" parent="Margin/Center/Fullscreen"]
+[node name="CheckButton" type="CheckButton" parent="Margin/Center/Fullscreen" unique_id=695618497]
 layout_mode = 2
 
-[node name="VSync" type="HBoxContainer" parent="Margin/Center"]
+[node name="VSync" type="HBoxContainer" parent="Margin/Center" unique_id=30378220]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="Label" type="Label" parent="Margin/Center/VSync"]
-layout_mode = 2
+[node name="Label" type="Label" parent="Margin/Center/VSync" unique_id=1816663691]
 custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "VSync"
 
-[node name="CheckButton" type="CheckButton" parent="Margin/Center/VSync"]
+[node name="CheckButton" type="CheckButton" parent="Margin/Center/VSync" unique_id=1211902423]
 layout_mode = 2
 button_pressed = true
 
-[node name="Sep3" type="HSeparator" parent="Margin/Center"]
+[node name="Sep3" type="HSeparator" parent="Margin/Center" unique_id=92603333]
 layout_mode = 2
 
-[node name="BackButton" type="Button" parent="Margin/Center"]
-layout_mode = 2
+[node name="BackButton" type="Button" parent="Margin/Center" unique_id=1302510369]
 custom_minimum_size = Vector2(200, 40)
+layout_mode = 2
 text = "Back"
 
 [connection signal="pressed" from="Margin/Center/BackButton" to="." method="_on_back_pressed"]

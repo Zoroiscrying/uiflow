@@ -1,7 +1,16 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://addons/ui_flow/examples/main_menu_flow/screens/settings_menu_screen.gd" id="1"]
 [ext_resource type="Script" path="res://addons/ui_flow/core/ui_flow_input_action_node.gd" id="2"]
+[ext_resource type="Script" path="res://addons/ui_flow/resources/flow_transition_ref.gd" id="3"]
+
+[sub_resource type="Resource" script_class="UIFlowTransitionRef" id="1"]
+script = ExtResource("3")
+source = 1
+preset = 1
+duration = 0.25
+ease_type = 1
+trans_type = 0
 
 [node name="SettingsMenuScreen" type="Control"]
 layout_mode = 3
@@ -11,6 +20,8 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1")
+enter_transition = SubResource("1")
+exit_transition = SubResource("1")
 
 [node name="BackAction" type="Node" parent="."]
 script = ExtResource("2")

@@ -8,13 +8,6 @@ var _bindings: Array[UIFlowBindUtils.UIFlowBinding] = []
 
 func _ready() -> void:
 	$Margin/Center/BackButton.pressed.connect(_on_back_pressed)
-	# Fade in/out animation
-	var fade := UIFlowTransitionRef.new()
-	fade.source = UIFlowTransitionRef.Source.PRESET
-	fade.preset = UIFlowTransitionType.Type.FADE
-	fade.duration = 0.25
-	enter_transition = fade
-	exit_transition = fade
 
 
 func _on_back_pressed() -> void:
