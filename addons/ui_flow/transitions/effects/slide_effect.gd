@@ -1,4 +1,4 @@
-## Slide effect — animates node position.
+## Slide effect — animates node position only.
 @tool
 class_name UIFlowSlideEffect extends UIFlowTransitionEffect
 
@@ -9,13 +9,19 @@ enum Direction { LEFT, RIGHT, UP, DOWN }
 @export var direction: Direction = Direction.LEFT
 
 
-func play_enter(node: Control, callback: Callable = Callable()) -> void:
-	var viewport_size: Vector2 = node.get_viewport_rect().size if node.is_inside_tree() else Vector2(1920, 1080)
-	var target_pos: Vector2 = node.position
-	var start_pos: Vector2 = target_pos + _get_offset(viewport_size)
+func _init() -> void:
+	starts_hidden = true
 
-	node.position = start_pos
+
+func play_enter(node: Control, callback: Callable = Callable()) -> void:
+	if not is_instance_valid(node) or not node.is_inside_tree():
+		_on_finished(callback)
+		return
+	# Only touch position — do NOT touch alpha or scale
 	node.visible = true
+	var viewport_size: Vector2 = node.get_viewport_rect().size
+	var target_pos: Vector2 = node.position
+	node.position = target_pos + _get_offset(viewport_size)
 
 	var tween := _create_tween(node)
 	if tween:
@@ -27,7 +33,10 @@ func play_enter(node: Control, callback: Callable = Callable()) -> void:
 
 
 func play_exit(node: Control, callback: Callable = Callable()) -> void:
-	var viewport_size: Vector2 = node.get_viewport_rect().size if node.is_inside_tree() else Vector2(1920, 1080)
+	if not is_instance_valid(node) or not node.is_inside_tree():
+		_on_finished(callback)
+		return
+	var viewport_size: Vector2 = node.get_viewport_rect().size
 	var target_pos: Vector2 = node.position + _get_offset(viewport_size)
 
 	var tween := _create_tween(node)

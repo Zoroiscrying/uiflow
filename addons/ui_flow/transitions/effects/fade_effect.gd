@@ -1,14 +1,19 @@
-## Fade effect — animates node opacity.
+## Fade effect — animates node opacity only.
 @tool
 class_name UIFlowFadeEffect extends UIFlowTransitionEffect
+
+
+func _init() -> void:
+	starts_hidden = true
 
 
 func play_enter(node: Control, callback: Callable = Callable()) -> void:
 	if not is_instance_valid(node) or not node.is_inside_tree():
 		_on_finished(callback)
 		return
-	node.modulate.a = 0.0
+	# Only touch opacity
 	node.visible = true
+	node.modulate.a = 0.0
 	var tween := _create_tween(node)
 	if tween:
 		tween.tween_property(node, "modulate:a", 1.0, duration).set_ease(ease_type).set_trans(trans_type)
