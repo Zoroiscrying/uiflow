@@ -1,19 +1,36 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://addons/ui_flow/examples/dialog_page.gd" id="1"]
 [ext_resource type="Script" path="res://addons/ui_flow/core/ui_flow_input_action_node.gd" id="2"]
 [ext_resource type="Script" path="res://addons/ui_flow/resources/flow_transition_ref.gd" id="3"]
 [ext_resource type="Script" path="res://addons/ui_flow/transitions/effects/fade_effect.gd" id="4"]
+[ext_resource type="Script" path="res://addons/ui_flow/transitions/effects/scale_effect.gd" id="5"]
+[ext_resource type="Script" path="res://addons/ui_flow/transitions/effects/sequenced_effect.gd" id="6"]
 
 [sub_resource type="Resource" id="1"]
 script = ExtResource("4")
-duration = 0.2
+from_current = false
+from_alpha = 0.0
+to_alpha = 1.0
+duration = 0.15
 ease_type = 1
 trans_type = 0
 
 [sub_resource type="Resource" id="2"]
+script = ExtResource("5")
+from_current = true
+to_scale = Vector2(1, 1)
+duration = 0.2
+ease_type = 2
+trans_type = 5
+
+[sub_resource type="Resource" id="3"]
+script = ExtResource("6")
+effects = [SubResource("1"), SubResource("2")]
+
+[sub_resource type="Resource" id="4"]
 script = ExtResource("3")
-enter_effect = SubResource("1")
+enter_effect = SubResource("3")
 exit_effect = SubResource("1")
 
 [node name="DialogPage" type="Control"]
@@ -25,8 +42,8 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1")
 is_modal = true
-enter_transition = SubResource("2")
-exit_transition = SubResource("2")
+enter_transition = SubResource("4")
+exit_transition = SubResource("1")
 
 [node name="ContinueAction" type="Node" parent="."]
 script = ExtResource("2")
