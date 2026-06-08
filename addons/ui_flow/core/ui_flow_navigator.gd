@@ -98,6 +98,10 @@ func push_instance(instance: Control, data: Dictionary = {}) -> Control:
 	if page and page.has_method("_on_opened"):
 		page._on_opened(data)
 
+	# Play enter animation
+	if page:
+		page._play_enter_animation()
+
 	page_pushed.emit(instance.get_script(), data)
 	return instance
 
