@@ -8,20 +8,21 @@
 [ext_resource type="Script" path="res://addons/ui_flow/transitions/effects/sequenced_effect.gd" id="6"]
 
 [sub_resource type="Resource" id="1"]
-script = ExtResource("4")
+script = ExtResource("5")
 from_current = false
-from_alpha = 0.0
-to_alpha = 1.0
-duration = 0.2
-ease_type = 1
+starts_hidden = true
+from_scale = Vector2(0, 0)
+to_scale = Vector2(0.5, 0.5)
+duration = 0.15
+ease_type = 2
 trans_type = 0
 
 [sub_resource type="Resource" id="2"]
 script = ExtResource("5")
-from_current = false
-from_scale = Vector2(0.85, 0.85)
+from_current = true
+starts_hidden = false
 to_scale = Vector2(1, 1)
-duration = 0.25
+duration = 0.2
 ease_type = 2
 trans_type = 5
 
