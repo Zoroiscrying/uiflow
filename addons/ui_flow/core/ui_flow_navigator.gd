@@ -37,10 +37,10 @@ func push(page_class: GDScript, data: Dictionary = {}, page_theme: UIFlowTheme =
 		if current_page and current_page.has_method("_on_hidden"):
 			current_page._on_hidden()
 
-	# Instantiate and add to tree
+	# Instantiate and add to tree (visibility controlled by enter effect)
 	var instance: Control = scene.instantiate()
-	instance.visible = true
-	instance.modulate.a = 1.0
+	instance.visible = false
+	instance.modulate.a = 0.0
 	_container.add_child(instance)
 
 	# Apply theme
