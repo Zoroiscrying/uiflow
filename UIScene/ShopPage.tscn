@@ -5,20 +5,20 @@
 [ext_resource type="Script" path="res://addons/ui_flow/resources/flow_transition_ref.gd" id="3"]
 [ext_resource type="Script" path="res://addons/ui_flow/transitions/effects/fade_effect.gd" id="4"]
 [ext_resource type="Script" path="res://addons/ui_flow/transitions/effects/scale_effect.gd" id="5"]
-[ext_resource type="Script" path="res://addons/ui_flow/transitions/effects/composite_effect.gd" id="6"]
+[ext_resource type="Script" path="res://addons/ui_flow/transitions/effects/sequenced_effect.gd" id="6"]
 
 [sub_resource type="Resource" id="1"]
-script = ExtResource("4")
-duration = 0.25
+script = ExtResource("5")
+from_scale = Vector2(0.8, 0.8)
+duration = 0.2
 ease_type = 2
 trans_type = 5
 
 [sub_resource type="Resource" id="2"]
-script = ExtResource("5")
-from_scale = Vector2(0.8, 0.8)
-duration = 0.25
-ease_type = 2
-trans_type = 5
+script = ExtResource("4")
+duration = 0.15
+ease_type = 1
+trans_type = 0
 
 [sub_resource type="Resource" id="3"]
 script = ExtResource("6")
