@@ -4,6 +4,9 @@ class_name UIFlowFadeEffect extends UIFlowTransitionEffect
 
 
 func play_enter(node: Control, callback: Callable = Callable()) -> void:
+	if not is_instance_valid(node) or not node.is_inside_tree():
+		_on_finished(callback)
+		return
 	node.modulate.a = 0.0
 	node.visible = true
 	var tween := _create_tween(node)
@@ -16,6 +19,9 @@ func play_enter(node: Control, callback: Callable = Callable()) -> void:
 
 
 func play_exit(node: Control, callback: Callable = Callable()) -> void:
+	if not is_instance_valid(node) or not node.is_inside_tree():
+		_on_finished(callback)
+		return
 	var tween := _create_tween(node)
 	if tween:
 		tween.tween_property(node, "modulate:a", 0.0, duration).set_ease(ease_type).set_trans(trans_type)

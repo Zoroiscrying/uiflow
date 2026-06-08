@@ -7,11 +7,16 @@ class_name UIFlowScaleEffect extends UIFlowTransitionEffect
 
 
 func play_enter(node: Control, callback: Callable = Callable()) -> void:
+	if not is_instance_valid(node) or not node.is_inside_tree():
+		_on_finished(callback)
+		return
 	node.scale = from_scale
 	node.modulate.a = 0.0
 	node.visible = true
 
-	var tween := _create_tween(node).set_parallel(true)
+	var tween := _create_tween(node)
+	if tween:
+		tween.set_parallel(true)
 	if tween:
 		tween.tween_property(node, "scale", Vector2.ONE, duration).set_ease(ease_type).set_trans(trans_type)
 		tween.tween_property(node, "modulate:a", 1.0, duration * 0.5)
@@ -23,7 +28,12 @@ func play_enter(node: Control, callback: Callable = Callable()) -> void:
 
 
 func play_exit(node: Control, callback: Callable = Callable()) -> void:
-	var tween := _create_tween(node).set_parallel(true)
+	if not is_instance_valid(node) or not node.is_inside_tree():
+		_on_finished(callback)
+		return
+	var tween := _create_tween(node)
+	if tween:
+		tween.set_parallel(true)
 	if tween:
 		tween.tween_property(node, "scale", from_scale, duration).set_ease(ease_type).set_trans(trans_type)
 		tween.tween_property(node, "modulate:a", 0.0, duration * 0.5)

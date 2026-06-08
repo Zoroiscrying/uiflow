@@ -42,14 +42,20 @@ func _play_sequence(node: Control, callback: Callable, index: int, is_enter: boo
 		_on_finished(callback)
 		return
 
+	if not is_instance_valid(node) or not node.is_inside_tree():
+		_on_finished(callback)
+		return
+
 	var effect = effects[index]
 	if effect == null or not (effect is UIFlowTransitionEffect):
-		# Skip null entries
 		_advance(node, callback, index, is_enter)
 		return
 
 	var next_callback := func():
-		_advance(node, callback, index, is_enter)
+		if is_instance_valid(node):
+			_advance(node, callback, index, is_enter)
+		else:
+			_on_finished(callback)
 
 	if is_enter:
 		effect.play_enter(node, next_callback)

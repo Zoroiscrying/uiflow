@@ -49,21 +49,24 @@ func play_exit(node: Control, callback: Callable = Callable()) -> void:
 
 ## Call this when the animation finishes.
 func _on_finished(callback: Callable) -> void:
+	if not callback.is_valid():
+		return
 	if delay > 0.0:
 		var tree: SceneTree = Engine.get_main_loop() as SceneTree
 		if tree:
 			tree.create_timer(delay).timeout.connect(func():
 				if callback.is_valid():
 					callback.call()
-			)
+			, CONNECT_ONE_SHOT)
 	else:
-		if callback.is_valid():
-			callback.call()
+		callback.call()
 
 
 ## Helper: create a tween on the node's tree.
 func _create_tween(node: Node) -> Tween:
-	var tree: SceneTree = node.get_tree()
+	if not is_instance_valid(node):
+		return null
+	var tree: SceneTree = node.get_tree() if node.is_inside_tree() else null
 	if tree == null:
 		tree = Engine.get_main_loop() as SceneTree
 	return tree.create_tween() if tree else null
