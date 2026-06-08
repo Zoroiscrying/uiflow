@@ -40,11 +40,10 @@ func _update_prompts() -> void:
 func _add_prompt(text: String) -> void:
 	var label := Label.new()
 	label.text = text
-	label.add_theme_font_size_override("font_size", 14)
+	label.add_theme_font_size_override("font_size", 18)
 	_prompt_bar.add_child(label)
-# Esc handling is in _on_back() — managed by InputManager
+
 
 ## When MainHUD is topmost and Esc is pressed, open Pause menu.
 func _on_back() -> void:
-	if not UIFlow.has_page(PausePage):
-		UIFlow.push(PausePage)
+	pass
