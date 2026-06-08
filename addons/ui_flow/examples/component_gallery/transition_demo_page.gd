@@ -23,16 +23,59 @@ func _on_created(data: Dictionary = {}) -> void:
 	var trans = data.get("enter_trans", Tween.TRANS_LINEAR)
 
 	if preset != UIFlowTransitionType.Type.NONE:
-		var ref := UIFlowTransitionRef.new()
-		ref.source = UIFlowTransitionRef.Source.PRESET
-		ref.preset = preset
-		ref.duration = duration
-		ref.ease_type = ease
-		ref.trans_type = trans
-		enter_transition = ref
+		var effect := _create_effect(preset, duration, ease, trans)
+		if effect:
+			var ref := UIFlowTransitionRef.new()
+			ref.enter_effect = effect
+			enter_transition = ref
 
 	var trans_name: String = data.get("transition_name", "Unknown")
 	$Center/NameLabel.text = "Transition: %s" % trans_name
+
+
+func _create_effect(preset: int, duration: float, ease: int, trans: int) -> UIFlowTransitionEffect:
+	match preset:
+		UIFlowTransitionType.Type.FADE:
+			var e := UIFlowFadeEffect.new()
+			e.duration = duration
+			e.ease_type = ease
+			e.trans_type = trans
+			return e
+		UIFlowTransitionType.Type.SCALE:
+			var e := UIFlowScaleEffect.new()
+			e.duration = duration
+			e.ease_type = ease
+			e.trans_type = trans
+			return e
+		UIFlowTransitionType.Type.SLIDE_LEFT:
+			var e := UIFlowSlideEffect.new()
+			e.direction = UIFlowSlideEffect.Direction.LEFT
+			e.duration = duration
+			e.ease_type = ease
+			e.trans_type = trans
+			return e
+		UIFlowTransitionType.Type.SLIDE_RIGHT:
+			var e := UIFlowSlideEffect.new()
+			e.direction = UIFlowSlideEffect.Direction.RIGHT
+			e.duration = duration
+			e.ease_type = ease
+			e.trans_type = trans
+			return e
+		UIFlowTransitionType.Type.SLIDE_UP:
+			var e := UIFlowSlideEffect.new()
+			e.direction = UIFlowSlideEffect.Direction.UP
+			e.duration = duration
+			e.ease_type = ease
+			e.trans_type = trans
+			return e
+		UIFlowTransitionType.Type.SLIDE_DOWN:
+			var e := UIFlowSlideEffect.new()
+			e.direction = UIFlowSlideEffect.Direction.DOWN
+			e.duration = duration
+			e.ease_type = ease
+			e.trans_type = trans
+			return e
+	return UIFlowFadeEffect.new()
 
 
 func _on_opened(_data: Dictionary = {}) -> void:
