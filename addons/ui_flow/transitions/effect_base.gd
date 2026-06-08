@@ -28,6 +28,10 @@ class_name UIFlowTransitionEffect extends Resource
 ## If false, the node starts visible immediately.
 @export var starts_hidden: bool = true
 
+## If true, animate from the node's current value (continues where previous effect left off).
+## If false, animate from a configured start value (resets to specific state).
+@export var from_current: bool = false
+
 ## Animation duration in seconds.
 @export_range(0.0, 2.0, 0.05) var duration: float = 0.3
 

@@ -2,8 +2,11 @@
 @tool
 class_name UIFlowScaleEffect extends UIFlowTransitionEffect
 
-## Scale start value (enter) or end value (exit).
+## Start scale (used when from_current=false).
 @export var from_scale: Vector2 = Vector2.ZERO
+
+## Target scale for enter animation.
+@export var to_scale: Vector2 = Vector2.ONE
 
 
 func _init() -> void:
@@ -14,15 +17,15 @@ func play_enter(node: Control, callback: Callable = Callable()) -> void:
 	if not is_instance_valid(node) or not node.is_inside_tree():
 		_on_finished(callback)
 		return
-	# Only touch scale — do NOT touch alpha
 	node.visible = true
-	node.scale = from_scale
+	if not from_current:
+		node.scale = from_scale
 	var tween := _create_tween(node)
 	if tween:
-		tween.tween_property(node, "scale", Vector2.ONE, duration).set_ease(ease_type).set_trans(trans_type)
+		tween.tween_property(node, "scale", to_scale, duration).set_ease(ease_type).set_trans(trans_type)
 		tween.finished.connect(func(): _on_finished(callback), CONNECT_ONE_SHOT)
 	else:
-		node.scale = Vector2.ONE
+		node.scale = to_scale
 		_on_finished(callback)
 
 
