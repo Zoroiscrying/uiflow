@@ -58,12 +58,12 @@ func push(page_class: GDScript, data: Dictionary = {}, page_theme: UIFlowTheme =
 	if page and page.has_method("_on_created"):
 		page._on_created(data)
 
-	# Play enter animation (from @export config)
-	if page:
-		page._play_enter_animation()
-
 	if page and page.has_method("_on_opened"):
 		page._on_opened(data)
+
+	# Play enter animation AFTER _on_opened (so _ready + _on_opened can set it up)
+	if page:
+		page._play_enter_animation()
 
 	# Auto-focus (from @export default_focus_path)
 	if page:
