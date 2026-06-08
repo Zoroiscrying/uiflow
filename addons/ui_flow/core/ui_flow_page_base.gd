@@ -81,22 +81,22 @@ func _apply_default_focus() -> void:
 		UIFlow.set_default_focus(focus_node)
 
 
-## Called by Navigator before _on_opened. Plays enter animation.
+## Called by Navigator after _on_opened. Plays enter animation.
 func _play_enter_animation() -> void:
-	if enter_transition == null or enter_transition.source == UIFlowTransitionRef.Source.NONE:
+	if enter_transition == null:
 		return
-	var transition: UIFlowTransitionBase = enter_transition.create_instance()
-	if transition:
-		transition.play_enter(self)
+	var effect = enter_transition.get_enter_effect()
+	if effect:
+		effect.play_enter(self)
 
 
 ## Called by Navigator before removal. Plays exit animation.
 func _play_exit_animation() -> void:
-	if exit_transition == null or exit_transition.source == UIFlowTransitionRef.Source.NONE:
+	if exit_transition == null:
 		return
-	var transition: UIFlowTransitionBase = exit_transition.create_instance()
-	if transition:
-		transition.play_exit(self)
+	var effect = exit_transition.get_exit_effect()
+	if effect:
+		effect.play_exit(self)
 
 
 # ── Input Action Access ──────────────────────────────────────────────────────

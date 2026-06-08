@@ -1,23 +1,27 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://addons/ui_flow/examples/component_gallery/gallery_page.gd" id="1"]
 [ext_resource type="Script" path="res://addons/ui_flow/resources/flow_transition_ref.gd" id="2"]
+[ext_resource type="Script" path="res://addons/ui_flow/transitions/effects/slide_effect.gd" id="3"]
+[ext_resource type="Script" path="res://addons/ui_flow/transitions/effects/fade_effect.gd" id="4"]
 
 [sub_resource type="Resource" id="1"]
-script = ExtResource("2")
-source = 1
-preset = 4
+script = ExtResource("3")
+direction = 2
 duration = 0.3
 ease_type = 2
 trans_type = 5
 
 [sub_resource type="Resource" id="2"]
-script = ExtResource("2")
-source = 1
-preset = 1
+script = ExtResource("4")
 duration = 0.2
 ease_type = 0
 trans_type = 0
+
+[sub_resource type="Resource" id="3"]
+script = ExtResource("2")
+enter_effect = SubResource("1")
+exit_effect = SubResource("2")
 
 [node name="GalleryPage" type="Control"]
 layout_mode = 3
@@ -27,8 +31,8 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1")
-enter_transition = SubResource("1")
-exit_transition = SubResource("2")
+enter_transition = SubResource("3")
+exit_transition = SubResource("3")
 
 [node name="BG" type="ColorRect" parent="."]
 layout_mode = 1

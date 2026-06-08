@@ -1,15 +1,18 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://addons/ui_flow/examples/component_gallery/transition_demo_page.gd" id="1"]
 [ext_resource type="Script" path="res://addons/ui_flow/resources/flow_transition_ref.gd" id="2"]
+[ext_resource type="Script" path="res://addons/ui_flow/transitions/effects/fade_effect.gd" id="3"]
 
 [sub_resource type="Resource" id="1"]
-script = ExtResource("2")
-source = 1
-preset = 1
+script = ExtResource("3")
 duration = 0.2
 ease_type = 0
 trans_type = 0
+
+[sub_resource type="Resource" id="2"]
+script = ExtResource("2")
+exit_effect = SubResource("1")
 
 [node name="TransitionDemoPage" type="Control"]
 layout_mode = 3
@@ -19,7 +22,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1")
-exit_transition = SubResource("1")
+exit_transition = SubResource("2")
 
 [node name="BG" type="ColorRect" parent="."]
 layout_mode = 1
