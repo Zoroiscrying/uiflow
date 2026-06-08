@@ -4,7 +4,7 @@
 [ext_resource type="Script" path="res://addons/ui_flow/core/ui_flow_input_action_node.gd" id="2"]
 [ext_resource type="Script" path="res://addons/ui_flow/resources/flow_transition_ref.gd" id="3"]
 
-[sub_resource type="Resource" script_class="UIFlowTransitionRef" id="1"]
+[sub_resource type="Resource" id="1"]
 script = ExtResource("3")
 source = 1
 preset = 1

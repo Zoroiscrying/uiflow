@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://dte6fgg2v3f40" path="res://addons/ui_flow/examples/settings_screen/settings_page.gd" id="1"]
 [ext_resource type="Script" path="res://addons/ui_flow/resources/flow_transition_ref.gd" id="2"]
 
-[sub_resource type="Resource" script_class="UIFlowTransitionRef" id="1"]
+[sub_resource type="Resource" id="1"]
 script = ExtResource("2")
 source = 1
 preset = 1
