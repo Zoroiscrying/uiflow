@@ -6,6 +6,16 @@ var _game_events: GameEvents
 var _stats: PlayerStats
 
 
+func _ready() -> void:
+	# Fade in
+	var fade := UIFlowTransitionRef.new()
+	fade.source = UIFlowTransitionRef.Source.PRESET
+	fade.preset = UIFlowTransitionType.Type.FADE
+	fade.duration = 0.3
+	enter_transition = fade
+	exit_transition = fade
+
+
 func _on_opened(_data: Dictionary = {}) -> void:
 	# Create event bus
 	_game_events = GameEvents.new()
@@ -16,7 +26,7 @@ func _on_opened(_data: Dictionary = {}) -> void:
 	_stats = PlayerStats.new()
 
 	# Push HUD
-	var hud: HUDPage = UIFlow.push(HUDPage, {}) as HUDPage
+	var hud: HUDPage = UIFlow.push(HUDPage) as HUDPage
 	hud.stats = _stats
 	hud.game_events = _game_events
 
@@ -44,11 +54,10 @@ func _on_opened(_data: Dictionary = {}) -> void:
 	)
 
 
-## Handle back button — push PausePage instead of popping.
 func _on_back() -> void:
 	if UIFlow.has_page(PausePage):
 		return
-	UIFlow.push(PausePage, {})
+	UIFlow.push(PausePage)
 
 
 func _on_closed() -> void:

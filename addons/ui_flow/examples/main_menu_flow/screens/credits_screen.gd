@@ -1,4 +1,4 @@
-## Credits screen - simple page with back navigation.
+## Credits screen — simple page with back navigation.
 class_name CreditsScreen extends UIFlowPage
 
 @onready var _back_button: Button = $Center/BackButton
@@ -6,9 +6,20 @@ class_name CreditsScreen extends UIFlowPage
 
 func _ready() -> void:
 	_back_button.pressed.connect(_on_back_pressed)
+	# Fade in/out
+	var fade := UIFlowTransitionRef.new()
+	fade.source = UIFlowTransitionRef.Source.PRESET
+	fade.preset = UIFlowTransitionType.Type.FADE
+	fade.duration = 0.25
+	enter_transition = fade
+	exit_transition = fade
 
 
 func _on_back_pressed() -> void:
+	UIFlow.pop()
+
+
+func _on_back() -> void:
 	UIFlow.pop()
 
 
