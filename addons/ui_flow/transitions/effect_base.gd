@@ -24,6 +24,10 @@
 @tool
 class_name UIFlowTransitionEffect extends Resource
 
+## If true, the node starts invisible and the effect controls visibility.
+## If false, the node starts visible immediately.
+@export var starts_hidden: bool = true
+
 ## Animation duration in seconds.
 @export_range(0.0, 2.0, 0.05) var duration: float = 0.3
 

@@ -39,15 +39,14 @@ func push(page_class: GDScript, data: Dictionary = {}, page_theme: UIFlowTheme =
 
 	# Instantiate and add to tree
 	var instance: Control = scene.instantiate()
-	# If page has enter_transition, start invisible (effect controls visibility)
-	# Otherwise, show immediately
-	var has_animation: bool = false
-	if instance is UIFlowPage and instance.enter_transition != null:
+	# Check if the enter effect wants the node to start hidden
+	var starts_hidden := false
+	if instance is UIFlowPage and instance.enter_transition:
 		var effect = instance.enter_transition.get_enter_effect()
-		if effect:
-			has_animation = true
-	instance.visible = not has_animation
-	instance.modulate.a = 0.0 if has_animation else 1.0
+		if effect and effect.starts_hidden:
+			starts_hidden = true
+	instance.visible = not starts_hidden
+	instance.modulate.a = 0.0 if starts_hidden else 1.0
 	_container.add_child(instance)
 
 	# Apply theme
