@@ -5,10 +5,6 @@ class_name SettingsMenuScreen extends UIFlowPage
 @onready var _back_button: Button = $Center/BackButton
 
 
-func _ready() -> void:
-	_back_button.pressed.connect(_on_back_pressed)
-
-
 func _on_back_pressed() -> void:
 	UIFlow.pop()
 
