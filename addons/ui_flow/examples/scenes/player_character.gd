@@ -5,9 +5,13 @@ extends CharacterBody3D
 const SPEED := 5.0
 const JUMP_VELOCITY := 4.5
 const MOUSE_SENSITIVITY := 0.003
+const ATTACK_RANGE := 2.5
+const ATTACK_COOLDOWN := 0.4
 
 ## Optional stats resource (used by ARPG example).
 var stats: Resource = null
+
+var _attack_timer: float = 0.0
 
 var _yaw: float = 0.0
 var _pitch: float = -0.5
@@ -45,6 +49,13 @@ func _physics_process(delta: float) -> void:
 	if Input.is_action_just_pressed("ui_accept") and is_on_floor():
 		velocity.y = JUMP_VELOCITY
 
+	# Attack cooldown
+	_attack_timer = maxf(_attack_timer - delta, 0.0)
+
+	# Attack input (left click or E)
+	if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) or Input.is_key_pressed(KEY_E):
+		_attack()
+
 	# WASD input
 	var input_dir := Vector2.ZERO
 	if Input.is_key_pressed(KEY_W) or Input.is_key_pressed(KEY_UP):
@@ -72,3 +83,38 @@ func _physics_process(delta: float) -> void:
 		velocity.z = move_toward(velocity.z, 0, SPEED * 0.2)
 
 	move_and_slide()
+
+
+func _attack() -> void:
+	if _attack_timer > 0:
+		return
+	_attack_timer = ATTACK_COOLDOWN
+
+	var attack_power: int = 10
+	if stats and "attack" in stats:
+		attack_power = stats.attack
+
+	var enemies := get_tree().get_nodes_in_group("enemies")
+	for enemy in enemies:
+		if not is_instance_valid(enemy):
+			continue
+		var dist := global_position.distance_to(enemy.global_position)
+		if dist <= ATTACK_RANGE:
+			if enemy.has_method("take_damage"):
+				var enemy_stats = enemy.get("stats")
+				if enemy_stats and enemy_stats.is_alive():
+					enemy.take_damage(attack_power)
+					# Show damage number on HUD
+					var hud := UIFlow.get_page(ARPGHUDPage) as ARPGHUDPage
+					if hud:
+						hud.show_damage_number(attack_power, enemy.global_position + Vector3(0, 2, 0))
+
+
+func take_damage(amount: float) -> void:
+	if stats and "health" in stats:
+		stats.health -= amount
+		var hud := UIFlow.get_page(ARPGHUDPage) as ARPGHUDPage
+		if hud:
+			hud.show_damage_flash()
+		if stats.health <= 0:
+			print("Player died!")
