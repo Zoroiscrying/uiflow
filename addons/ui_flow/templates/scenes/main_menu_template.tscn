@@ -1,0 +1,79 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://addons/ui_flow/templates/main_menu_template.gd" id="1"]
+[ext_resource type="Script" path="res://addons/ui_flow/resources/flow_transition_ref.gd" id="2"]
+
+[sub_resource type="Resource" id="1"]
+script = ExtResource("2")
+enter_effect = null
+exit_effect = null
+
+[node name="MainMenuTemplate" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1")
+enter_transition = SubResource("1")
+
+[node name="BG" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.1, 0.1, 0.13, 1)
+
+[node name="Center" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -150.0
+offset_top = -180.0
+offset_right = 150.0
+offset_bottom = 180.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 14
+alignment = 1
+
+[node name="Title" type="Label" parent="Center"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 36
+text = "Game Title"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="Center"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Press Start"
+horizontal_alignment = 1
+modulate = Color(1, 1, 1, 0.5)
+
+[node name="Spacer" type="Control" parent="Center"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 20)
+
+[node name="PlayButton" type="Button" parent="Center"]
+layout_mode = 2
+custom_minimum_size = Vector2(250, 44)
+theme_override_font_sizes/font_size = 16
+text = "Play"
+
+[node name="SettingsButton" type="Button" parent="Center"]
+layout_mode = 2
+custom_minimum_size = Vector2(250, 44)
+theme_override_font_sizes/font_size = 16
+text = "Settings"
+
+[node name="QuitButton" type="Button" parent="Center"]
+layout_mode = 2
+custom_minimum_size = Vector2(250, 44)
+theme_override_font_sizes/font_size = 16
+text = "Quit"

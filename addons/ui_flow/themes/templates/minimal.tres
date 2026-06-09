@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="UIFlowTheme" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://addons/ui_flow/resources/flow_theme.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+primary = Color(0.2, 0.2, 0.2, 1)
+secondary = Color(0.5, 0.5, 0.5, 1)
+accent = Color(0.0, 0.5, 1.0, 1)
+error = Color(0.9, 0.2, 0.2, 1)
+warning = Color(0.9, 0.7, 0.0, 1)
+success = Color(0.2, 0.7, 0.3, 1)
+info = Color(0.3, 0.5, 0.8, 1)
+background = Color(0.95, 0.95, 0.95, 1)
+surface = Color(1, 1, 1, 1)
+on_primary = Color(1, 1, 1, 1)
+on_secondary = Color(1, 1, 1, 1)
+on_surface = Color(0.1, 0.1, 0.1, 1)
+font_size_title = 28
+font_size_heading = 18
+font_size_body = 14
+font_size_small = 12
+spacing_xs = 4
+spacing_sm = 8
+spacing_md = 12
+spacing_lg = 20
+spacing_xl = 32
+radius_sm = 0
+radius_md = 0
+radius_lg = 0
