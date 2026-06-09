@@ -211,6 +211,38 @@ func sequencer() -> UIFlowSequencer:
 	return UIFlowAnimator.sequencer()
 
 
+# ── Animation presets ────────────────────────────────────────────────────────
+
+const _AnimPresets = preload("res://addons/ui_flow/core/ui_flow_anim_presets.gd")
+
+func anim_hover_enter(node: Control) -> Tween:
+	return _AnimPresets.hover_scale(node)
+
+func anim_hover_exit(node: Control) -> Tween:
+	return _AnimPresets.hover_reset(node)
+
+func anim_press_down(node: Control) -> Tween:
+	return _AnimPresets.press_down(node)
+
+func anim_press_up(node: Control) -> Tween:
+	return _AnimPresets.press_up(node)
+
+func anim_shake(node: Control, intensity: float = 8.0) -> Tween:
+	return _AnimPresets.shake(node, intensity)
+
+func anim_pulse(node: Control) -> Tween:
+	return _AnimPresets.pulse(node)
+
+func anim_fade_in(node: Control, duration: float = 0.2) -> Tween:
+	return _AnimPresets.fade_in(node, duration)
+
+func anim_fade_out(node: Control, duration: float = 0.2) -> Tween:
+	return _AnimPresets.fade_out(node, duration)
+
+func anim_stagger_fade(parent: Node) -> UIFlowSequencer:
+	return _AnimPresets.stagger_fade_in(parent)
+
+
 # ── Binding shortcuts ────────────────────────────────────────────────────────
 
 func bind_signal(node: Node, prop_name: StringName, sig: Signal) -> UIFlowBindUtils.UIFlowBinding:
