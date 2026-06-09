@@ -1,8 +1,5 @@
 ## UIFlowTransitionAnimPlayer — plays a Godot Animation resource as a transition.
-##
-## Wraps Godot's AnimationPlayer to play .tres Animation files
-## as UIFlow page enter/exit transitions.
-class_name UIFlowTransitionAnimPlayer extends UIFlowTransitionBase
+class_name UIFlowTransitionAnimPlayer extends UIFlowTransitionEffect
 
 var _animation: Animation
 
@@ -13,14 +10,12 @@ func _init(anim: Animation = null) -> void:
 
 func play_enter(node: Control, callback: Callable = Callable()) -> void:
 	if _animation == null:
-		if callback.is_valid():
-			callback.call()
+		_on_finished(callback)
 		return
 
 	node.visible = true
 	node.modulate.a = 1.0
 
-	# Create an AnimationPlayer on the node
 	var player := AnimationPlayer.new()
 	player.name = "__uiflow_transition_player"
 	node.add_child(player)
@@ -32,16 +27,13 @@ func play_enter(node: Control, callback: Callable = Callable()) -> void:
 	player.play("transition")
 	player.animation_finished.connect(func(_anim_name: String):
 		player.queue_free()
-		if callback.is_valid():
-			callback.call()
+		_on_finished(callback)
 	, CONNECT_ONE_SHOT)
 
 
 func play_exit(node: Control, callback: Callable = Callable()) -> void:
-	# For exit, play the animation in reverse
 	if _animation == null:
-		if callback.is_valid():
-			callback.call()
+		_on_finished(callback)
 		return
 
 	var player := AnimationPlayer.new()
@@ -55,6 +47,5 @@ func play_exit(node: Control, callback: Callable = Callable()) -> void:
 	player.play_backwards("transition")
 	player.animation_finished.connect(func(_anim_name: String):
 		player.queue_free()
-		if callback.is_valid():
-			callback.call()
+		_on_finished(callback)
 	, CONNECT_ONE_SHOT)

@@ -110,16 +110,22 @@ func _create_page_files(class_name_str: String) -> void:
 	var script_content := """## %s — UIFlow page.
 extends UIFlowPage
 
-func _on_enter(_data: Dictionary = {}) -> void:
+func _on_created(_data: Dictionary = {}) -> void:
 	pass
 
-func _on_exit() -> void:
+func _on_opened(_data: Dictionary = {}) -> void:
 	pass
 
-func _on_pause() -> void:
+func _on_hidden() -> void:
 	pass
 
-func _on_resume() -> void:
+func _on_shown() -> void:
+	pass
+
+func _on_closed() -> void:
+	pass
+
+func _on_destroyed() -> void:
 	pass
 """ % class_name_str
 

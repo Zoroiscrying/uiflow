@@ -8,28 +8,28 @@ class_name UIFlowUtils
 
 ## Iterate over all direct children of a node.
 ## [codeblock]
-## UIFlowUtils.ForEachChild($Container, func(child, index):
+## UIFlowUtils.for_each_child($Container, func(child, index):
 ##     child.visible = index < 5
 ## )
 ## [/codeblock]
-static func ForEachChild(node: Node, callback: Callable) -> void:
+static func for_each_child(node: Node, callback: Callable) -> void:
 	for i in range(node.get_child_count()):
 		var child := node.get_child(i)
 		callback.call(child, i)
 
 
 ## Iterate over all descendants (recursive).
-static func ForEachDescendant(node: Node, callback: Callable) -> void:
+static func for_each_descendant(node: Node, callback: Callable) -> void:
 	for child in node.get_children():
 		callback.call(child)
-		ForEachDescendant(child, callback)
+		for_each_descendant(child, callback)
 
 
 ## Find first child matching a predicate.
 ## [codeblock]
-## var btn = UIFlowUtils.FindChild($Container, func(child): return child is Button)
+## var btn = UIFlowUtils.find_child($Container, func(child): return child is Button)
 ## [/codeblock]
-static func FindChild(node: Node, predicate: Callable) -> Node:
+static func find_child(node: Node, predicate: Callable) -> Node:
 	for child in node.get_children():
 		if predicate.call(child):
 			return child
@@ -37,7 +37,7 @@ static func FindChild(node: Node, predicate: Callable) -> Node:
 
 
 ## Find all children matching a predicate.
-static func FindChildren(node: Node, predicate: Callable) -> Array:
+static func find_children(node: Node, predicate: Callable) -> Array:
 	var result: Array = []
 	for child in node.get_children():
 		if predicate.call(child):
@@ -46,17 +46,17 @@ static func FindChildren(node: Node, predicate: Callable) -> Array:
 
 
 ## Find first child by type.
-static func FindChildByType(node: Node, type: Variant) -> Node:
-	return FindChild(node, func(child): return is_instance_of(child, type))
+static func find_childByType(node: Node, type: Variant) -> Node:
+	return find_child(node, func(child): return is_instance_of(child, type))
 
 
 ## Find all children by type.
-static func FindChildrenByType(node: Node, type: Variant) -> Array:
-	return FindChildren(node, func(child): return is_instance_of(child, type))
+static func find_childrenByType(node: Node, type: Variant) -> Array:
+	return find_children(node, func(child): return is_instance_of(child, type))
 
 
 ## Find child by name (direct child only).
-static func FindChildByName(node: Node, child_name: String) -> Node:
+static func find_childByName(node: Node, child_name: String) -> Node:
 	for child in node.get_children():
 		if child.name == child_name:
 			return child
@@ -64,17 +64,17 @@ static func FindChildByName(node: Node, child_name: String) -> Node:
 
 
 ## Find descendant by name (recursive).
-static func FindDescendantByName(node: Node, desc_name: String) -> Node:
+static func find_descendant_by_name(node: Node, desc_name: String) -> Node:
 	for child in node.get_children():
 		if child.name == desc_name:
 			return child
-		var found := FindDescendantByName(child, desc_name)
+		var found := find_descendant_by_name(child, desc_name)
 		if found:
 			return found
 	return null
 
 
-# ── ReserveChildren ──────────────────────────────────────────────────────────
+# ── reserve_children ──────────────────────────────────────────────────────────
 
 ## Ensure a parent has exactly [code]count[/code] children.
 ## Creates or frees children as needed using [code]template[/code] scene.
@@ -82,11 +82,11 @@ static func FindDescendantByName(node: Node, desc_name: String) -> Node:
 ##
 ## [codeblock]
 ## # Ensure inventory grid has exactly 20 slots
-## UIFlowUtils.ReserveChildren($Grid, 20, slot_scene, func(slot, i):
+## UIFlowUtils.reserve_children($Grid, 20, slot_scene, func(slot, i):
 ##     slot.SetItem(inventory[i])
 ## )
 ## [/codeblock]
-static func ReserveChildren(parent: Node, count: int, template: PackedScene, on_update: Callable = Callable()) -> void:
+static func reserve_children(parent: Node, count: int, template: PackedScene, on_update: Callable = Callable()) -> void:
 	var current_count: int = parent.get_child_count()
 
 	# Create missing children
@@ -107,13 +107,13 @@ static func ReserveChildren(parent: Node, count: int, template: PackedScene, on_
 			on_update.call(child, i)
 
 
-## Same as ReserveChildren but uses a factory function instead of a scene.
+## Same as reserve_children but uses a factory function instead of a scene.
 ## [codeblock]
-## UIFlowUtils.ReserveChildrenFactory($List, 10, func(): return Label.new(), func(label, i):
+## UIFlowUtils.reserve_childrenFactory($List, 10, func(): return Label.new(), func(label, i):
 ##     label.text = "Item %d" % i
 ## )
 ## [/codeblock]
-static func ReserveChildrenFactory(parent: Node, count: int, factory: Callable, on_update: Callable = Callable()) -> void:
+static func reserve_childrenFactory(parent: Node, count: int, factory: Callable, on_update: Callable = Callable()) -> void:
 	var current_count: int = parent.get_child_count()
 
 	while parent.get_child_count() < count:
@@ -135,44 +135,44 @@ static func ReserveChildrenFactory(parent: Node, count: int, factory: Callable, 
 
 ## Set visibility on multiple nodes.
 ## [codeblock]
-## UIFlowUtils.SetVisible([$HP, $MP, $Gold], true)
+## UIFlowUtils.set_visible([$HP, $MP, $Gold], true)
 ## [/codeblock]
-static func SetVisible(nodes: Array, visible: bool) -> void:
+static func set_visible(nodes: Array, visible: bool) -> void:
 	for node in nodes:
 		if is_instance_valid(node) and node is Control:
 			node.visible = visible
 
 
 ## Set modulate alpha on multiple nodes.
-static func SetAlpha(nodes: Array, alpha: float) -> void:
+static func set_alpha(nodes: Array, alpha: float) -> void:
 	for node in nodes:
 		if is_instance_valid(node) and node is CanvasItem:
 			node.modulate.a = alpha
 
 
 ## Enable or disable multiple buttons.
-static func SetButtonsEnabled(buttons: Array, enabled: bool) -> void:
+static func set_buttons_enabled(buttons: Array, enabled: bool) -> void:
 	for btn in buttons:
 		if is_instance_valid(btn) and btn is BaseButton:
 			btn.disabled = not enabled
 
 
 ## Set text on multiple labels.
-static func SetTexts(labels: Array, texts: Array) -> void:
+static func set_texts(labels: Array, texts: Array) -> void:
 	for i in range(min(labels.size(), texts.size())):
 		if is_instance_valid(labels[i]) and labels[i] is Label:
 			labels[i].text = str(texts[i])
 
 
 ## Remove all children from a node.
-static func ClearChildren(parent: Node) -> void:
+static func clear_children(parent: Node) -> void:
 	for child in parent.get_children():
 		parent.remove_child(child)
 		child.queue_free()
 
 
 ## Get all children as a typed array.
-static func GetChildrenOfType(node: Node, type: Variant) -> Array:
+static func get_children_of_type(node: Node, type: Variant) -> Array:
 	var result: Array = []
 	for child in node.get_children():
 		if is_instance_of(child, type):

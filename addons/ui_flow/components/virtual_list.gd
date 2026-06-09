@@ -78,10 +78,6 @@ func _on_scroll_changed() -> void:
 	_refresh_visible()
 
 
-func _process(_delta: float) -> void:
-	if scroll_vertical != _last_scroll:
-		_last_scroll = scroll_vertical
-		_refresh_visible()
 
 
 func _refresh_visible() -> void:

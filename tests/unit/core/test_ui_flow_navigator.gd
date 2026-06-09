@@ -11,10 +11,9 @@ func before_test() -> void:
 	_container = Control.new()
 	add_child(_container)
 	_resolver = UIFlowSceneResolver.new()
-	_transitions = UIFlowTransitionManager.new()
 	_navigator = UIFlowNavigator.new()
 	add_child(_navigator)
-	_navigator.setup(_container, _resolver, _transitions)
+	_navigator.setup(_container, _resolver)
 
 
 func after_test() -> void:

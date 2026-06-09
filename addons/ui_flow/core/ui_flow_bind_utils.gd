@@ -79,16 +79,30 @@ static func bind_format(node: Node, prop_name: StringName, sig: Signal, format: 
 	return UIFlowBinding.new(sig, cb)
 
 
+## Composite binding that manages multiple inner bindings.
+class UIFlowMultiBinding extends RefCounted:
+	var _bindings: Array[UIFlowBinding] = []
+
+	func _init(bindings: Array[UIFlowBinding]) -> void:
+		_bindings = bindings
+
+	func unbind() -> void:
+		for b in _bindings:
+			b.unbind()
+		_bindings.clear()
+
+
 ## Bind multiple Signals to a property with a multi-argument formatter.
-## [param signals] is an Array of Signals. The formatter receives all signal values.
+## Returns a UIFlowMultiBinding that can unbind() all inner connections.
 ##
 ## Example:
 ## [codeblock]
-## UIFlow.bind_multi($HPLabel, "text",
+## var binding = UIFlow.bind_multi($HPLabel, "text",
 ##     [player_data.health_changed, player_data.max_health_changed],
 ##     func(h, m): return "HP: %d / %d" % [h, m])
+## binding.unbind()
 ## [/codeblock]
-static func bind_multi(node: Node, prop_name: StringName, signals: Array[Signal], formatter: Callable) -> UIFlowBinding:
+static func bind_multi(node: Node, prop_name: StringName, signals: Array[Signal], formatter: Callable) -> UIFlowMultiBinding:
 	var values: Array = []
 	values.resize(signals.size())
 
@@ -96,7 +110,6 @@ static func bind_multi(node: Node, prop_name: StringName, signals: Array[Signal]
 		if is_instance_valid(node):
 			node.set(prop_name, formatter.callv(values))
 
-	# Connect each signal to update its slot and re-evaluate
 	var bindings: Array[UIFlowBinding] = []
 	for i in range(signals.size()):
 		var idx: int = i
@@ -106,8 +119,7 @@ static func bind_multi(node: Node, prop_name: StringName, signals: Array[Signal]
 			cb.call()
 		bindings.append(UIFlowBinding.new(sig, update_cb))
 
-	# Return a composite binding that disconnects all
-	return UIFlowBinding.new(signals[0], func(_v: Variant) -> void: pass)  # Dummy — cleanup handled below
+	return UIFlowMultiBinding.new(bindings)
 
 
 ## Two-way bind a Slider/HSlider/VSlider to a Signal and setter.
