@@ -6,6 +6,9 @@ const SPEED := 5.0
 const JUMP_VELOCITY := 4.5
 const MOUSE_SENSITIVITY := 0.003
 
+## Optional stats resource (used by ARPG example).
+var stats: Resource = null
+
 var _yaw: float = 0.0
 var _pitch: float = -0.5
 
