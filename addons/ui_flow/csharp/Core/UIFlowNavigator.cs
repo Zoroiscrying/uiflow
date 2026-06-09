@@ -196,4 +196,37 @@ public partial class UIFlowNavigator : Node
             path[i] = _stack[i].Class.GetGlobalName();
         return path;
     }
+
+    /// <summary>
+    /// Replace the top page with a new one.
+    /// </summary>
+    public Control Replace(Script pageClass, Dictionary data = null, UIFlowTheme theme = null)
+    {
+        if (_stack.Count == 0) return Push(pageClass, data, theme);
+
+        var old = _stack[^1];
+        _stack.RemoveAt(_stack.Count - 1);
+
+        if (old.Instance is UIFlowPage oldPage)
+        {
+            oldPage.OnClosed();
+            oldPage.OnDestroyed();
+        }
+        if (IsInstanceValid(old.Instance) && old.Instance.IsInsideTree())
+        {
+            _container.RemoveChild(old.Instance);
+            old.Instance.QueueFree();
+        }
+
+        return Push(pageClass, data, theme);
+    }
+
+    /// <summary>
+    /// Remove all pages except the root.
+    /// </summary>
+    public void PopToRoot()
+    {
+        while (_stack.Count > 1)
+            Pop();
+    }
 }

@@ -64,7 +64,27 @@ public partial class UIFlow : Node
     public static Control Replace<T>(Dictionary data = null, UIFlowTheme theme = null) where T : UIFlowPage
         => Instance?.Router.Replace(typeof(T).GetGodotScript(), data, theme);
 
+    public static Control Replace(Script pageClass, Dictionary data = null, UIFlowTheme theme = null)
+        => Instance?.Router.Replace(pageClass, data, theme);
+
     public static void PopToRoot() => Instance?.Router.PopToRoot();
+
+    // ── Async ────────────────────────────────────────────────────────────────
+
+    public static async System.Threading.Tasks.Task<Control> PushAsync<T>(Dictionary data = null, UIFlowTheme theme = null) where T : UIFlowPage
+    {
+        var instance = Push<T>(data, theme);
+        if (Instance != null)
+            await Instance.ToSignal(Instance, UIFlow.SignalName.PageOpened);
+        return instance;
+    }
+
+    public static async System.Threading.Tasks.Task PopAsync()
+    {
+        Pop();
+        if (Instance != null)
+            await Instance.ToSignal(Instance, UIFlow.SignalName.PageClosed);
+    }
 
     public static T CurrentPage<T>() where T : UIFlowPage
         => Instance?.Router.CurrentPageInstance() as T;
