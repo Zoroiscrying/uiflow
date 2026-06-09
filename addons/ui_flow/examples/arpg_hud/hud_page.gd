@@ -8,6 +8,9 @@ var _damage_overlay: ColorRect
 
 
 func _on_opened(_data: Variant = null) -> void:
+	# Read player_stats from data if not set via export
+	if player_stats == null and _data is Dictionary:
+		player_stats = _data.get("player_stats", null)
 	if player_stats == null:
 		return
 

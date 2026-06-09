@@ -11,9 +11,8 @@ func _ready() -> void:
 
 	await get_tree().process_frame
 
-	# Push HUD
-	var hud: ARPGHUDPage = UIFlow.push(ARPGHUDPage) as ARPGHUDPage
-	hud.player_stats = player_stats
+	# Push HUD with player_stats as data
+	var hud: ARPGHUDPage = UIFlow.push(ARPGHUDPage, {"player_stats": player_stats}) as ARPGHUDPage
 
 	# Give stats to player
 	var player := get_node_or_null("Player")
