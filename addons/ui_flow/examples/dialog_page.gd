@@ -5,7 +5,7 @@ class_name DialogPage extends UIFlowPage
 var _dialog_text: String = "Hello, traveler! Welcome to our village."
 
 
-func _on_opened(data: Dictionary = {}) -> void:
+func _on_opened(data: Variant = null) -> void:
 	if data.has("text"):
 		_dialog_text = data["text"]
 	if data.has("speaker"):

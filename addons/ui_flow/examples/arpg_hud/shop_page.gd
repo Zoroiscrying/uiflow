@@ -24,7 +24,7 @@ func _ready() -> void:
 	_confirm_panel.visible = false
 
 
-func _on_opened(data: Dictionary = {}) -> void:
+func _on_opened(data: Variant = null) -> void:
 	_player_stats = data.get("player_stats", null)
 	_shop_items = data.get("items", [])
 	_rebuild_shop_list()

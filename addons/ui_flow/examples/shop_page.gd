@@ -17,5 +17,5 @@ func _on_back() -> void:
 	UIFlow.pop()
 
 
-func _on_opened(_data: Dictionary = {}) -> void:
+func _on_opened(_data: Variant = null) -> void:
 	UIFlow.set_default_focus(_close_button)

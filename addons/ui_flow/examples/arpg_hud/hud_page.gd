@@ -7,7 +7,7 @@ var _bindings: Array[UIFlowBindUtils.UIFlowBinding] = []
 var _damage_overlay: ColorRect
 
 
-func _on_opened(_data: Dictionary = {}) -> void:
+func _on_opened(_data: Variant = null) -> void:
 	if player_stats == null:
 		return
 

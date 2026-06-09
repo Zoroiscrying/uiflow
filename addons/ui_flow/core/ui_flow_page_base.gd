@@ -51,10 +51,16 @@ func _discover_actions() -> void:
 
 # ── Lifecycle (override these in subclasses) ─────────────────────────────────
 
-func _on_created(_data: Dictionary = {}) -> void:
+## Helper: safely cast data to Dictionary (for backwards compatibility).
+func _as_dict(data: Variant) -> Dictionary:
+	if data is Dictionary:
+		return data
+	return {}
+
+func _on_created(_data: Variant = null) -> void:
 	pass
 
-func _on_opened(_data: Dictionary = {}) -> void:
+func _on_opened(_data: Variant = null) -> void:
 	pass
 
 func _on_hidden() -> void:

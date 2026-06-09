@@ -81,13 +81,13 @@ func _ensure_page_container() -> void:
 # ── Router shortcuts ─────────────────────────────────────────────────────────
 
 ## Push a page. Returns the page instance.
-func push(page_class: GDScript, data: Dictionary = {}, page_theme: UIFlowTheme = null) -> Control:
+func push(page_class: GDScript, data: Variant = null, page_theme: UIFlowTheme = null) -> Control:
 	_ensure_page_container()
 	return Router.push(page_class, data, page_theme)
 
 
 ## Push a pre-instantiated page.
-func push_instance(instance: Control, data: Dictionary = {}) -> Control:
+func push_instance(instance: Control, data: Variant = null) -> Control:
 	_ensure_page_container()
 	return Router.push_instance(instance, data)
 
@@ -98,7 +98,7 @@ func pop() -> void:
 
 
 ## Replace the top page.
-func replace(page_class: GDScript, data: Dictionary = {}, page_theme: UIFlowTheme = null) -> Control:
+func replace(page_class: GDScript, data: Variant = null, page_theme: UIFlowTheme = null) -> Control:
 	_ensure_page_container()
 	return Router.replace(page_class, data, page_theme)
 

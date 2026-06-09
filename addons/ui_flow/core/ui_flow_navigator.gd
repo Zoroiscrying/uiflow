@@ -3,7 +3,7 @@
 ## Pages handle their own animations via _on_opened/_on_closed callbacks.
 class_name UIFlowNavigator extends Node
 
-signal page_pushed(page_class: GDScript, data: Dictionary)
+signal page_pushed(page_class: GDScript, data: Variant)
 signal page_popped(page_class: GDScript)
 signal page_opened(page_class: GDScript)   # Emitted when _on_opened completes
 signal page_closed(page_class: GDScript)   # Emitted when _on_closed completes
@@ -28,7 +28,7 @@ func get_guard():
 
 ## Push a new page onto the stack.
 ## Returns the page instance. Returns null if blocked by a guard.
-func push(page_class: GDScript, data: Dictionary = {}, page_theme: UIFlowTheme = null) -> Control:
+func push(page_class: GDScript, data: Variant = null, page_theme: UIFlowTheme = null) -> Control:
 	# No-op if page is already in stack — return existing instance
 	var existing := get_page(page_class)
 	if existing:
@@ -94,7 +94,7 @@ func push(page_class: GDScript, data: Dictionary = {}, page_theme: UIFlowTheme =
 
 
 ## Push a pre-instantiated page instance.
-func push_instance(instance: Control, data: Dictionary = {}) -> Control:
+func push_instance(instance: Control, data: Variant = null) -> Control:
 	if _stack.size() > 0:
 		var current: Dictionary = _stack.back()
 		var current_page: UIFlowPage = current["instance"] as UIFlowPage
@@ -170,7 +170,7 @@ func _cleanup_after_pop(top_instance: Control, top_class: GDScript) -> void:
 
 
 ## Replace the top page with a new one.
-func replace(page_class: GDScript, data: Dictionary = {}, page_theme: UIFlowTheme = null) -> Control:
+func replace(page_class: GDScript, data: Variant = null, page_theme: UIFlowTheme = null) -> Control:
 	if _stack.is_empty():
 		return push(page_class, data, page_theme)
 

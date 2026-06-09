@@ -15,7 +15,7 @@ func _ready() -> void:
 	_close_button.pressed.connect(func(): UIFlow.pop())
 
 
-func _on_opened(_data: Dictionary = {}) -> void:
+func _on_opened(_data: Variant = null) -> void:
 	if inventory_data:
 		_grid.setup(inventory_data)
 

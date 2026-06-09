@@ -17,7 +17,7 @@ func _ready() -> void:
 	_options_container.visible = false
 
 
-func _on_opened(data: Dictionary = {}) -> void:
+func _on_opened(data: Variant = null) -> void:
 	_dialog = data.get("dialog", null)
 	_on_complete = data.get("on_complete", Callable())
 	_current_line = 0

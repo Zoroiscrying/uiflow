@@ -15,7 +15,7 @@ func _ready() -> void:
 	_back_button.pressed.connect(func(): UIFlow.pop())
 
 
-func _on_created(data: Dictionary = {}) -> void:
+func _on_created(data: Variant = null) -> void:
 	# Configure enter transition from data
 	var preset = data.get("enter_preset", UIFlowTransitionType.Type.NONE)
 	var duration: float = data.get("enter_duration", 0.3)
@@ -78,5 +78,5 @@ func _create_effect(preset: int, duration: float, ease: int, trans: int) -> UIFl
 	return UIFlowFadeEffect.new()
 
 
-func _on_opened(_data: Dictionary = {}) -> void:
+func _on_opened(_data: Variant = null) -> void:
 	UIFlow.set_default_focus(_back_button)
