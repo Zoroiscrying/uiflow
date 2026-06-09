@@ -133,6 +133,44 @@ func has_page(page_class: GDScript) -> bool:
 	return Router.has_page(page_class)
 
 
+# ── Guard shortcuts ──────────────────────────────────────────────────────────
+
+## Add a global navigation guard.
+## Guard receives (from_page, to_page, data) and returns true to allow, false to block.
+##
+## Example:
+## [codeblock]
+## UIFlow.add_guard(func(from, to, data):
+##     if Game.in_combat():
+##         UIFlowUI.Toast.show_toast("Can't open menu in combat!", "warning")
+##         return false
+##     return true
+## )
+## [/codeblock]
+func add_guard(guard: Callable) -> void:
+	Router.get_guard().add_guard(guard)
+
+
+## Remove a global guard.
+func remove_guard(guard: Callable) -> void:
+	Router.get_guard().remove_guard(guard)
+
+
+## Add a guard for a specific target page.
+func add_page_guard(page_class: GDScript, guard: Callable) -> void:
+	Router.get_guard().add_page_guard(page_class, guard)
+
+
+## Remove a page-specific guard.
+func remove_page_guard(page_class: GDScript, guard: Callable) -> void:
+	Router.get_guard().remove_page_guard(page_class, guard)
+
+
+## Clear all guards.
+func clear_guards() -> void:
+	Router.get_guard().clear()
+
+
 # ── Scene registration ───────────────────────────────────────────────────────
 
 ## Register a custom scene mapping.

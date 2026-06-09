@@ -11,20 +11,33 @@ signal page_closed(page_class: GDScript)   # Emitted when _on_closed completes
 var _stack: Array[Dictionary] = [] # { "class": GDScript, "instance": Control, "scene": PackedScene }
 var _scene_resolver: UIFlowSceneResolver
 var _container: Control
+const _GuardClass = preload("res://addons/ui_flow/core/ui_flow_guard.gd")
+var _guard  # UIFlowGuard
 
 
 func setup(p_container: Control, p_resolver: UIFlowSceneResolver) -> void:
 	_container = p_container
 	_scene_resolver = p_resolver
+	_guard = _GuardClass.new()
+
+
+## Get the guard system for adding navigation guards.
+func get_guard():
+	return _guard
 
 
 ## Push a new page onto the stack.
-## Returns the page instance.
+## Returns the page instance. Returns null if blocked by a guard.
 func push(page_class: GDScript, data: Dictionary = {}, page_theme: UIFlowTheme = null) -> Control:
 	# No-op if page is already in stack — return existing instance
 	var existing := get_page(page_class)
 	if existing:
 		return existing
+
+	# Check guards
+	var from_class: GDScript = current_page_class()
+	if _guard and not _guard.can_navigate(from_class, page_class, data):
+		return null
 
 	var scene: PackedScene = _scene_resolver.resolve(page_class)
 	if scene == null:
