@@ -45,7 +45,6 @@ var _last_scroll: float = 0.0
 
 func _ready() -> void:
 	_setup_layout()
-	scroll_vertical_changed.connect(_on_scroll_changed)
 
 
 func _setup_layout() -> void:
@@ -74,8 +73,10 @@ func _update_scroll_area() -> void:
 	_refresh_visible()
 
 
-func _on_scroll_changed() -> void:
-	_refresh_visible()
+func _process(_delta: float) -> void:
+	if scroll_vertical != _last_scroll:
+		_last_scroll = scroll_vertical
+		_refresh_visible()
 
 
 

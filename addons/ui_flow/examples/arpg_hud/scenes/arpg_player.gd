@@ -99,7 +99,7 @@ func _attack() -> void:
 				if hud:
 					hud.show_damage_number(stats.attack, enemy.global_position + Vector3(0, 2, 0))
 				# Knockback
-				var knockback_dir := (enemy.global_position - global_position).normalized()
+				var knockback_dir: Vector3 = (enemy.global_position - global_position).normalized()
 				enemy.velocity = knockback_dir * 5.0
 
 

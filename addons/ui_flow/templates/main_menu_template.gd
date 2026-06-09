@@ -32,5 +32,5 @@ func _on_quit() -> void:
 	)
 
 
-func _on_opened(_data: Dictionary = {}) -> void:
+func _on_opened(_data: Variant = null) -> void:
 	UIFlow.set_default_focus(play_button)
