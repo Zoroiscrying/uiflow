@@ -191,6 +191,25 @@ func bind_slider(slider: Range, sig: Signal, setter: Callable) -> UIFlowBindUtil
 	return UIFlowBindUtils.bind_slider(slider, sig, setter)
 
 
+## Bind an array signal to a UI template list.
+## Automatically creates/updates/destroys instances when the array changes.
+##
+## Example:
+## [codeblock]
+## var binder = UIFlow.bind_list(
+##     $GridContainer,
+##     player_data.inventory_changed,
+##     preload("res://item_slot.tscn"),
+##     func(slot, item, index): slot.setup(item)
+## )
+## # Later: binder.unbind()
+## [/codeblock]
+const _ListBinderClass = preload("res://addons/ui_flow/core/ui_flow_list_binder.gd")
+
+func bind_list(container: Node, sig: Signal, template: PackedScene, binder: Callable):
+	return _ListBinderClass.new(container, sig, template, binder)
+
+
 # ── Input shortcuts ──────────────────────────────────────────────────────────
 
 ## Set the default focus node.
