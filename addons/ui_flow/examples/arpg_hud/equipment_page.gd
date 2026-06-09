@@ -40,7 +40,7 @@ func _on_closed() -> void:
 
 
 func _create_slots() -> void:
-	UIFlowUtils.ClearChildren(_slot_container)
+	UIFlowUtils.clear_children(_slot_container)
 	_slot_nodes.clear()
 
 	var slot_names := {

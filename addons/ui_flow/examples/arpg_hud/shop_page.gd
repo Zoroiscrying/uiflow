@@ -32,7 +32,7 @@ func _on_opened(data: Dictionary = {}) -> void:
 
 
 func _rebuild_shop_list() -> void:
-	UIFlowUtils.ClearChildren(_item_list)
+	UIFlowUtils.clear_children(_item_list)
 
 	for item in _shop_items:
 		var row := HBoxContainer.new()

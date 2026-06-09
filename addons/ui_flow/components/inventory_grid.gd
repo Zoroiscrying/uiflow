@@ -25,7 +25,7 @@ func setup(data: InventoryData) -> void:
 
 
 func _create_slots() -> void:
-	UIFlowUtils.ClearChildren(self)
+	UIFlowUtils.clear_children(self)
 	_slots.clear()
 
 	for i in range(inventory_data.slot_count):

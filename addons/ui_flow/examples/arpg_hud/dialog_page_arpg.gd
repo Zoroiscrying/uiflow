@@ -46,7 +46,7 @@ func _show_current_line() -> void:
 
 func _show_options(options: Array) -> void:
 	_options_container.visible = true
-	UIFlowUtils.ClearChildren(_options_container)
+	UIFlowUtils.clear_children(_options_container)
 
 	for option in options:
 		var btn := Button.new()
