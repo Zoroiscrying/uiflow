@@ -1,11 +1,9 @@
-## Main entry point — 3D game world with UIFlow UI.
-##
-## MainHUD is always visible (never popped).
-## Esc opens Pause menu.
-## Interactive 3D objects open Shop/Dialog pages.
-extends Node3D
+## Main entry point — UIFlow Free Demo.
+## Showcases core UIFlow features: navigation, data binding, transitions, components, themes.
+extends Control
+
+const DemoHub = preload("res://addons/ui_flow/examples/free_demo/demo_hub.gd")
 
 func _ready() -> void:
 	await get_tree().process_frame
-	# MainHUD is always the bottom layer, never popped
-	UIFlow.push(MainHUD, {})
+	UIFlow.push(DemoHub)

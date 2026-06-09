@@ -1,0 +1,73 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://addons/ui_flow/examples/free_demo/demo_theme.gd" id="1"]
+
+[node name="UIFlowDemoTheme" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1")
+
+[node name="Panel" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -120.0
+offset_right = 200.0
+offset_bottom = 120.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="Panel"]
+layout_mode = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="Title" type="Label" parent="Panel/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Theme Switching"
+horizontal_alignment = 1
+
+[node name="Desc" type="Label" parent="Panel/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "Switch between built-in themes.\nAll UI updates automatically."
+horizontal_alignment = 1
+modulate = Color(1, 1, 1, 0.5)
+
+[node name="Sep" type="HSeparator" parent="Panel/VBox"]
+layout_mode = 2
+
+[node name="CurrentLabel" type="Label" parent="Panel/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Current: Dark"
+horizontal_alignment = 1
+
+[node name="ThemeButtons" type="HBoxContainer" parent="Panel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="DarkBtn" type="Button" parent="Panel/VBox/ThemeButtons"]
+layout_mode = 2
+custom_minimum_size = Vector2(120, 40)
+text = "Dark"
+
+[node name="LightBtn" type="Button" parent="Panel/VBox/ThemeButtons"]
+layout_mode = 2
+custom_minimum_size = Vector2(120, 40)
+text = "Light"
+
+[node name="BackButton" type="Button" parent="Panel/VBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(200, 36)
+text = "Back"

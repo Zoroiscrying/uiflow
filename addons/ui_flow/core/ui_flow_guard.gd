@@ -54,7 +54,7 @@ func remove_page_guard(page_class: GDScript, guard: Callable) -> void:
 
 
 ## Check if navigation is allowed. Returns true if allowed, false if blocked.
-func can_navigate(from_page: GDScript, to_page: GDScript, data: Dictionary = {}) -> bool:
+func can_navigate(from_page: GDScript, to_page: GDScript, data: Variant = null) -> bool:
 	# Check global guards
 	for guard in _global_guards:
 		if guard.is_valid():
