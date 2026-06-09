@@ -47,7 +47,7 @@ public partial class UIFlowNavigator : Node
         {
             var current = _stack[^1];
             if (current.Instance is UIFlowPage currentPage)
-                currentPage.OnHidden();
+                currentPage.InvokeHidden();
         }
 
         // Instantiate
@@ -75,8 +75,8 @@ public partial class UIFlowNavigator : Node
         // Lifecycle
         if (instance is UIFlowPage newPage)
         {
-            newPage.OnCreated(data);
-            newPage.OnOpened(data);
+            newPage.InvokeCreated(data);
+            newPage.InvokeOpened(data);
             newPage.PlayEnterAnimation();
             newPage.ApplyDefaultFocus();
         }
@@ -95,7 +95,7 @@ public partial class UIFlowNavigator : Node
         {
             var current = _stack[^1];
             if (current.Instance is UIFlowPage currentPage)
-                currentPage.OnHidden();
+                currentPage.InvokeHidden();
         }
 
         bool startsHidden = false;
@@ -115,8 +115,8 @@ public partial class UIFlowNavigator : Node
         if (instance is UIFlowPage newPage)
         {
             data ??= new Dictionary();
-            newPage.OnCreated(data);
-            newPage.OnOpened(data);
+            newPage.InvokeCreated(data);
+            newPage.InvokeOpened(data);
             newPage.PlayEnterAnimation();
             newPage.ApplyDefaultFocus();
         }
@@ -153,8 +153,8 @@ public partial class UIFlowNavigator : Node
     {
         if (top.Instance is UIFlowPage page)
         {
-            page.OnClosed();
-            page.OnDestroyed();
+            page.InvokeClosed();
+            page.InvokeDestroyed();
         }
 
         if (IsInstanceValid(top.Instance) && top.Instance.IsInsideTree())
@@ -167,7 +167,7 @@ public partial class UIFlowNavigator : Node
         {
             var below = _stack[^1];
             if (below.Instance is UIFlowPage belowPage)
-                belowPage.OnShown();
+                belowPage.InvokeShown();
         }
 
         PagePopped?.Invoke(top.Class);

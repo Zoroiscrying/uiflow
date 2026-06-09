@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using UIFlow.Utils;
 
 namespace UIFlow.Core;
 
@@ -26,7 +27,6 @@ public partial class UIFlow : Node
         Scenes = new UIFlowSceneResolver();
         ThemeHelper = new UIFlowThemeHelper();
 
-        // Create page container
         var uiLayer = new CanvasLayer { Name = "UIFlowPageLayer", Layer = 10 };
         AddChild(uiLayer);
 
@@ -44,7 +44,6 @@ public partial class UIFlow : Node
         Router.PageOpened += c => PageOpened?.Invoke(c);
         Router.PageClosed += c => PageClosed?.Invoke(c);
 
-        // Apply default theme
         ApplyThemeToContainer();
     }
 
@@ -69,23 +68,6 @@ public partial class UIFlow : Node
 
     public static void PopToRoot() => Instance?.Router.PopToRoot();
 
-    // ── Async ────────────────────────────────────────────────────────────────
-
-    public static async System.Threading.Tasks.Task<Control> PushAsync<T>(Dictionary data = null, UIFlowTheme theme = null) where T : UIFlowPage
-    {
-        var instance = Push<T>(data, theme);
-        if (Instance != null)
-            await Instance.ToSignal(Instance, UIFlow.SignalName.PageOpened);
-        return instance;
-    }
-
-    public static async System.Threading.Tasks.Task PopAsync()
-    {
-        Pop();
-        if (Instance != null)
-            await Instance.ToSignal(Instance, UIFlow.SignalName.PageClosed);
-    }
-
     public static T CurrentPage<T>() where T : UIFlowPage
         => Instance?.Router.CurrentPageInstance() as T;
 
@@ -97,6 +79,23 @@ public partial class UIFlow : Node
 
     public static int StackDepth() => Instance?.Router.Depth() ?? 0;
 
+    // ── Async ────────────────────────────────────────────────────────────────
+
+    public static async System.Threading.Tasks.Task<Control> PushAsync<T>(Dictionary data = null, UIFlowTheme theme = null) where T : UIFlowPage
+    {
+        var instance = Push<T>(data, theme);
+        if (Instance != null)
+            await Instance.ToSignal(Instance, SignalName.PageOpened);
+        return instance;
+    }
+
+    public static async System.Threading.Tasks.Task PopAsync()
+    {
+        Pop();
+        if (Instance != null)
+            await Instance.ToSignal(Instance, SignalName.PageClosed);
+    }
+
     // ── Scene registration ───────────────────────────────────────────────────
 
     public static void RegisterScene(Script pageClass, PackedScene scene)
@@ -104,7 +103,7 @@ public partial class UIFlow : Node
 
     // ── Animation ────────────────────────────────────────────────────────────
 
-    public static Tween Animate(Node node, UIFlowTweenProp.Prop prop, Variant from, Variant to,
+    public static Tween Animate(Node node, UIFlowTweenProp prop, Variant from, Variant to,
         float duration = 0.3f, Tween.EaseType ease = Tween.EaseType.InOut,
         Tween.TransitionType trans = Tween.TransitionType.Linear)
         => UIFlowAnimator.Animate(node, prop, from, to, duration, ease, trans);
@@ -140,6 +139,14 @@ public partial class UIFlow : Node
 
     public static Color GetColor(UIFlowTheme.ColorSlot slot)
         => Instance?.ThemeHelper.GetColor(slot) ?? Colors.White;
+
+    // ── Input ────────────────────────────────────────────────────────────────
+
+    public static void SetDefaultFocus(Control node)
+    {
+        // Focus management
+        node?.GrabFocus();
+    }
 
     private void ApplyThemeToContainer()
     {

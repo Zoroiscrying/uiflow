@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace UIFlow.Core;
 
 /// <summary>
-/// Base class for all UIFlow pages. Extend this for your UI pages.
+/// Base class for all UIFlow pages.
 /// </summary>
 [GlobalClass]
 public partial class UIFlowPage : Control
@@ -40,15 +40,17 @@ public partial class UIFlowPage : Control
     protected virtual void OnShown() { }
     protected virtual void OnClosed() { }
     protected virtual void OnDestroyed() { }
+    protected virtual void OnBack() { UIFlow.Pop(); }
 
-    // ── Framework hooks (called by Navigator) ────────────────────────────────
+    // ── Framework hooks (called by Navigator via Invoke* methods) ────────────
 
-    internal void OnCreated(Dictionary data) => OnCreated(data);
-    internal void OnOpened(Dictionary data) => OnOpened(data);
-    internal void OnHidden() => OnHidden();
-    internal void OnShown() => OnShown();
-    internal void OnClosed() => OnClosed();
-    internal void OnDestroyed() => OnDestroyed();
+    internal void InvokeCreated(Dictionary data) => OnCreated(data);
+    internal void InvokeOpened(Dictionary data) => OnOpened(data);
+    internal void InvokeHidden() => OnHidden();
+    internal void InvokeShown() => OnShown();
+    internal void InvokeClosed() => OnClosed();
+    internal void InvokeDestroyed() => OnDestroyed();
+    internal void InvokeBack() => OnBack();
 
     internal void PlayEnterAnimation()
     {
@@ -61,13 +63,13 @@ public partial class UIFlowPage : Control
     {
         if (ExitTransition == null)
         {
-            onComplete.Call();
+            if (onComplete.IsValid) onComplete.Call();
             return;
         }
         var effect = ExitTransition.GetExitEffect();
         if (effect != null)
             effect.PlayExit(this, onComplete);
-        else
+        else if (onComplete.IsValid)
             onComplete.Call();
     }
 

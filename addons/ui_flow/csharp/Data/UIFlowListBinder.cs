@@ -50,7 +50,7 @@ public class UIFlowListBinder : IDisposable
         if (_signal.IsConnected(new Callable(this, MethodName.OnDataChanged)))
             _signal.Disconnect(new Callable(this, MethodName.OnDataChanged));
         foreach (var inst in _instances)
-            if (IsInstanceValid(inst)) inst.QueueFree();
+            if (GodotObject.IsInstanceValid(inst)) inst.QueueFree();
         _instances.Clear();
     }
 
