@@ -11,6 +11,8 @@ class_name ARPGHUDPage extends UIFlowPage
 @onready var _level_label: Label = $HUD/Margin/VBox/LevelLabel
 @onready var _gold_label: Label = $HUD/Margin/VBox/GoldLabel
 
+@onready var _wave_label: Label = $HUD/Margin/VBox/WaveLabel
+
 var _bindings: Array[UIFlowBindUtils.UIFlowBinding] = []
 var _damage_overlay: ColorRect
 
@@ -88,6 +90,18 @@ func show_damage_flash() -> void:
 	_damage_overlay.modulate.a = 0.4
 	var tween: Tween = create_tween()
 	tween.tween_property(_damage_overlay, "modulate:a", 0.0, 0.5)
+
+
+## Show wave start notification.
+func show_wave_start(wave: int) -> void:
+	_wave_label.text = "Wave %d" % wave
+	_wave_label.visible = true
+	UIFlowUI.Toast.show_toast("Wave %d incoming!" % wave, "warning", 2.0)
+
+
+## Show wave complete notification.
+func show_wave_complete(_wave: int) -> void:
+	UIFlowUI.Toast.show_toast("Wave cleared! Next wave incoming...", "success", 2.0)
 
 
 ## Show floating damage number at position.

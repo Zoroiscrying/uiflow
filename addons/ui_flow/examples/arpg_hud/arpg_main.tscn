@@ -7,43 +7,31 @@
 background_mode = 2
 background_color = Color(0.06, 0.06, 0.09, 1)
 ambient_light_source = 2
-ambient_light_color = Color(0.1, 0.1, 0.15, 1)
-ambient_light_energy = 0.4
+ambient_light_color = Color(0.15, 0.15, 0.2, 1)
+ambient_light_energy = 0.5
 
 [sub_resource type="PlaneMesh" id="2"]
 size = Vector2(40, 40)
 
 [sub_resource type="StandardMaterial3D" id="3"]
-albedo_color = Color(0.15, 0.18, 0.12, 1)
+albedo_color = Color(0.12, 0.14, 0.1, 1)
 
 [sub_resource type="WorldBoundaryShape3D" id="4"]
 
 [sub_resource type="BoxMesh" id="5"]
-size = Vector3(40, 2, 0.5)
+size = Vector3(40, 1.5, 0.4)
 
 [sub_resource type="StandardMaterial3D" id="6"]
-albedo_color = Color(0.2, 0.2, 0.25, 1)
+albedo_color = Color(0.25, 0.25, 0.3, 1)
 
 [sub_resource type="BoxShape3D" id="7"]
-size = Vector3(40, 2, 0.5)
+size = Vector3(40, 1.5, 0.4)
 
 [sub_resource type="BoxMesh" id="8"]
-size = Vector3(0.5, 2, 30)
+size = Vector3(0.4, 1.5, 40)
 
 [sub_resource type="BoxShape3D" id="9"]
-size = Vector3(0.5, 2, 30)
-
-[sub_resource type="CylinderMesh" id="10"]
-top_radius = 0.4
-bottom_radius = 0.5
-height = 3.0
-
-[sub_resource type="StandardMaterial3D" id="11"]
-albedo_color = Color(0.3, 0.3, 0.35, 1)
-
-[sub_resource type="CylinderShape3D" id="12"]
-radius = 0.5
-height = 3.0
+size = Vector3(0.4, 1.5, 40)
 
 [node name="ARPGMain" type="Node3D"]
 script = ExtResource("1")
@@ -70,7 +58,7 @@ shape = SubResource("4")
 [node name="ArenaWalls" type="Node3D" parent="."]
 
 [node name="WallN" type="StaticBody3D" parent="ArenaWalls"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, -15)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, -20)
 
 [node name="Mesh" type="MeshInstance3D" parent="ArenaWalls/WallN"]
 mesh = SubResource("5")
@@ -80,7 +68,7 @@ material_override = SubResource("6")
 shape = SubResource("7")
 
 [node name="WallS" type="StaticBody3D" parent="ArenaWalls"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 15)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 20)
 
 [node name="Mesh" type="MeshInstance3D" parent="ArenaWalls/WallS"]
 mesh = SubResource("5")
@@ -90,7 +78,7 @@ material_override = SubResource("6")
 shape = SubResource("7")
 
 [node name="WallW" type="StaticBody3D" parent="ArenaWalls"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15, 0.5, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 0.75, 0)
 
 [node name="Mesh" type="MeshInstance3D" parent="ArenaWalls/WallW"]
 mesh = SubResource("8")
@@ -100,7 +88,7 @@ material_override = SubResource("6")
 shape = SubResource("9")
 
 [node name="WallE" type="StaticBody3D" parent="ArenaWalls"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 0.5, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 0.75, 0)
 
 [node name="Mesh" type="MeshInstance3D" parent="ArenaWalls/WallE"]
 mesh = SubResource("8")
@@ -109,57 +97,19 @@ material_override = SubResource("6")
 [node name="Col" type="CollisionShape3D" parent="ArenaWalls/WallE"]
 shape = SubResource("9")
 
-[node name="Decorations" type="Node3D" parent="."]
+[node name="SpawnPoints" type="Node3D" parent="."]
 
-[node name="Pillar1" type="StaticBody3D" parent="Decorations"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, -8)
+[node name="SpawnN" type="Node3D" parent="SpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -18)
 
-[node name="Mesh" type="MeshInstance3D" parent="Decorations/Pillar1"]
-mesh = SubResource("10")
-material_override = SubResource("11")
+[node name="SpawnS" type="Node3D" parent="SpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 18)
 
-[node name="Col" type="CollisionShape3D" parent="Decorations/Pillar1"]
-shape = SubResource("12")
+[node name="SpawnW" type="Node3D" parent="SpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18, 0, 0)
 
-[node name="Pillar2" type="StaticBody3D" parent="Decorations"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, -8)
-
-[node name="Mesh" type="MeshInstance3D" parent="Decorations/Pillar2"]
-mesh = SubResource("10")
-material_override = SubResource("11")
-
-[node name="Col" type="CollisionShape3D" parent="Decorations/Pillar2"]
-shape = SubResource("12")
-
-[node name="Pillar3" type="StaticBody3D" parent="Decorations"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 10)
-
-[node name="Mesh" type="MeshInstance3D" parent="Decorations/Pillar3"]
-mesh = SubResource("10")
-material_override = SubResource("11")
-
-[node name="Col" type="CollisionShape3D" parent="Decorations/Pillar3"]
-shape = SubResource("12")
-
-[node name="Lights" type="Node3D" parent="."]
-
-[node name="TorchLight1" type="OmniLight3D" parent="Lights"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 2, -8)
-light_color = Color(1, 0.8, 0.5, 1)
-light_energy = 0.6
-omni_range = 8.0
-
-[node name="TorchLight2" type="OmniLight3D" parent="Lights"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 2, -8)
-light_color = Color(1, 0.8, 0.5, 1)
-light_energy = 0.6
-omni_range = 8.0
-
-[node name="TorchLight3" type="OmniLight3D" parent="Lights"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 10)
-light_color = Color(0.5, 0.7, 1, 1)
-light_energy = 0.5
-omni_range = 10.0
+[node name="SpawnE" type="Node3D" parent="SpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, 0, 0)
 
 [node name="Player" parent="." instance=ExtResource("2")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
