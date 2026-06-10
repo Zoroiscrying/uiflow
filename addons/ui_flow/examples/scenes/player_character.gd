@@ -126,7 +126,7 @@ func _shoot() -> void:
 				collider.take_damage(attack_power)
 
 				# Knockback
-				var kb_dir := (collider.global_position - global_position).normalized()
+				var kb_dir: Vector3 = (collider.global_position - global_position).normalized()
 				if collider is CharacterBody3D:
 					collider.velocity = kb_dir * KNOCKBACK_FORCE
 
