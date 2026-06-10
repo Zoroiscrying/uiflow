@@ -22,8 +22,8 @@ func _ready() -> void:
 	_buttons.get_child(4).pressed.connect(func():
 		UIFlow.push(DemoTheme))
 	_buttons.get_child(5).pressed.connect(func():
-		# Switch to ARPG scene
-		get_tree().change_scene_to_file("res://addons/ui_flow/examples/arpg_hud/arpg_main.tscn")
+		# Switch to Survivors scene
+		get_tree().change_scene_to_file("res://addons/ui_flow/examples/survivors/arpg_main.tscn")
 	)
 
 

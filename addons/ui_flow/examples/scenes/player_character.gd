@@ -1,14 +1,15 @@
-## Player Character — top-down shooter with gun attack + VFX.
+## Player Character — top-down auto-shooter that targets nearest enemy.
 extends CharacterBody3D
 
 const SPEED := 6.0
-const ATTACK_COOLDOWN := 0.15
-const ATTACK_RANGE := 50.0
+const ATTACK_COOLDOWN := 0.3
+const ATTACK_RANGE := 12.0
 const KNOCKBACK_FORCE := 8.0
 
-var stats: Resource = null
+var stats: SurvivorsPlayerStats = null
 var _attack_timer: float = 0.0
 var _top_down: bool = false
+var _target: Node3D = null
 
 @onready var _model: Node3D = $Model
 @onready var _camera_pivot: Node3D = $CameraPivot
@@ -33,10 +34,6 @@ func _input(event: InputEvent) -> void:
 				_camera_arm.spring_length = maxf(_camera_arm.spring_length - 0.5, 4.0)
 			elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
 				_camera_arm.spring_length = minf(_camera_arm.spring_length + 0.5, 20.0)
-	else:
-		if event is InputEventMouseMotion and Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
-			_camera_pivot.rotation.y -= event.relative.x * 0.003
-			_camera_arm.rotation.x = clampf(_camera_arm.rotation.x - event.relative.y * 0.003, -1.2, 0.2)
 
 
 func _physics_process(delta: float) -> void:
@@ -45,8 +42,11 @@ func _physics_process(delta: float) -> void:
 
 	_attack_timer = maxf(_attack_timer - delta, 0.0)
 
-	# Auto-fire while holding click
-	if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+	# Find nearest enemy
+	_target = _find_nearest_enemy()
+
+	# Auto-shoot when target in range
+	if _target and _attack_timer <= 0:
 		_shoot()
 
 	# WASD movement
@@ -65,138 +65,112 @@ func _physics_process(delta: float) -> void:
 		velocity.x = input_dir.x * SPEED
 		velocity.z = input_dir.y * SPEED
 
-		# Face mouse
-		var mouse_pos := get_viewport().get_mouse_position()
-		var camera := get_viewport().get_camera_3d()
-		if camera:
-			var ray_origin := camera.project_ray_origin(mouse_pos)
-			var ray_dir := camera.project_ray_normal(mouse_pos)
-			if absf(ray_dir.y) > 0.001:
-				var t := -ray_origin.y / ray_dir.y
-				var ground_pos := ray_origin + ray_dir * t
-				var look_dir := ground_pos - global_position
-				if look_dir.length() > 0.1:
-					_model.rotation.y = lerp_angle(_model.rotation.y, atan2(look_dir.x, look_dir.z), 0.3)
-	else:
-		var direction := Vector3(input_dir.x, 0, input_dir.y).rotated(Vector3.UP, _camera_pivot.rotation.y)
-		if direction.length() > 0.01:
-			velocity.x = direction.x * SPEED
-			velocity.z = direction.z * SPEED
-			_model.rotation.y = lerp_angle(_model.rotation.y, atan2(direction.x, direction.z), 0.15)
+		# Face target, or mouse if no target
+		if _target and is_instance_valid(_target):
+			var look_dir := _target.global_position - global_position
+			look_dir.y = 0
+			if look_dir.length() > 0.1:
+				_model.rotation.y = lerp_angle(_model.rotation.y, atan2(look_dir.x, look_dir.z), 0.3)
 		else:
-			velocity.x = move_toward(velocity.x, 0, SPEED * 0.2)
-			velocity.z = move_toward(velocity.z, 0, SPEED * 0.2)
+			var mouse_pos := get_viewport().get_mouse_position()
+			var camera := get_viewport().get_camera_3d()
+			if camera:
+				var ray_origin := camera.project_ray_origin(mouse_pos)
+				var ray_dir := camera.project_ray_normal(mouse_pos)
+				if absf(ray_dir.y) > 0.001:
+					var t := -ray_origin.y / ray_dir.y
+					var ground_pos := ray_origin + ray_dir * t
+					var look_dir := ground_pos - global_position
+					if look_dir.length() > 0.1:
+						_model.rotation.y = lerp_angle(_model.rotation.y, atan2(look_dir.x, look_dir.z), 0.3)
 
 	move_and_slide()
 
 
+func _find_nearest_enemy() -> Node3D:
+	var enemies := get_tree().get_nodes_in_group("enemies")
+	var nearest: Node3D = null
+	var nearest_dist := ATTACK_RANGE
+
+	for enemy in enemies:
+		if not is_instance_valid(enemy):
+			continue
+		var enemy_stats: SurvivorsEnemyStats = enemy.get("stats")
+		if enemy_stats == null or not enemy_stats.is_alive():
+			continue
+		var dist := global_position.distance_to(enemy.global_position)
+		if dist < nearest_dist:
+			nearest_dist = dist
+			nearest = enemy
+
+	return nearest
+
+
 func _shoot() -> void:
-	if _attack_timer > 0:
-		return
 	_attack_timer = ATTACK_COOLDOWN
 
-	var attack_power: int = 10
-	if stats and "attack" in stats:
-		attack_power = stats.attack
+	if _target == null or not is_instance_valid(_target):
+		return
 
-	# Raycast from gun tip forward
+	var attack_power: int = stats.attack if stats else 10
 	var gun_pos: Vector3 = _gun_tip.global_position if _gun_tip else global_position + Vector3(0, 1, 0)
-	var forward: Vector3 = -_model.global_transform.basis.z
-	var from: Vector3 = gun_pos
-	var to: Vector3 = from + forward * ATTACK_RANGE
+	var target_pos: Vector3 = _target.global_position + Vector3(0, 0.8, 0)
+	var shoot_dir: Vector3 = (target_pos - gun_pos).normalized()
 
 	# Spawn muzzle flash
-	_spawn_muzzle_flash(gun_pos, forward)
+	_spawn_muzzle_flash(gun_pos, shoot_dir)
 
-	# Raycast for hit detection
-	var space := get_world_3d().direct_space_state
-	var query := PhysicsRayQueryParameters3D.create(from, to)
-	query.collide_with_areas = true
-	var result := space.intersect_ray(query)
+	# Deal damage
+	var enemy_stats: SurvivorsEnemyStats = _target.get("stats")
+	if enemy_stats and enemy_stats.is_alive():
+		_target.take_damage(attack_power)
 
-	var hit_pos: Vector3 = to
-	if result:
-		hit_pos = result.position
-		var collider = result.collider
+		# Knockback
+		var kb_dir: Vector3 = (_target.global_position - global_position).normalized()
+		if _target is CharacterBody3D:
+			_target.velocity = kb_dir * KNOCKBACK_FORCE
 
-		# Check if hit an enemy
-		if collider.is_in_group("enemies") and collider.has_method("take_damage"):
-			var enemy_stats = collider.get("stats")
-			if enemy_stats and enemy_stats.is_alive():
-				collider.take_damage(attack_power)
+		# Show damage number
+		var hud := UIFlow.get_page(SurvivorsHUDPage) as SurvivorsHUDPage
+		if hud:
+			hud.show_damage_number(attack_power, _target.global_position + Vector3(0, 2, 0))
 
-				# Knockback
-				var kb_dir: Vector3 = (collider.global_position - global_position).normalized()
-				if collider is CharacterBody3D:
-					collider.velocity = kb_dir * KNOCKBACK_FORCE
-
-				# Show damage number
-				var hud := UIFlow.get_page(ARPGHUDPage) as ARPGHUDPage
-				if hud:
-					hud.show_damage_number(attack_power, collider.global_position + Vector3(0, 2, 0))
-
-		# Spawn impact effect
-		_spawn_impact(hit_pos, result.normal if result else Vector3.UP)
-	else:
-		_spawn_impact(hit_pos, Vector3.UP)
-
-	# Bullet trail
-	_spawn_bullet_trail(gun_pos, hit_pos)
+	# Bullet trail to target
+	_spawn_bullet_trail(gun_pos, target_pos)
 
 
 func _spawn_muzzle_flash(pos: Vector3, dir: Vector3) -> void:
-	# Simple flash: a small bright mesh
-	var flash := MeshInstance3D.new()
-	var sphere := SphereMesh.new()
-	sphere.radius = 0.08
-	sphere.height = 0.16
-	flash.mesh = sphere
-	var mat := StandardMaterial3D.new()
-	mat.emission_enabled = true
-	mat.emission = Color(1, 0.9, 0.5)
-	mat.emission_energy_multiplier = 5.0
-	mat.albedo_color = Color(1, 0.9, 0.5)
-	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	flash.material_override = mat
-	flash.position = pos
-	flash.scale = Vector3(1, 1, 2)  # Elongated in shoot direction
-	flash.look_at(pos + dir, Vector3.UP)
-	add_child(flash)
+	var particles := GPUParticles3D.new()
+	particles.emitting = true
+	particles.one_shot = true
+	particles.amount = 8
+	particles.lifetime = 0.15
+	particles.explosiveness = 1.0
 
-	# Fade out quickly
-	var tween := create_tween()
-	tween.tween_property(flash, "modulate:a", 0.0, 0.1)
-	tween.finished.connect(flash.queue_free)
+	var mat := ParticleProcessMaterial.new()
+	mat.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_SPHERE
+	mat.emission_sphere_radius = 0.05
+	mat.direction = dir
+	mat.spread = 30.0
+	mat.initial_velocity_min = 2.0
+	mat.initial_velocity_max = 5.0
+	mat.gravity = Vector3.ZERO
+	mat.scale_min = 0.3
+	mat.scale_max = 0.6
+	mat.color = Color(1, 0.9, 0.5)
+	mat.color_ramp = _create_fade_ramp(Color(1, 0.9, 0.5, 1.0), Color(1, 0.6, 0.2, 0.0))
+	particles.process_material = mat
 
-
-func _spawn_impact(pos: Vector3, normal: Vector3) -> void:
-	# Impact spark
-	var spark := MeshInstance3D.new()
-	var sphere := SphereMesh.new()
-	sphere.radius = 0.1
-	sphere.height = 0.2
-	spark.mesh = sphere
-	var mat := StandardMaterial3D.new()
-	mat.emission_enabled = true
-	mat.emission = Color(1, 0.8, 0.3)
-	mat.emission_energy_multiplier = 3.0
-	mat.albedo_color = Color(1, 0.8, 0.3)
-	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	spark.material_override = mat
-	spark.position = pos + normal * 0.05
-	add_child(spark)
-
-	var tween := create_tween().set_parallel(true)
-	tween.tween_property(spark, "scale", Vector3(0.01, 0.01, 0.01), 0.2)
-	tween.tween_property(spark, "modulate:a", 0.0, 0.2)
-	tween.finished.connect(spark.queue_free)
+	_add_vfx(particles, pos)
+	particles.finished.connect(particles.queue_free)
 
 
 func _spawn_bullet_trail(from: Vector3, to: Vector3) -> void:
-	# Simple line trail
-	var trail := MeshInstance3D.new()
-	var mid := (from + to) / 2.0
 	var dist := from.distance_to(to)
+	if dist < 0.1:
+		return
+
+	var trail := MeshInstance3D.new()
 	var box := BoxMesh.new()
 	box.size = Vector3(0.02, 0.02, dist)
 	trail.mesh = box
@@ -204,25 +178,51 @@ func _spawn_bullet_trail(from: Vector3, to: Vector3) -> void:
 	mat.emission_enabled = true
 	mat.emission = Color(1, 0.9, 0.6)
 	mat.emission_energy_multiplier = 2.0
-	mat.albedo_color = Color(1, 0.9, 0.6)
+	mat.albedo_color = Color(1, 0.9, 0.6, 1.0)
 	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	trail.material_override = mat
-	trail.global_position = mid
+
+	_add_vfx(trail, (from + to) / 2.0)
 	trail.look_at(to, Vector3.UP)
-	add_child(trail)
 
 	var tween := create_tween()
-	tween.tween_property(trail, "modulate:a", 0.0, 0.15)
+	tween.tween_property(mat, "albedo_color:a", 0.0, 0.15)
 	tween.finished.connect(trail.queue_free)
 
 
+func _add_vfx(node: Node3D, world_pos: Vector3) -> void:
+	var root := get_tree().current_scene
+	if root:
+		root.add_child(node)
+	else:
+		add_child(node)
+	node.global_position = world_pos
+
+
+func _create_fade_ramp(start_color: Color, end_color: Color) -> GradientTexture1D:
+	var gradient := Gradient.new()
+	gradient.set_color(0, start_color)
+	gradient.set_offset(0, 0.0)
+	gradient.set_color(1, end_color)
+	gradient.set_offset(1, 1.0)
+	var texture := GradientTexture1D.new()
+	texture.gradient = gradient
+	return texture
+
+
 func take_damage(amount: float) -> void:
-	if stats and "health" in stats:
-		stats.health -= amount
-		# Screen shake
-		var hud := UIFlow.get_page(ARPGHUDPage) as ARPGHUDPage
-		if hud:
-			hud.show_damage_flash()
-			hud.shake_camera(0.2, 6.0)
-		if stats.health <= 0:
-			print("Player died!")
+	if stats == null:
+		return
+	stats.take_damage(amount)
+	var hud := UIFlow.get_page(SurvivorsHUDPage) as SurvivorsHUDPage
+	if hud:
+		hud.show_damage_flash()
+		hud.shake_camera(0.2, 6.0)
+	if stats.health <= 0:
+		_die()
+
+
+func _die() -> void:
+	print("Player died!")
+	# Future: death screen, respawn, etc.

@@ -92,11 +92,11 @@ custom_minimum_size = Vector2(0, 48)
 theme_override_font_sizes/font_size = 16
 text = "Theme Switching"
 
-[node name="ARPGBtn" type="Button" parent="Margin/Scroll/VBox/Buttons"]
+[node name="SurvivorsBtn" type="Button" parent="Margin/Scroll/VBox/Buttons"]
 layout_mode = 2
 custom_minimum_size = Vector2(0, 48)
 theme_override_font_sizes/font_size = 16
-text = "ARPG Demo (3D Combat + HUD)"
+text = "Survivors Demo (3D Combat + HUD)"
 
 [node name="Sep2" type="HSeparator" parent="Margin/Scroll/VBox"]
 layout_mode = 2
