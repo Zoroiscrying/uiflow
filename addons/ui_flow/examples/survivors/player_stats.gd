@@ -10,6 +10,7 @@ signal xp_to_next_changed(value: float)
 signal level_changed(value: int)
 signal gold_changed(value: int)
 signal attack_changed(value: int)
+signal weapons_changed()
 
 var max_health: float = 100.0:
 	set(v): max_health = v; max_health_changed.emit(max_health)
@@ -38,6 +39,9 @@ var gold: int = 0:
 var attack: int = 10:
 	set(v): attack = maxi(v, 0); attack_changed.emit(attack)
 
+var weapons: Array[WeaponData] = []
+var max_weapon_slots: int = 4
+
 func take_damage(amount: float) -> void:
 	health -= amount
 
@@ -61,3 +65,24 @@ func add_xp(amount: float) -> void:
 		max_mana += 5
 		mana = max_mana
 		attack += 2
+
+
+func add_weapon(weapon: WeaponData) -> bool:
+	if weapons.size() >= max_weapon_slots:
+		return false
+	weapons.append(weapon)
+	weapons_changed.emit()
+	return true
+
+
+func remove_weapon(index: int) -> WeaponData:
+	if index < 0 or index >= weapons.size():
+		return null
+	var weapon: WeaponData = weapons[index]
+	weapons.remove_at(index)
+	weapons_changed.emit()
+	return weapon
+
+
+func get_weapons() -> Array[WeaponData]:
+	return weapons
