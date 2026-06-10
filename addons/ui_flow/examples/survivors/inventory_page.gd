@@ -24,6 +24,7 @@ func _on_opened(_data: Variant = null) -> void:
 
 	if inventory_data:
 		_grid.setup(inventory_data)
+		_attach_slot_tooltips()
 
 	if equipment_data:
 		if not equipment_data.stats_changed.is_connected(_update_stats_display):
@@ -47,6 +48,16 @@ func _update_stats_display() -> void:
 		bonuses["attack"], bonuses["defense"],
 		bonuses["health"], bonuses["mana"]
 	]
+
+
+func _attach_slot_tooltips() -> void:
+	for slot in _grid.get_children():
+		if slot is UIFlowItemSlot:
+			var item: ItemData = slot.get_item()
+			if item:
+				UIFlowTooltip.attach(slot, item.item_name)
+			else:
+				UIFlowTooltip.attach(slot, "Empty Slot")
 
 
 func _on_back() -> void:

@@ -9,11 +9,27 @@ class_name SurvivorsEquipmentPage extends UIFlowPage
 @onready var _slot_container: GridContainer = $Panel/VBox/Slots
 
 var _slot_nodes: Dictionary = {}  # slot_name -> UIFlowItemSlot
+var _stat_style: UIFlowDataStyle
 
 
 func _ready() -> void:
 	is_modal = true
 	_close_button.pressed.connect(func(): UIFlow.pop())
+	_setup_stat_style()
+
+
+func _setup_stat_style() -> void:
+	_stat_style = UIFlowDataStyle.new()
+	_stat_style.add_rule(func(v): return v > 0, {
+		"modulate": Color(0.3, 1.0, 0.3),
+	})
+	_stat_style.add_rule(func(v): return v < 0, {
+		"modulate": Color(1.0, 0.3, 0.3),
+	})
+	_stat_style.add_rule(func(v): return v == 0, {
+		"modulate": Color(1, 1, 1, 0.6),
+	})
+	_stats_label.add_child(_stat_style)
 
 
 func _on_opened(_data: Variant = null) -> void:
@@ -98,6 +114,8 @@ func _update_stats() -> void:
 		bonuses["attack"], bonuses["defense"],
 		bonuses["health"], bonuses["mana"]
 	]
+	var total := bonuses["attack"] + bonuses["defense"] + bonuses["health"] + bonuses["mana"]
+	_stat_style.evaluate(total)
 
 
 func _on_slot_drop(item: ItemData, from_index: int, slot_name: StringName) -> void:
@@ -111,10 +129,26 @@ func _on_slot_drop(item: ItemData, from_index: int, slot_name: StringName) -> vo
 
 func _on_item_equipped(_slot: StringName, _item: ItemData) -> void:
 	_update_all_slots()
+	_attach_hover_hints()
 
 
 func _on_item_unequipped(_slot: StringName, _item: ItemData) -> void:
 	_update_all_slots()
+	_attach_hover_hints()
+
+
+func _attach_hover_hints() -> void:
+	if equipment_data == null:
+		return
+	for slot_name in _slot_nodes:
+		var slot: UIFlowItemSlot = _slot_nodes[slot_name]
+		for child in slot.get_children():
+			if child is UIFlowHoverHint:
+				child.queue_free()
+		var item := equipment_data.get_equipped(slot_name)
+		if item:
+			var hint_text := "[b]%s[/b]\n%s" % [item.item_name, item.description]
+			UIFlowHoverHint.attach(slot, hint_text, true)
 
 
 func _on_back() -> void:
