@@ -2,14 +2,11 @@
 extends CharacterBody3D
 
 const SPEED := 6.0
-const ATTACK_COOLDOWN := 0.3
-const ATTACK_RANGE := 12.0
 const KNOCKBACK_FORCE := 8.0
 
 var stats: SurvivorsPlayerStats = null
-var _attack_timer: float = 0.0
 var _top_down: bool = false
-var _target: Node3D = null
+var _weapon_manager: Node = null
 
 @onready var _model: Node3D = $Model
 @onready var _camera_pivot: Node3D = $CameraPivot
@@ -40,14 +37,13 @@ func _physics_process(delta: float) -> void:
 	if not is_on_floor():
 		velocity.y -= 9.8 * delta
 
-	_attack_timer = maxf(_attack_timer - delta, 0.0)
-
-	# Find nearest enemy
-	_target = _find_nearest_enemy()
-
-	# Auto-shoot when target in range
-	if _target and _attack_timer <= 0:
-		_shoot()
+	# Auto-shoot via weapon manager
+	if _weapon_manager and _weapon_manager.has_method("update"):
+		var fired_weapon = _weapon_manager.update(delta, global_position)
+		if fired_weapon:
+			var target = _weapon_manager.get_target_for_weapon(fired_weapon, global_position)
+			if target:
+				_shoot_at(target, fired_weapon)
 
 	# WASD movement
 	var input_dir := Vector2.ZERO
@@ -66,8 +62,9 @@ func _physics_process(delta: float) -> void:
 		velocity.z = input_dir.y * SPEED
 
 		# Face target, or mouse if no target
-		if _target and is_instance_valid(_target):
-			var look_dir := _target.global_position - global_position
+		var face_target := _get_face_target()
+		if face_target:
+			var look_dir := face_target.global_position - global_position
 			look_dir.y = 0
 			if look_dir.length() > 0.1:
 				_model.rotation.y = lerp_angle(_model.rotation.y, atan2(look_dir.x, look_dir.z), 0.3)
@@ -87,55 +84,37 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 
 
-func _find_nearest_enemy() -> Node3D:
-	var enemies := get_tree().get_nodes_in_group("enemies")
-	var nearest: Node3D = null
-	var nearest_dist := ATTACK_RANGE
-
-	for enemy in enemies:
-		if not is_instance_valid(enemy):
-			continue
-		var enemy_stats: SurvivorsEnemyStats = enemy.get("stats")
-		if enemy_stats == null or not enemy_stats.is_alive():
-			continue
-		var dist := global_position.distance_to(enemy.global_position)
-		if dist < nearest_dist:
-			nearest_dist = dist
-			nearest = enemy
-
-	return nearest
+func _get_face_target() -> Node3D:
+	if _weapon_manager and _weapon_manager.has_method("get_target_for_weapon") and stats:
+		var weapons := stats.get_weapons()
+		if weapons.size() > 0:
+			return _weapon_manager.get_target_for_weapon(weapons[0], global_position)
+	return null
 
 
-func _shoot() -> void:
-	_attack_timer = ATTACK_COOLDOWN
-
-	if _target == null or not is_instance_valid(_target):
+func _shoot_at(target: Node3D, weapon: WeaponData) -> void:
+	if target == null or not is_instance_valid(target):
 		return
 
-	var attack_power: int = stats.attack if stats else 10
+	var attack_power: int = weapon.damage + (stats.attack if stats else 0)
 	var gun_pos: Vector3 = _gun_tip.global_position if _gun_tip else global_position + Vector3(0, 1, 0)
-	var target_pos: Vector3 = _target.global_position + Vector3(0, 0.8, 0)
+	var target_pos: Vector3 = target.global_position + Vector3(0, 0.8, 0)
 	var shoot_dir: Vector3 = (target_pos - gun_pos).normalized()
 
-	# Spawn muzzle flash
 	_spawn_muzzle_flash(gun_pos, shoot_dir)
 
-	# Deal damage
-	var enemy_stats: SurvivorsEnemyStats = _target.get("stats")
+	var enemy_stats: SurvivorsEnemyStats = target.get("stats")
 	if enemy_stats and enemy_stats.is_alive():
-		_target.take_damage(attack_power)
+		target.take_damage(attack_power)
 
-		# Knockback
-		var kb_dir: Vector3 = (_target.global_position - global_position).normalized()
-		if _target is CharacterBody3D:
-			_target.velocity = kb_dir * KNOCKBACK_FORCE
+		var kb_dir: Vector3 = (target.global_position - global_position).normalized()
+		if target is CharacterBody3D:
+			target.velocity = kb_dir * KNOCKBACK_FORCE
 
-		# Show damage number
 		var hud := UIFlow.get_page(SurvivorsHUDPage) as SurvivorsHUDPage
 		if hud:
-			hud.show_damage_number(attack_power, _target.global_position + Vector3(0, 2, 0))
+			hud.show_damage_number(attack_power, target.global_position + Vector3(0, 2, 0))
 
-	# Bullet trail to target
 	_spawn_bullet_trail(gun_pos, target_pos)
 
 
