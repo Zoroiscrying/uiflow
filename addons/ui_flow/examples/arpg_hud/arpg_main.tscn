@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=14 format=3]
 
 [ext_resource type="Script" path="res://addons/ui_flow/examples/arpg_hud/arpg_main.gd" id="1"]
 [ext_resource type="PackedScene" path="res://addons/ui_flow/examples/scenes/player_character.tscn" id="2"]
@@ -9,7 +9,6 @@ background_color = Color(0.06, 0.06, 0.09, 1)
 ambient_light_source = 2
 ambient_light_color = Color(0.1, 0.1, 0.15, 1)
 ambient_light_energy = 0.4
-tonemap_mode = 2
 
 [sub_resource type="PlaneMesh" id="2"]
 size = Vector2(40, 40)
@@ -18,6 +17,33 @@ size = Vector2(40, 40)
 albedo_color = Color(0.15, 0.18, 0.12, 1)
 
 [sub_resource type="WorldBoundaryShape3D" id="4"]
+
+[sub_resource type="BoxMesh" id="5"]
+size = Vector3(40, 2, 0.5)
+
+[sub_resource type="StandardMaterial3D" id="6"]
+albedo_color = Color(0.2, 0.2, 0.25, 1)
+
+[sub_resource type="BoxShape3D" id="7"]
+size = Vector3(40, 2, 0.5)
+
+[sub_resource type="BoxMesh" id="8"]
+size = Vector3(0.5, 2, 30)
+
+[sub_resource type="BoxShape3D" id="9"]
+size = Vector3(0.5, 2, 30)
+
+[sub_resource type="CylinderMesh" id="10"]
+top_radius = 0.4
+bottom_radius = 0.5
+height = 3.0
+
+[sub_resource type="StandardMaterial3D" id="11"]
+albedo_color = Color(0.3, 0.3, 0.35, 1)
+
+[sub_resource type="CylinderShape3D" id="12"]
+radius = 0.5
+height = 3.0
 
 [node name="ARPGMain" type="Node3D"]
 script = ExtResource("1")
@@ -47,65 +73,41 @@ shape = SubResource("4")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, -15)
 
 [node name="Mesh" type="MeshInstance3D" parent="ArenaWalls/WallN"]
-
-[node name="BoxMesh" type="BoxMesh" parent="ArenaWalls/WallN/Mesh"]
-size = Vector3(40, 2, 0.5)
-
-[node name="Mat" type="StandardMaterial3D" parent="ArenaWalls/WallN/Mesh"]
-albedo_color = Color(0.2, 0.2, 0.25, 1)
+mesh = SubResource("5")
+material_override = SubResource("6")
 
 [node name="Col" type="CollisionShape3D" parent="ArenaWalls/WallN"]
-
-[node name="BoxShape" type="BoxShape3D" parent="ArenaWalls/WallN/Col"]
-size = Vector3(40, 2, 0.5)
+shape = SubResource("7")
 
 [node name="WallS" type="StaticBody3D" parent="ArenaWalls"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 15)
 
 [node name="Mesh" type="MeshInstance3D" parent="ArenaWalls/WallS"]
-
-[node name="BoxMesh" type="BoxMesh" parent="ArenaWalls/WallS/Mesh"]
-size = Vector3(40, 2, 0.5)
-
-[node name="Mat" type="StandardMaterial3D" parent="ArenaWalls/WallS/Mesh"]
-albedo_color = Color(0.2, 0.2, 0.25, 1)
+mesh = SubResource("5")
+material_override = SubResource("6")
 
 [node name="Col" type="CollisionShape3D" parent="ArenaWalls/WallS"]
-
-[node name="BoxShape" type="BoxShape3D" parent="ArenaWalls/WallS/Col"]
-size = Vector3(40, 2, 0.5)
+shape = SubResource("7")
 
 [node name="WallW" type="StaticBody3D" parent="ArenaWalls"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15, 0.5, 0)
 
 [node name="Mesh" type="MeshInstance3D" parent="ArenaWalls/WallW"]
-
-[node name="BoxMesh" type="BoxMesh" parent="ArenaWalls/WallW/Mesh"]
-size = Vector3(0.5, 2, 30)
-
-[node name="Mat" type="StandardMaterial3D" parent="ArenaWalls/WallW/Mesh"]
-albedo_color = Color(0.2, 0.2, 0.25, 1)
+mesh = SubResource("8")
+material_override = SubResource("6")
 
 [node name="Col" type="CollisionShape3D" parent="ArenaWalls/WallW"]
-
-[node name="BoxShape" type="BoxShape3D" parent="ArenaWalls/WallW/Col"]
-size = Vector3(0.5, 2, 30)
+shape = SubResource("9")
 
 [node name="WallE" type="StaticBody3D" parent="ArenaWalls"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 0.5, 0)
 
 [node name="Mesh" type="MeshInstance3D" parent="ArenaWalls/WallE"]
-
-[node name="BoxMesh" type="BoxMesh" parent="ArenaWalls/WallE/Mesh"]
-size = Vector3(0.5, 2, 30)
-
-[node name="Mat" type="StandardMaterial3D" parent="ArenaWalls/WallE/Mesh"]
-albedo_color = Color(0.2, 0.2, 0.25, 1)
+mesh = SubResource("8")
+material_override = SubResource("6")
 
 [node name="Col" type="CollisionShape3D" parent="ArenaWalls/WallE"]
-
-[node name="BoxShape" type="BoxShape3D" parent="ArenaWalls/WallE/Col"]
-size = Vector3(0.5, 2, 30)
+shape = SubResource("9")
 
 [node name="Decorations" type="Node3D" parent="."]
 
@@ -113,58 +115,31 @@ size = Vector3(0.5, 2, 30)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, -8)
 
 [node name="Mesh" type="MeshInstance3D" parent="Decorations/Pillar1"]
-
-[node name="CylinderMesh" type="CylinderMesh" parent="Decorations/Pillar1/Mesh"]
-top_radius = 0.4
-bottom_radius = 0.5
-height = 3.0
-
-[node name="Mat" type="StandardMaterial3D" parent="Decorations/Pillar1/Mesh"]
-albedo_color = Color(0.3, 0.3, 0.35, 1)
+mesh = SubResource("10")
+material_override = SubResource("11")
 
 [node name="Col" type="CollisionShape3D" parent="Decorations/Pillar1"]
-
-[node name="CylinderShape" type="CylinderShape3D" parent="Decorations/Pillar1/Col"]
-radius = 0.5
-height = 3.0
+shape = SubResource("12")
 
 [node name="Pillar2" type="StaticBody3D" parent="Decorations"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, -8)
 
 [node name="Mesh" type="MeshInstance3D" parent="Decorations/Pillar2"]
-
-[node name="CylinderMesh" type="CylinderMesh" parent="Decorations/Pillar2/Mesh"]
-top_radius = 0.4
-bottom_radius = 0.5
-height = 3.0
-
-[node name="Mat" type="StandardMaterial3D" parent="Decorations/Pillar2/Mesh"]
-albedo_color = Color(0.3, 0.3, 0.35, 1)
+mesh = SubResource("10")
+material_override = SubResource("11")
 
 [node name="Col" type="CollisionShape3D" parent="Decorations/Pillar2"]
-
-[node name="CylinderShape" type="CylinderShape3D" parent="Decorations/Pillar2/Col"]
-radius = 0.5
-height = 3.0
+shape = SubResource("12")
 
 [node name="Pillar3" type="StaticBody3D" parent="Decorations"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 10)
 
 [node name="Mesh" type="MeshInstance3D" parent="Decorations/Pillar3"]
-
-[node name="CylinderMesh" type="CylinderMesh" parent="Decorations/Pillar3/Mesh"]
-top_radius = 0.4
-bottom_radius = 0.5
-height = 3.0
-
-[node name="Mat" type="StandardMaterial3D" parent="Decorations/Pillar3/Mesh"]
-albedo_color = Color(0.3, 0.3, 0.35, 1)
+mesh = SubResource("10")
+material_override = SubResource("11")
 
 [node name="Col" type="CollisionShape3D" parent="Decorations/Pillar3"]
-
-[node name="CylinderShape" type="CylinderShape3D" parent="Decorations/Pillar3/Col"]
-radius = 0.5
-height = 3.0
+shape = SubResource("12")
 
 [node name="Lights" type="Node3D" parent="."]
 
