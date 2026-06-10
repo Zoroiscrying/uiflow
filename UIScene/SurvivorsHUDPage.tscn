@@ -58,22 +58,6 @@ custom_minimum_size = Vector2(70, 0)
 theme_override_font_sizes/font_size = 13
 text = "100 / 100"
 
-[node name="ManaRow" type="HBoxContainer" parent="HUD/Margin/VBox"]
-layout_mode = 2
-theme_override_constants/separation = 8
-
-[node name="ManaBar" type="ProgressBar" parent="HUD/Margin/VBox/ManaRow"]
-layout_mode = 2
-custom_minimum_size = Vector2(180, 14)
-size_flags_horizontal = 3
-value = 50.0
-
-[node name="ManaLabel" type="Label" parent="HUD/Margin/VBox/ManaRow"]
-layout_mode = 2
-custom_minimum_size = Vector2(70, 0)
-theme_override_font_sizes/font_size = 13
-text = "50 / 50"
-
 [node name="XPBar" type="ProgressBar" parent="HUD/Margin/VBox"]
 layout_mode = 2
 custom_minimum_size = Vector2(0, 8)
@@ -82,7 +66,7 @@ value = 0.0
 [node name="GoldLabel" type="Label" parent="HUD/Margin/VBox"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 14
-text = "💰 0"
+text = "0 G"
 
 [node name="WaveLabel" type="Label" parent="HUD/Margin/VBox"]
 visible = false
@@ -90,6 +74,10 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 16
 text = "Wave 1"
 modulate = Color(1, 0.8, 0.2, 1)
+
+[node name="WeaponSlots" type="HBoxContainer" parent="HUD/Margin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 4
 
 [node name="ControlsHint" type="Label" parent="."]
 layout_mode = 1
@@ -103,6 +91,6 @@ offset_right = -16.0
 grow_horizontal = 2
 grow_vertical = 0
 theme_override_font_sizes/font_size = 13
-text = "WASD: Move | Auto-shoot nearest enemy | I: Inventory | O: Shop | P: Equip | T: Talk"
+text = "WASD: Move | Auto-shoot | I: Backpack | P: Equipment | Esc: Pause"
 horizontal_alignment = 1
 modulate = Color(1, 1, 1, 0.4)
