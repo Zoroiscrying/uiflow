@@ -62,8 +62,9 @@ func _collect() -> void:
 
 func _get_event_bus() -> SurvivorsEventBus:
 	# Try autoload first
-	if Engine.has_singleton("SurvivorsEventBus"):
-		return Engine.get_singleton("SurvivorsEventBus")
+	var autoload := get_node_or_null("/root/SurvivorsEventBus")
+	if autoload is SurvivorsEventBus:
+		return autoload
 	# Fallback: find in scene
 	var root := get_tree().current_scene
 	if root:
