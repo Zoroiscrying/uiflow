@@ -15,6 +15,24 @@ class_name ARPGHUDPage extends UIFlowPage
 
 var _bindings: Array[UIFlowBindUtils.UIFlowBinding] = []
 var _damage_overlay: ColorRect
+var _shake_tween: Tween
+
+
+## Shake the HUD (screen shake effect).
+func shake_camera(duration: float = 0.2, intensity: float = 6.0) -> void:
+	if _shake_tween and _shake_tween.is_valid():
+		_shake_tween.kill()
+
+	var original_pos: Vector2 = position
+	_shake_tween = create_tween()
+	var steps := 4
+	for i in range(steps):
+		var offset := Vector2(
+			randf_range(-intensity, intensity),
+			randf_range(-intensity, intensity)
+		) * (1.0 - float(i) / steps)
+		_shake_tween.tween_property(self, "position", original_pos + offset, duration / steps)
+	_shake_tween.tween_property(self, "position", original_pos, duration / steps)
 
 
 func _on_opened(_data: Variant = null) -> void:

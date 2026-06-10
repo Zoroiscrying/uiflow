@@ -39,6 +39,9 @@ size = Vector3(0.3, 0.1, 0.3)
 resource_local_to_scene = true
 albedo_color = Color(0.9, 0.6, 0.2, 1)
 
+[node name="GunTip" type="Node3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0, -0.5)
+
 [node name="CameraPivot" type="Node3D" parent="."]
 
 [node name="CameraArm" type="SpringArm3D" parent="CameraPivot"]

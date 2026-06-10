@@ -128,8 +128,19 @@ func _attack_player() -> void:
 
 func take_damage(amount: float) -> void:
 	stats.take_damage(amount)
+	_hit_flash()
 	if not stats.is_alive():
 		_die()
+
+
+func _hit_flash() -> void:
+	# Find mesh and flash white
+	var mesh := find_child("Mesh", true, false) as MeshInstance3D
+	if mesh and mesh.material_override:
+		var original_color: Color = mesh.material_override.albedo_color
+		mesh.material_override.albedo_color = Color.WHITE
+		var tween := create_tween()
+		tween.tween_property(mesh.material_override, "albedo_color", original_color, 0.15)
 
 
 func _die() -> void:
