@@ -81,7 +81,15 @@ func _rebuild_shop_list() -> void:
 		buy_btn.pressed.connect(func(): _on_buy_pressed(shop_item))
 		row.add_child(buy_btn)
 
+		# Hover hint with BBCode details
+		var rarity_color := ItemData.get_rarity_color(item.rarity)
+		var color_hex := rarity_color.to_html()
+		var hint_bbcode := "[b][color=%s]%s[/color][/b]\n%s\nPrice: %d gold" % [color_hex, item.item_name, item.description, item.sell_price]
+		UIFlowHoverHint.attach(row, hint_bbcode, true)
+
 		_item_list.add_child(row)
+
+	UIFlow.anim_stagger_fade(_item_list)
 
 
 func _on_buy_pressed(item: ItemData) -> void:
