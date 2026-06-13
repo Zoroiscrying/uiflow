@@ -1,5 +1,5 @@
 ## SurvivorsEventBus — game-wide decoupled communication.
-class_name SurvivorsEventBus extends UIFlowEventBus
+extends UIFlowEventBus
 
 signal enemy_killed(enemy_name: String, xp: int, gold: int)
 signal xp_gained(amount: float)

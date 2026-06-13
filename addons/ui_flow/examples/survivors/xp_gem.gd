@@ -54,21 +54,11 @@ func _physics_process(delta: float) -> void:
 
 
 func _collect() -> void:
-	var event_bus := _get_event_bus()
+	var event_bus = _get_event_bus()
 	if event_bus:
 		event_bus.xp_gained.emit(xp_amount)
 	queue_free()
 
 
-func _get_event_bus() -> SurvivorsEventBus:
-	# Try autoload first
-	var autoload := get_node_or_null("/root/SurvivorsEventBus")
-	if autoload is SurvivorsEventBus:
-		return autoload
-	# Fallback: find in scene
-	var root := get_tree().current_scene
-	if root:
-		for child in root.get_children():
-			if child is SurvivorsEventBus:
-				return child
-	return null
+func _get_event_bus():
+	return get_node_or_null("/root/SurvivorsEventBus")

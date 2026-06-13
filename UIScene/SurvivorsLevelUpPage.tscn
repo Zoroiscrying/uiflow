@@ -49,3 +49,14 @@ layout_mode = 2
 size_flags_vertical = 3
 alignment = 1
 theme_override_constants/separation = 16
+
+[node name="FeatureTag" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 1
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 320.0
+offset_bottom = 24.0
+theme_override_font_sizes/font_size = 10
+theme_override_colors/font_color = Color(0.5, 0.8, 1.0, 0.5)
+text = "is_modal | stagger_fade_in | UIFlowTooltip | anim_hover"

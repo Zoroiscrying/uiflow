@@ -27,6 +27,9 @@
 | `addons/ui_flow/examples/survivors/equipment_page.gd` | Equipment UI |
 | `addons/ui_flow/examples/survivors/pause_page.gd` | Pause menu UI |
 | `addons/ui_flow/examples/survivors/game_over_page.gd` | Death screen UI |
+| `addons/ui_flow/examples/survivors/event_bus.gd` | EventBus autoload (no class_name) |
+| `addons/ui_flow/examples/survivors/localization.gd` | i18n EN/CN autoload |
+| `addons/ui_flow/components/code_panel.gd` | UIFlowCodePanel sidebar component |
 | `UIScene/SurvivorsLevelUpPage.tscn` | Level-up scene |
 | `UIScene/SurvivorsShopPage.tscn` | Shop scene |
 | `UIScene/SurvivorsWaveSummaryPage.tscn` | Wave summary scene |
@@ -494,9 +497,12 @@ git commit -m "feat: add WeaponManager for multi-weapon auto-attack"
 
 Create `addons/ui_flow/examples/survivors/event_bus.gd`:
 
+**IMPORTANT:** Do NOT use `class_name` — it conflicts with the autoload singleton name. The autoload registered in project.godot acts as the global reference.
+
 ```gdscript
 ## SurvivorsEventBus — game-wide decoupled communication.
-class_name SurvivorsEventBus extends UIFlowEventBus
+## Registered as autoload in project.godot — access via SurvivorsEventBus singleton.
+extends UIFlowEventBus
 
 signal enemy_killed(enemy_name: String, xp: int, gold: int)
 signal xp_gained(amount: float)
@@ -1089,33 +1095,58 @@ git commit -m "feat: update backpack and equipment pages with tooltips and conte
 
 Create `pause_page.gd`:
 
+**Pause Architecture:** Only Pause/Shop/LevelUp/WaveSummary pages pause the game. Backpack/Equipment do NOT pause (game continues while managing inventory).
+
 ```gdscript
 ## SurvivorsPausePage — pause menu with resume and quit.
+## Uses get_tree().paused + process_mode = ALWAYS.
+## Engine.time_scale = 0 does NOT work (stops tweens/animations).
 class_name SurvivorsPausePage extends UIFlowPage
 
-@onready var _resume_button: Button = $VBox/ResumeButton
-@onready var _quit_button: Button = $VBox/QuitButton
+@onready var _resume_button: Button = $Dimmer/VBox/ResumeButton
+@onready var _quit_button: Button = $Dimmer/VBox/QuitButton
+@onready var _title_label: Label = $Dimmer/VBox/TitleLabel
 
 
 func _ready() -> void:
 	is_modal = true
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	_resume_button.pressed.connect(func(): UIFlow.pop())
 	_quit_button.pressed.connect(func():
-		UIFlowUI.Confirm.show_confirm("Quit?", "Return to main menu?", func():
-			get_tree().paused = false
-			UIFlow.pop_to_root()
+		UIFlowUI.Confirm.show_confirm(
+			SurvivorsLocalization.loc("quit_confirm_title"),
+			SurvivorsLocalization.loc("quit_confirm_msg"),
+			func():
+				get_tree().paused = false
+				UIFlow.pop_to_root()
 		)
 	)
 
 
 func _on_opened(_data: Variant = null) -> void:
 	get_tree().paused = true
+	_update_language()
+	SurvivorsLocalization.language_changed.connect(_update_language)
 	UIFlow.set_default_focus(_resume_button)
 
 
 func _on_closed() -> void:
 	get_tree().paused = false
+	if SurvivorsLocalization.language_changed.is_connected(_update_language):
+		SurvivorsLocalization.language_changed.disconnect(_update_language)
+
+
+func _update_language() -> void:
+	_title_label.text = SurvivorsLocalization.loc("paused")
+	_resume_button.text = SurvivorsLocalization.loc("resume")
+	_quit_button.text = SurvivorsLocalization.loc("main_menu")
 ```
+
+**Key decisions:**
+- `process_mode = PROCESS_MODE_ALWAYS` — UI still processes while game is paused
+- `get_tree().paused` — pauses game logic, NOT tweens/animations
+- Listens to `SurvivorsLocalization.language_changed` for i18n
+- Disconnects signal in `_on_closed` to avoid leaks
 
 - [ ] **Step 2: Create game over page**
 
@@ -1125,17 +1156,21 @@ Create `game_over_page.gd`:
 ## GameOverPage — death screen with restart options.
 class_name GameOverPage extends UIFlowPage
 
-@onready var _restart_button: Button = $VBox/RestartButton
-@onready var _menu_button: Button = $VBox/MenuButton
-@onready var _stats_grid: UIFlowDataGrid = $VBox/StatsGrid
+@onready var _restart_button: Button = $Dimmer/VBox/RestartButton
+@onready var _menu_button: Button = $Dimmer/VBox/MenuButton
+@onready var _stats_grid: UIFlowDataGrid = $Dimmer/VBox/StatsGrid
+@onready var _title_label: Label = $Dimmer/VBox/TitleLabel
 
 
 func _ready() -> void:
 	is_modal = true
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	_restart_button.pressed.connect(func(): UIFlow.pop_to_root())
 	_menu_button.pressed.connect(func():
-		UIFlowUI.Confirm.show_confirm("Quit?", "Return to main menu?", func():
-			UIFlow.pop_to_root()
+		UIFlowUI.Confirm.show_confirm(
+			SurvivorsLocalization.loc("quit_confirm_title"),
+			SurvivorsLocalization.loc("quit_confirm_msg"),
+			func(): UIFlow.pop_to_root()
 		)
 	)
 
@@ -1144,17 +1179,36 @@ func _on_opened(data: Variant = null) -> void:
 	if data is Dictionary:
 		var stats: Dictionary = data.get("stats", {})
 		_setup_stats(stats)
+	_update_language()
+	SurvivorsLocalization.language_changed.connect(_update_language)
 	UIFlow.set_default_focus(_restart_button)
 
 
+func _on_closed() -> void:
+	if SurvivorsLocalization.language_changed.is_connected(_update_language):
+		SurvivorsLocalization.language_changed.disconnect(_update_language)
+
+
 func _setup_stats(stats: Dictionary) -> void:
-	_stats_grid.add_column("Stat", 150, false)
-	_stats_grid.add_column("Value", 100, false)
+	_stats_grid.add_column(SurvivorsLocalization.loc("stat"), 150, false)
+	_stats_grid.add_column(SurvivorsLocalization.loc("value"), 100, false)
 	var grid_data: Array = []
 	for key in stats:
-		grid_data.append({"Stat": key, "Value": str(stats[key])})
+		grid_data.append([key, str(stats[key])])
 	_stats_grid.set_data(grid_data)
+
+
+func _update_language() -> void:
+	_title_label.text = SurvivorsLocalization.loc("game_over")
+	_restart_button.text = SurvivorsLocalization.loc("restart")
+	_menu_button.text = SurvivorsLocalization.loc("main_menu")
 ```
+
+**Key decisions:**
+- `process_mode = PROCESS_MODE_ALWAYS` — works while paused
+- Uses `SurvivorsLocalization.loc()` for i18n
+- UIFlowDataGrid uses Array of Arrays (not Dictionaries)
+- Scene node type for StatsGrid must be `PanelContainer` (not `Control`)
 
 - [ ] **Step 3: Commit**
 
@@ -1268,16 +1322,20 @@ Checklist:
 - [ ] UIFlowWorldUI on enemy health bars
 - [ ] bind_visible on wave indicator
 - [ ] bind_list on weapon slots
+- [ ] bind_signal_t on DPS display
 - [ ] UIFlowEventBus for game events
 - [ ] UIInputActionNode for I/P/Escape
 - [ ] UIFlow.replace() for summary → shop
 - [ ] UIFlow.pop_to_root() for restart
-- [ ] UIFlowSequencedEffect on level-up cards
 - [ ] stagger_fade_in on shop items and cards
 - [ ] UIFlowConfirmDialog on quit
-- [ ] UIFlowContextMenu on weapon slots
-- [ ] Navigation guard on shop
+- [ ] UIFlowContextMenu on weapon slots (right-click)
+- [ ] UIFlowDragDrop on backpack slots
+- [ ] Navigation guard on shop (block during wave)
 - [ ] Modal vs non-modal coexistence
+- [ ] Code panel (F1 toggle) with API snippets
+- [ ] Feature labels on all scenes
+- [ ] EN/CN language toggle
 
 - [ ] **Step 3: Run full test suite**
 
@@ -1288,4 +1346,304 @@ Expected: All pass
 ```bash
 git add -A
 git commit -m "feat: survivors demo complete — UIFlow capability showcase"
+```
+
+---
+
+## Task 15: Code Panel & Feature Labels
+
+**Goal:** Each UI page displays its UIFlow API usage via a collapsible sidebar and a feature tag label.
+
+**Files:**
+- Create: `addons/ui_flow/components/code_panel.gd`
+- Modify: `addons/ui_flow/examples/survivors/arpg_main.gd`
+- Modify: `addons/ui_flow/examples/main.gd`
+- Modify: All `.tscn` scenes (add FeatureTag labels)
+
+- [ ] **Step 1: Create UIFlowCodePanel component**
+
+Create `addons/ui_flow/components/code_panel.gd`:
+
+```gdscript
+## UIFlowCodePanel — collapsible sidebar showing UIFlow API snippets.
+class_name UIFlowCodePanel extends Control
+
+var _panel: PanelContainer
+var _title_label: Label
+var _snippets_container: VBoxContainer
+var _tab_button: Button
+var _is_open: bool = false
+var _panel_width: float = 380.0
+
+
+func _ready() -> void:
+	var vp := get_viewport()
+	if vp:
+		size = vp.get_visible_rect().size
+	get_viewport().size_changed.connect(func():
+		var v := get_viewport()
+		if v:
+			size = v.get_visible_rect().size
+			_tab_button.position = Vector2(size.x - 40, size.y / 2 - 40)
+			_panel.position = Vector2(size.x - _panel_width, 0)
+			_panel.size = Vector2(_panel_width, size.y)
+	)
+	_build_tab_button()
+	_build_panel()
+
+
+func _build_tab_button() -> void:
+	_tab_button = Button.new()
+	_tab_button.text = "< >"
+	_tab_button.custom_minimum_size = Vector2(32, 80)
+	_tab_button.position = Vector2(size.x - 40, size.y / 2 - 40)
+	_tab_button.pressed.connect(func(): toggle())
+	add_child(_tab_button)
+
+
+func _build_panel() -> void:
+	_panel = PanelContainer.new()
+	_panel.visible = false
+	_panel.position = Vector2(size.x - _panel_width, 0)
+	_panel.size = Vector2(_panel_width, size.y)
+	add_child(_panel)
+
+	var root_vbox := VBoxContainer.new()
+	root_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	root_vbox.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_panel.add_child(root_vbox)
+
+	var header := HBoxContainer.new()
+	header.add_theme_constant_override("separation", 8)
+	root_vbox.add_child(header)
+
+	_title_label = Label.new()
+	_title_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_title_label.add_theme_font_size_override("font_size", 14)
+	_title_label.text = "UIFlow API"
+	header.add_child(_title_label)
+
+	var close_btn := Button.new()
+	close_btn.text = "×"
+	close_btn.custom_minimum_size = Vector2(28, 28)
+	close_btn.pressed.connect(func(): toggle())
+	header.add_child(close_btn)
+
+	var sep := HSeparator.new()
+	root_vbox.add_child(sep)
+
+	var scroll := ScrollContainer.new()
+	scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	root_vbox.add_child(scroll)
+
+	_snippets_container = VBoxContainer.new()
+	_snippets_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_snippets_container.add_theme_constant_override("separation", 12)
+	scroll.add_child(_snippets_container)
+
+
+func toggle() -> void:
+	_is_open = not _is_open
+	_panel.visible = _is_open
+	_tab_button.visible = not _is_open
+
+
+func show_snippets(page_name: String, snippets: Array) -> void:
+	for child in _snippets_container.get_children():
+		child.queue_free()
+	_title_label.text = page_name
+	for snippet in snippets:
+		var block := VBoxContainer.new()
+		block.add_theme_constant_override("separation", 4)
+		var label := Label.new()
+		label.text = snippet.get("title", "")
+		label.add_theme_font_size_override("font_size", 12)
+		label.add_theme_color_override("font_color", Color(0.5, 0.8, 1.0))
+		block.add_child(label)
+		var code_label := Label.new()
+		code_label.text = snippet.get("code", "")
+		code_label.add_theme_font_size_override("font_size", 11)
+		code_label.add_theme_color_override("font_color", Color(0.85, 0.85, 0.9))
+		code_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		block.add_child(code_label)
+		_snippets_container.add_child(block)
+	_panel.visible = true
+	_is_open = true
+	_tab_button.visible = false
+```
+
+**Architecture:** Code panel is added directly to the main node (not CanvasLayer). Node order ensures it renders on top of UIFlow pages.
+
+- [ ] **Step 2: Add code panel to Survivors main controller**
+
+In `arpg_main.gd`, add:
+
+```gdscript
+const _PAGE_SNIPPETS: Dictionary = {
+	"SurvivorsHUDPage": [
+		{"title": "bind_signal — Bind signal to property", "code": "UIFlow.bind_signal(\n    _health_bar, \"value\",\n    player_stats.health_changed)"},
+		{"title": "bind_signal_t — Signal with transform", "code": "UIFlow.bind_signal_t(\n    _gold_label, \"text\",\n    player_stats.gold_changed,\n    func(v): return \"%d G\" % v)"},
+		{"title": "bind_visible — Conditional visibility", "code": "UIFlow.bind_visible(\n    _wave_label,\n    player_stats.wave_active_changed,\n    func(active): return active)"},
+		{"title": "UIFlowDataStyle — Data-driven styling", "code": "var style := UIFlowDataStyle.new()\nstyle.add_rule(\n    func(v): return v < max_hp * 0.25,\n    {\"pulse\": true})\nstyle.bind_signal(health_changed)"},
+		{"title": "UIFlowTooltip — Hover tooltip", "code": "UIFlowTooltip.attach(slot,\n    \"Pistol\\nDMG: 5 | CD: 0.3s\")"},
+		{"title": "UIInputActionNode — Input declaration", "code": "# Scene node:\nOpenBackpack (UIInputActionNode)\n  action_name = &\"open_backpack\"\n  godot_action = &\"open_backpack\"\n  label = \"Backpack\""},
+	],
+	# ... snippets for each page class
+}
+
+var _code_panel: UIFlowCodePanel
+
+func _setup_code_panel() -> void:
+	_code_panel = UIFlowCodePanel.new()
+	_code_panel.name = "CodePanel"
+	add_child(_code_panel)
+	UIFlow.page_opened.connect(_on_page_opened)
+
+func _on_page_opened(page_class: GDScript) -> void:
+	var class_name_str: String = page_class.get_global_name()
+	var snippets: Array = _PAGE_SNIPPETS.get(class_name_str, [])
+	if not snippets.is_empty():
+		_code_panel.show_snippets(class_name_str, snippets)
+```
+
+F1 key toggles the panel (add to `_unhandled_input`).
+
+- [ ] **Step 3: Add feature labels to all .tscn scenes**
+
+Add a `FeatureTag` Label node to each scene, top-left corner, listing UIFlow features used:
+
+```
+[node name="FeatureTag" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 1
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 320.0
+offset_bottom = 24.0
+theme_override_font_sizes/font_size = 10
+theme_override_colors/font_color = Color(0.5, 0.8, 1.0, 0.5)
+text = "bind_signal | bind_signal_t | UIFlowDataStyle | UIFlowTooltip"
+```
+
+- [ ] **Step 4: Add feature comments to all .gd files**
+
+Each page script header should list UIFlow features demonstrated:
+
+```gdscript
+## SurvivorsHUDPage — game HUD with UIFlow bindings showcase.
+##
+## UIFlow Features Demonstrated:
+## - bind_signal: Health/XP bar updates from reactive signals
+## - bind_signal_t: Level/gold label text transforms
+## - UIFlowDataStyle: Health bar pulse effect when HP < 25%
+## - UIFlowTooltip: Weapon slot hover tooltips
+```
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add addons/ui_flow/components/code_panel.gd addons/ui_flow/examples/survivors/arpg_main.gd addons/ui_flow/examples/main.gd UIScene/
+git commit -m "feat: add code panel, feature labels, and feature comments"
+```
+
+---
+
+## Task 16: Localization (EN/CN)
+
+**Goal:** All UI text supports English/Chinese switching via a language toggle button.
+
+**Files:**
+- Create: `addons/ui_flow/examples/survivors/localization.gd`
+- Modify: `project.godot` (add autoload)
+- Modify: All page scripts (use `SurvivorsLocalization.loc()`)
+- Modify: `UIScene/SurvivorsHUDPage.tscn` (add LangButton)
+
+- [ ] **Step 1: Create SurvivorsLocalization autoload**
+
+Create `addons/ui_flow/examples/survivors/localization.gd`:
+
+```gdscript
+## SurvivorsLocalization — simple EN/CN language switching.
+extends Node
+
+signal language_changed
+
+var _lang: String = "en"
+var _strings: Dictionary = {}
+
+func _init() -> void:
+	_init_strings()
+
+func _init_strings() -> void:
+	_strings = {
+		"controls_hint": {
+			"en": "WASD: Move | Auto-shoot | I: Backpack | P: Equipment | Esc: Pause | F1: Source",
+			"cn": "WASD: 移动 | 自动射击 | I: 背包 | P: 装备 | Esc: 暂停 | F1: 源码",
+		},
+		# ... all translatable strings
+	}
+
+func loc(key: String) -> String:
+	if _strings.has(key):
+		var entry: Dictionary = _strings[key]
+		return entry.get(_lang, entry.get("en", key))
+	return key
+
+func locf(key: String, args: Array) -> String:
+	return loc(key) % args
+
+func toggle_language() -> void:
+	_lang = "cn" if _lang == "en" else "en"
+	language_changed.emit()
+```
+
+**IMPORTANT:** Method is named `loc()` not `tr()` — `tr()` is a built-in Node method with a different signature.
+
+- [ ] **Step 2: Register autoload in project.godot**
+
+```ini
+SurvivorsLocalization="*res://addons/ui_flow/examples/survivors/localization.gd"
+```
+
+- [ ] **Step 3: Add language toggle to HUD scene**
+
+Add a Button node to `SurvivorsHUDPage.tscn`:
+
+```
+[node name="LangButton" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 1
+offset_left = -50.0
+offset_top = 4.0
+offset_right = -8.0
+offset_bottom = 30.0
+theme_override_font_sizes/font_size = 12
+text = "EN"
+```
+
+Connect in HUD script:
+```gdscript
+_lang_button.pressed.connect(func(): SurvivorsLocalization.toggle_language())
+SurvivorsLocalization.language_changed.connect(_update_language)
+```
+
+- [ ] **Step 4: Update all page scripts to use loc()**
+
+Replace hardcoded strings with `SurvivorsLocalization.loc("key")` and `SurvivorsLocalization.locf("key", [args])`.
+
+Pages that need localization:
+- HUD: controls hint, DPS label, wave notifications
+- LevelUp: title
+- Shop: buy button, toast messages
+- WaveSummary: title, column headers
+- Backpack: context menu items
+- Pause: title, buttons, confirm dialog
+- GameOver: title, buttons, stat columns
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add addons/ui_flow/examples/survivors/localization.gd project.godot UIScene/SurvivorsHUDPage.tscn
+git commit -m "feat: add EN/CN localization with language toggle"
 ```

@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://addons/ui_flow/examples/survivors/hud_page.gd" id="1"]
+[ext_resource type="Script" path="res://addons/ui_flow/core/ui_flow_input_action_node.gd" id="2"]
 
 [node name="SurvivorsHUDPage" type="Control"]
 layout_mode = 3
@@ -68,6 +69,12 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 14
 text = "0 G"
 
+[node name="DPSLabel" type="Label" parent="HUD/Margin/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "DPS: 0"
+modulate = Color(1, 1, 1, 0.6)
+
 [node name="WaveLabel" type="Label" parent="HUD/Margin/VBox"]
 visible = false
 layout_mode = 2
@@ -91,6 +98,55 @@ offset_right = -16.0
 grow_horizontal = 2
 grow_vertical = 0
 theme_override_font_sizes/font_size = 13
-text = "WASD: Move | Auto-shoot | I: Backpack | P: Equipment | Esc: Pause"
+text = "WASD: Move | Auto-shoot | I: Backpack | P: Equipment | Esc: Pause | F1: Source"
 horizontal_alignment = 1
 modulate = Color(1, 1, 1, 0.4)
+
+[node name="LangButton" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 1
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = -50.0
+offset_top = 4.0
+offset_right = -8.0
+offset_bottom = 30.0
+grow_horizontal = 0
+theme_override_font_sizes/font_size = 12
+text = "EN"
+
+[node name="FeatureTag" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 1
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = -320.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = 24.0
+grow_horizontal = 0
+theme_override_font_sizes/font_size = 10
+theme_override_colors/font_color = Color(0.5, 0.8, 1.0, 0.5)
+text = "bind_signal | bind_signal_t | bind_visible | UIFlowDataStyle | UIFlowTooltip | UIInputActionNode"
+horizontal_alignment = 2
+
+[node name="OpenBackpack" type="Node" parent="."]
+script = ExtResource("2")
+action_name = &"open_backpack"
+action_type = 0
+godot_action = &"open_backpack"
+label = "Backpack"
+
+[node name="OpenEquipment" type="Node" parent="."]
+script = ExtResource("2")
+action_name = &"open_equipment"
+action_type = 0
+godot_action = &"open_equipment"
+label = "Equipment"
+
+[node name="PauseAction" type="Node" parent="."]
+script = ExtResource("2")
+action_name = &"pause"
+action_type = 0
+godot_action = &"ui_cancel"
+label = "Pause"

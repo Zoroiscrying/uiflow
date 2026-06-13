@@ -1,4 +1,10 @@
-## Equipment Page — shows equipment slots with drag-and-drop equip/unequip.
+## SurvivorsEquipmentPage — equipment slots with stat display.
+##
+## UIFlow Features Demonstrated:
+## - UIFlowItemSlot: Equipment slots with accept_type filtering
+## - UIFlowDataStyle: Stat bonus color coding (green/red)
+## - UIFlowHoverHint: BBCode equipment details
+## - signal connect/disconnect lifecycle in _on_opened/_on_closed
 class_name SurvivorsEquipmentPage extends UIFlowPage
 
 @export var equipment_data: EquipmentData
@@ -114,7 +120,7 @@ func _update_stats() -> void:
 		bonuses["attack"], bonuses["defense"],
 		bonuses["health"], bonuses["mana"]
 	]
-	var total := bonuses["attack"] + bonuses["defense"] + bonuses["health"] + bonuses["mana"]
+	var total: int = int(bonuses["attack"]) + int(bonuses["defense"]) + int(bonuses["health"]) + int(bonuses["mana"])
 	_stat_style.evaluate(total)
 
 

@@ -1,7 +1,15 @@
 ## SurvivorsLevelUpPage — card selection on level up.
+##
+## UIFlow Features Demonstrated:
+## - is_modal: Blocks input to pages below
+## - UIFlowTooltip: Card hover tooltips
+## - UIFlow.anim_stagger_fade: Staggered card entry animation
+## - UIFlow.anim_hover_enter/exit: Card hover scale animation
+## - UIFlow.pop() with data callback
 class_name SurvivorsLevelUpPage extends UIFlowPage
 
 @onready var _card_container: HBoxContainer = $Dimmer/VBox/CardContainer
+@onready var _title_label: Label = $Dimmer/VBox/TitleLabel
 
 var _cards: Array = []
 var _on_selected: Callable
@@ -9,9 +17,12 @@ var _on_selected: Callable
 
 func _ready() -> void:
 	is_modal = true
+	process_mode = Node.PROCESS_MODE_ALWAYS
 
 
 func _on_opened(data: Variant = null) -> void:
+	get_tree().paused = true
+	_title_label.text = SurvivorsLocalization.loc("level_up_title")
 	if data is Dictionary:
 		_cards = data.get("cards", [])
 		_on_selected = data.get("on_selected", Callable())
@@ -78,3 +89,7 @@ func _select_card(index: int) -> void:
 	if _on_selected.is_valid():
 		_on_selected.call(_cards[index])
 	UIFlow.pop()
+
+
+func _on_closed() -> void:
+	get_tree().paused = false

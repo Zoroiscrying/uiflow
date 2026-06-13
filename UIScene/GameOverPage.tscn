@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://addons/ui_flow/examples/survivors/game_over_page.gd" id="1"]
+[ext_resource type="Script" path="res://addons/ui_flow/components/data_grid.gd" id="2"]
 
 [node name="GameOverPage" type="Control"]
 layout_mode = 3
@@ -21,6 +22,17 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 0.6)
 mouse_filter = 2
+
+[node name="FeatureTag" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 1
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 380.0
+offset_bottom = 24.0
+theme_override_font_sizes/font_size = 10
+theme_override_colors/font_color = Color(0.5, 0.8, 1.0, 0.5)
+text = "is_modal | UIFlowDataGrid | UIFlowUI.Confirm | pop_to_root"
 
 [node name="VBox" type="VBoxContainer" parent="Dimmer"]
 layout_mode = 1
@@ -48,6 +60,7 @@ horizontal_alignment = 1
 layout_mode = 2
 size_flags_vertical = 3
 custom_minimum_size = Vector2(0, 120)
+script = ExtResource("2")
 
 [node name="RestartButton" type="Button" parent="Dimmer/VBox"]
 layout_mode = 2

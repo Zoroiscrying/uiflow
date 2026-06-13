@@ -50,16 +50,10 @@ func _ready() -> void:
 
 
 func _create_health_bar() -> void:
-	var viewport := SubViewport.new()
-	viewport.size = Vector2i(200, 20)
-	viewport.transparent_bg = true
-	viewport.handle_input_locally = false
-	add_child(viewport)
-
 	var bar := ProgressBar.new()
 	bar.max_value = stats.max_health
 	bar.value = stats.health
-	bar.set_anchors_preset(Control.PRESET_FULL_RECT)
+	bar.custom_minimum_size = Vector2(60, 6)
 	bar.show_percentage = false
 
 	var bg_style := StyleBoxFlat.new()
@@ -72,7 +66,6 @@ func _create_health_bar() -> void:
 	fill_style.set_corner_radius_all(2)
 	bar.add_theme_stylebox_override("fill", fill_style)
 
-	viewport.add_child(bar)
 	_health_bar = bar
 
 	stats.health_changed.connect(func(v: float):
@@ -87,12 +80,21 @@ func _create_health_bar() -> void:
 		bar.add_theme_stylebox_override("fill", fill_style)
 	)
 
-	var sprite := Sprite3D.new()
-	sprite.texture = viewport.get_texture()
-	sprite.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-	sprite.pixel_size = 0.01
-	sprite.position = Vector3(0, 2.5, 0)
-	add_child(sprite)
+	# Use UIFlowWorldUI to project health bar above enemy
+	var world_ui := UIFlowWorldUI.new()
+	world_ui.target = self
+	world_ui.world_offset = Vector3(0, 2.2, 0)
+	world_ui.offset = Vector2(-30, 0)
+	bar.size = Vector2(60, 6)
+	world_ui.add_child(bar)
+
+	# Add to UIFlow page container (so it's in the UI tree)
+	var page_container := UIFlow._page_container
+	if page_container:
+		page_container.add_child(world_ui)
+	else:
+		# Fallback: add to current scene
+		get_tree().current_scene.add_child(world_ui)
 
 
 func _physics_process(delta: float) -> void:

@@ -11,6 +11,10 @@ signal level_changed(value: int)
 signal gold_changed(value: int)
 signal attack_changed(value: int)
 signal weapons_changed()
+signal wave_active_changed(active: bool)
+
+var wave_active: bool = false:
+	set(v): wave_active = v; wave_active_changed.emit(wave_active)
 
 var max_health: float = 100.0:
 	set(v): max_health = v; max_health_changed.emit(max_health)

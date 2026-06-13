@@ -1,4 +1,12 @@
-## Inventory Page — grid-based backpack with drag-and-drop.
+## SurvivorsBackpackPage — weapon backpack with drag-drop and context menu.
+##
+## UIFlow Features Demonstrated:
+## - UIFlowInventoryGrid: Grid layout bound to InventoryData
+## - UIFlowTooltip: Item slot hover tooltips
+## - UIFlowContextMenu: Right-click item actions
+## - UIFlowDragDrop / UIFlowDropTarget: Item drag between slots
+## - signal connect/disconnect lifecycle in _on_opened/_on_closed
+## - data parameter passing via UIFlow.push()
 class_name SurvivorsBackpackPage extends UIFlowPage
 
 @export var inventory_data: InventoryData
@@ -25,6 +33,7 @@ func _on_opened(_data: Variant = null) -> void:
 	if inventory_data:
 		_grid.setup(inventory_data)
 		_attach_slot_tooltips()
+		_attach_context_menus()
 
 	if equipment_data:
 		if not equipment_data.stats_changed.is_connected(_update_stats_display):
@@ -58,6 +67,40 @@ func _attach_slot_tooltips() -> void:
 				UIFlowTooltip.attach(slot, item.item_name)
 			else:
 				UIFlowTooltip.attach(slot, "Empty Slot")
+
+
+func _attach_context_menus() -> void:
+	for slot in _grid.get_children():
+		if slot is UIFlowItemSlot:
+			slot.gui_input.connect(func(event: InputEvent):
+				if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_RIGHT:
+					var item: ItemData = slot.get_item()
+					if item:
+						_show_item_context(item, slot, event.global_position)
+			)
+
+
+func _show_item_context(item: ItemData, slot: UIFlowItemSlot, pos: Vector2) -> void:
+	var menu := UIFlowContextMenu.new()
+	menu.add_item(SurvivorsLocalization.loc("examine"), func():
+		UIFlowUI.Toast.show_toast("%s: %s" % [item.item_name, item.description], "info", 3.0)
+	)
+
+	if item.type == ItemData.Type.WEAPON or item.type == ItemData.Type.ARMOR or item.type == ItemData.Type.ACCESSORY:
+		menu.add_item(SurvivorsLocalization.loc("equip"), func():
+			if equipment_data:
+				equipment_data.equip(item)
+				inventory_data.remove_item(slot.slot_index)
+				UIFlowUI.Toast.show_toast(SurvivorsLocalization.locf("equipped_item", [item.item_name]), "success")
+		)
+
+	menu.add_separator()
+	menu.add_item(SurvivorsLocalization.loc("drop"), func():
+		inventory_data.remove_item(slot.slot_index)
+		UIFlowUI.Toast.show_toast(SurvivorsLocalization.locf("dropped_item", [item.item_name]), "info")
+	)
+
+	menu.show_at(pos)
 
 
 func _on_back() -> void:

@@ -20,6 +20,7 @@ config/icon="res://icon.svg"
 UIFlow="*res://addons/ui_flow/core/ui_flow_autoload.tscn"
 UIFlowUI="*res://addons/ui_flow/core/ui_flow_ui_autoload.tscn"
 SurvivorsEventBus="*res://addons/ui_flow/examples/survivors/event_bus.gd"
+SurvivorsLocalization="*res://addons/ui_flow/examples/survivors/localization.gd"
 
 [display]
 

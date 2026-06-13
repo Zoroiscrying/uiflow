@@ -1,4 +1,11 @@
-## Shop Page — buy/sell items with inventory integration.
+## Shop Page — buy/sell items with UIFlow components.
+##
+## UIFlow Features Demonstrated:
+## - is_modal: Blocks input to pages below
+## - UIFlowHoverHint: BBCode hover details on items
+## - UIFlow.anim_stagger_fade: Staggered item list entry
+## - Dynamic child building (UIFlowUtils pattern)
+## - data parameter passing via UIFlow.push()
 class_name SurvivorsShopPage extends UIFlowPage
 
 @export var inventory_data: InventoryData
@@ -18,6 +25,7 @@ var _player_stats: SurvivorsPlayerStats
 
 func _ready() -> void:
 	is_modal = true
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	_close_button.pressed.connect(func(): UIFlow.pop())
 	_confirm_buy.pressed.connect(_on_buy_confirmed)
 	_confirm_cancel.pressed.connect(_on_buy_cancelled)
@@ -25,6 +33,7 @@ func _ready() -> void:
 
 
 func _on_opened(data: Variant = null) -> void:
+	get_tree().paused = true
 	if data is Dictionary:
 		_player_stats = data.get("player_stats", null)
 		_shop_items = data.get("items", [])
@@ -75,7 +84,7 @@ func _rebuild_shop_list() -> void:
 		row.add_child(price_label)
 
 		var buy_btn := Button.new()
-		buy_btn.text = "Buy"
+		buy_btn.text = SurvivorsLocalization.loc("buy")
 		buy_btn.custom_minimum_size = Vector2(60, 32)
 		var shop_item: ItemData = item
 		buy_btn.pressed.connect(func(): _on_buy_pressed(shop_item))
@@ -109,13 +118,13 @@ func _on_buy_confirmed() -> void:
 		if inventory_data:
 			var slot := inventory_data.add_item(_selected_item)
 			if slot >= 0:
-				UIFlowUI.Toast.show_toast("Bought %s!" % _selected_item.item_name, "success")
+				UIFlowUI.Toast.show_toast(SurvivorsLocalization.locf("bought_item", [_selected_item.item_name]), "success")
 			else:
 				UIFlowUI.Toast.show_toast("Inventory full!", "warning")
 				_player_stats.gold += _selected_item.sell_price
 		_update_gold_display()
 	else:
-		UIFlowUI.Toast.show_toast("Not enough gold!", "error")
+		UIFlowUI.Toast.show_toast(SurvivorsLocalization.loc("not_enough_gold"), "error")
 
 	_selected_item = null
 
@@ -135,3 +144,7 @@ func _on_back() -> void:
 		_on_buy_cancelled()
 	else:
 		UIFlow.pop()
+
+
+func _on_closed() -> void:
+	get_tree().paused = false

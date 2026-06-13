@@ -1,4 +1,12 @@
 ## SurvivorsHUDPage — game HUD with UIFlow bindings showcase.
+##
+## UIFlow Features Demonstrated:
+## - bind_signal: Health/XP bar updates from reactive signals
+## - bind_signal_t: Level/gold label text transforms
+## - UIFlowDataStyle: Health bar pulse effect when HP < 25%
+## - UIFlowTooltip: Weapon slot hover tooltips
+## - _on_hidden/_on_shown: Page lifecycle for pause/resume
+## - Binding cleanup in _on_closed
 class_name SurvivorsHUDPage extends UIFlowPage
 
 @export var player_stats: SurvivorsPlayerStats
@@ -8,13 +16,22 @@ class_name SurvivorsHUDPage extends UIFlowPage
 @onready var _xp_bar: ProgressBar = $HUD/Margin/VBox/XPBar
 @onready var _level_label: Label = $HUD/Margin/VBox/LevelLabel
 @onready var _gold_label: Label = $HUD/Margin/VBox/GoldLabel
+@onready var _dps_label: Label = $HUD/Margin/VBox/DPSLabel
 @onready var _wave_label: Label = $HUD/Margin/VBox/WaveLabel
 @onready var _weapon_slots: HBoxContainer = $HUD/Margin/VBox/WeaponSlots
+@onready var _controls_hint: Label = $ControlsHint
+@onready var _lang_button: Button = $LangButton
 
 var _bindings: Array[UIFlowBindUtils.UIFlowBinding] = []
 var _damage_overlay: ColorRect
 var _shake_tween: Tween
 var _health_style: UIFlowDataStyle
+
+
+func _ready() -> void:
+	_lang_button.pressed.connect(func(): SurvivorsLocalization.toggle_language())
+	SurvivorsLocalization.language_changed.connect(_update_language)
+	_update_language()
 
 
 func shake_camera(duration: float = 0.2, intensity: float = 6.0) -> void:
@@ -64,6 +81,19 @@ func _on_opened(_data: Variant = null) -> void:
 	# Gold
 	_bindings.append(UIFlow.bind_signal_t(_gold_label, "text", player_stats.gold_changed,
 		func(v): return "%d G" % v))
+
+	# Wave indicator — visible only during active wave
+	_bindings.append(UIFlow.bind_visible(_wave_label, player_stats.wave_active_changed,
+		func(active): return active))
+
+	# DPS — updates when weapons change
+	_bindings.append(UIFlow.bind_signal_t(_dps_label, "text", player_stats.weapons_changed,
+		func(_v):
+			var total_dps := 0.0
+			for w in player_stats.get_weapons():
+				if w: total_dps += w.damage / w.cooldown
+			return "%s: %d" % [SurvivorsLocalization.loc("dps_label"), int(total_dps)]
+	))
 
 	# Weapon slots — rebuild on weapons_changed
 	player_stats.weapons_changed.connect(_rebuild_weapon_slots)
@@ -118,11 +148,15 @@ func show_wave_start(wave: int) -> void:
 	_wave_label.text = "Wave %d" % wave
 	_wave_label.visible = true
 	_wave_label.modulate.a = 1.0
-	UIFlowUI.Toast.show_toast("Wave %d incoming!" % wave, "warning", 2.0)
+	UIFlowUI.Toast.show_toast(SurvivorsLocalization.locf("wave_incoming", [wave]), "warning", 2.0)
 	var tween: Tween = create_tween()
 	tween.tween_interval(2.0)
 	tween.tween_property(_wave_label, "modulate:a", 0.0, 0.5)
 	tween.finished.connect(func(): _wave_label.visible = false)
+
+
+func show_wave_complete(_wave: int) -> void:
+	UIFlowUI.Toast.show_toast(SurvivorsLocalization.loc("wave_cleared"), "success", 2.0)
 
 
 func show_damage_number(amount: int, world_pos: Vector3) -> void:
@@ -143,3 +177,8 @@ func show_damage_number(amount: int, world_pos: Vector3) -> void:
 	tween.tween_property(label, "position:y", label.position.y - 60, 0.8)
 	tween.tween_property(label, "modulate:a", 0.0, 0.8).set_delay(0.3)
 	tween.finished.connect(label.queue_free)
+
+
+func _update_language() -> void:
+	_controls_hint.text = SurvivorsLocalization.loc("controls_hint")
+	_lang_button.text = SurvivorsLocalization.loc("language")

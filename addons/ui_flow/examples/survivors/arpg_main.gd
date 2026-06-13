@@ -15,7 +15,8 @@ var _equipment_data: EquipmentData
 var _shop_items: Array[ItemData] = []
 var _level_up_weapons: Array[WeaponData] = []
 var _kill_tracker: Dictionary = {}
-var _event_bus: SurvivorsEventBus
+var _event_bus  # SurvivorsEventBus autoload
+var _code_panel: UIFlowCodePanel
 
 @onready var _player: CharacterBody3D = $Player
 @onready var _spawn_points: Node3D = $SpawnPoints
@@ -31,10 +32,19 @@ func _ready() -> void:
 	_setup_level_up_weapons()
 	_setup_event_bus()
 	_setup_player()
+	_setup_code_panel()
 
 	await get_tree().process_frame
 
 	UIFlow.push(SurvivorsHUDPage, {"player_stats": player_stats})
+
+	# Navigation guard: block shop during active wave
+	UIFlow.add_page_guard(SurvivorsShopPage, func(_from, _data):
+		if player_stats.wave_active:
+			UIFlowUI.Toast.show_toast(SurvivorsLocalization.loc("cant_shop_during_wave"), "warning")
+			return false
+		return true
+	)
 
 	_between_waves = true
 	_wave_timer = 2.0
@@ -132,15 +142,10 @@ func _setup_level_up_weapons() -> void:
 
 
 func _setup_event_bus() -> void:
-	# Use autoload if available, otherwise create local instance
-	var autoload := get_node_or_null("/root/SurvivorsEventBus")
-	if autoload is SurvivorsEventBus:
-		_event_bus = autoload
-	else:
-		_event_bus = SurvivorsEventBus.new()
-		_event_bus.name = "SurvivorsEventBus"
-		add_child(_event_bus)
-	_event_bus.xp_gained.connect(_on_xp_gained)
+	# Use autoload singleton
+	_event_bus = get_node_or_null("/root/SurvivorsEventBus")
+	if _event_bus:
+		_event_bus.xp_gained.connect(_on_xp_gained)
 
 
 func _setup_player() -> void:
@@ -164,6 +169,67 @@ func _setup_player() -> void:
 	_player._weapon_manager = weapon_mgr
 
 
+# Map page class → API snippets for code panel
+const _PAGE_SNIPPETS: Dictionary = {
+	"SurvivorsHUDPage": [
+		{"title": "bind_signal — Bind signal to property", "code": "UIFlow.bind_signal(\n    _health_bar, \"value\",\n    player_stats.health_changed)"},
+		{"title": "bind_signal_t — Signal with transform", "code": "UIFlow.bind_signal_t(\n    _gold_label, \"text\",\n    player_stats.gold_changed,\n    func(v): return \"%d G\" % v)"},
+		{"title": "bind_visible — Conditional visibility", "code": "UIFlow.bind_visible(\n    _wave_label,\n    player_stats.wave_active_changed,\n    func(active): return active)"},
+		{"title": "UIFlowDataStyle — Data-driven styling", "code": "var style := UIFlowDataStyle.new()\nstyle.add_rule(\n    func(v): return v < max_hp * 0.25,\n    {\"pulse\": true})\nstyle.bind_signal(health_changed)"},
+		{"title": "UIFlowTooltip — Hover tooltip", "code": "UIFlowTooltip.attach(slot,\n    \"Pistol\\nDMG: 5 | CD: 0.3s\")"},
+		{"title": "UIInputActionNode — Input declaration", "code": "# Scene node:\nOpenBackpack (UIInputActionNode)\n  action_name = &\"open_backpack\"\n  godot_action = &\"open_backpack\"\n  label = \"Backpack\""},
+	],
+	"SurvivorsLevelUpPage": [
+		{"title": "stagger_fade_in — Staggered entry", "code": "UIFlow.anim_stagger_fade(_card_container)"},
+		{"title": "anim_hover — Hover animation", "code": "card.mouse_entered.connect(\n    func(): UIFlow.anim_hover_enter(card))\ncard.mouse_exited.connect(\n    func(): UIFlow.anim_hover_exit(card))"},
+		{"title": "UIFlow.pop() — Close page", "code": "func _select_card(index):\n    _on_selected.call(_cards[index])\n    UIFlow.pop()"},
+	],
+	"SurvivorsShopPage": [
+		{"title": "UIFlowHoverHint — BBCode hint", "code": "UIFlowHoverHint.attach(row,\n    \"[b]Iron Sword[/b]\\nATK +5\",\n    true)"},
+		{"title": "stagger_fade_in — List animation", "code": "UIFlow.anim_stagger_fade(_item_list)"},
+		{"title": "Data parameter passing", "code": "UIFlow.push(SurvivorsShopPage, {\n    \"player_stats\": player_stats,\n    \"items\": _shop_items,\n})"},
+	],
+	"SurvivorsWaveSummaryPage": [
+		{"title": "UIFlowDataGrid — Data table", "code": "grid.add_column(\"Enemy\", 150, false)\ngrid.add_column(\"Killed\", 80, true)\ngrid.set_data([[\"Goblin\", \"5\"], ...])"},
+		{"title": "Callable callback passing", "code": "UIFlow.push(SurvivorsWaveSummaryPage, {\n    \"on_shop\": func(): open_shop(),\n    \"on_skip\": func(): next_wave(),\n})"},
+	],
+	"SurvivorsBackpackPage": [
+		{"title": "UIFlowInventoryGrid — Grid layout", "code": "@onready var _grid: UIFlowInventoryGrid\n_grid.setup(inventory_data)"},
+		{"title": "UIFlowContextMenu — Right-click menu", "code": "var menu := UIFlowContextMenu.new()\nmenu.add_item(\"Equip\", func(): equip())\nmenu.add_item(\"Drop\", func(): drop())\nmenu.show_at(pos)"},
+		{"title": "UIFlowTooltip — Item tooltip", "code": "UIFlowTooltip.attach(slot,\n    item.item_name)"},
+	],
+	"SurvivorsEquipmentPage": [
+		{"title": "UIFlowItemSlot — Equipment slot", "code": "var slot := UIFlowItemSlot.new()\nslot.accept_type = &\"weapon\"\nslot.is_equip_slot = true"},
+		{"title": "UIFlowDataStyle — Stat coloring", "code": "style.add_rule(\n    func(v): return v > 0,\n    {\"modulate\": Color.GREEN})"},
+		{"title": "UIFlowHoverHint — BBCode hint", "code": "UIFlowHoverHint.attach(slot,\n    \"[b]Iron Sword[/b]\\nATK +5\")"},
+	],
+	"SurvivorsPausePage": [
+		{"title": "process_mode = ALWAYS", "code": "func _ready():\n    process_mode = Node.PROCESS_MODE_ALWAYS"},
+		{"title": "get_tree().paused", "code": "func _on_opened():\n    get_tree().paused = true\nfunc _on_closed():\n    get_tree().paused = false"},
+		{"title": "UIFlowUI.Confirm — Confirm dialog", "code": "UIFlowUI.Confirm.show_confirm(\n    \"Quit?\", \"Return to menu?\",\n    func(): UIFlow.pop_to_root())"},
+	],
+	"GameOverPage": [
+		{"title": "UIFlowDataGrid — Stats table", "code": "grid.add_column(\"Stat\", 150)\ngrid.add_column(\"Value\", 100)\ngrid.set_data([[\"Waves\", \"5\"], ...])"},
+		{"title": "UIFlow.pop_to_root()", "code": "# Return to root page (HUD)\nUIFlow.pop_to_root()"},
+	],
+}
+
+
+func _setup_code_panel() -> void:
+	_code_panel = UIFlowCodePanel.new()
+	_code_panel.name = "CodePanel"
+	add_child(_code_panel)
+
+	UIFlow.page_opened.connect(_on_page_opened)
+
+
+func _on_page_opened(page_class: GDScript) -> void:
+	var class_name_str: String = page_class.get_global_name()
+	var snippets: Array = _PAGE_SNIPPETS.get(class_name_str, [])
+	if not snippets.is_empty():
+		_code_panel.show_snippets(class_name_str, snippets)
+
+
 func _process(delta: float) -> void:
 	if _between_waves:
 		_wave_timer -= delta
@@ -176,9 +242,15 @@ func _process(delta: float) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if UIFlow.stack_depth() > 1:
-		return
 	if event is InputEventKey and event.pressed:
+		# F1 toggles code panel (works anytime)
+		if event.keycode == KEY_F1 and _code_panel:
+			_code_panel.toggle()
+			get_viewport().set_input_as_handled()
+			return
+
+		if UIFlow.stack_depth() > 1:
+			return
 		match event.keycode:
 			KEY_I:
 				UIFlow.push(SurvivorsBackpackPage, {
@@ -198,6 +270,7 @@ func _start_wave() -> void:
 	_wave += 1
 	_between_waves = false
 	_kill_tracker.clear()
+	player_stats.wave_active = true
 
 	var hud := UIFlow.get_page(SurvivorsHUDPage) as SurvivorsHUDPage
 	if hud:
@@ -213,6 +286,7 @@ func _start_wave() -> void:
 func _end_wave() -> void:
 	_between_waves = true
 	_wave_timer = _wave_cooldown
+	player_stats.wave_active = false
 
 	var wave_gold := 10 + _wave * 5
 	player_stats.gold += wave_gold
@@ -224,7 +298,7 @@ func _end_wave() -> void:
 		"wave": _wave,
 		"kills": _kill_tracker,
 		"on_shop": func():
-			UIFlow.push(SurvivorsShopPage, {
+			UIFlow.replace(SurvivorsShopPage, {
 				"player_stats": player_stats,
 				"items": _shop_items,
 				"inventory_data": _inventory_data,
@@ -270,7 +344,7 @@ func _on_enemy_died(enemy_name: String, xp: int, gold: int) -> void:
 	var gem: Area3D = gem_script.new()
 	gem.xp_amount = xp
 	gem.position = _player.global_position + Vector3(randf_range(-3, 3), 0, randf_range(-3, 3))
-	add_child(gem)
+	add_child.call_deferred(gem)
 
 	if _event_bus:
 		_event_bus.enemy_killed.emit(enemy_name, xp, gold)
@@ -307,5 +381,5 @@ func _show_level_up_cards() -> void:
 	})
 
 
-func get_event_bus() -> SurvivorsEventBus:
+func get_event_bus():
 	return _event_bus

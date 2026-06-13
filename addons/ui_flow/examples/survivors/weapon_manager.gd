@@ -45,7 +45,7 @@ func get_target_for_weapon(weapon: WeaponData, player_pos: Vector3) -> Node3D:
 
 
 func _find_nearest_enemy(pos: Vector3, max_range: float) -> Node3D:
-	var enemies := Engine.get_main_loop().current_scene.get_tree().get_nodes_in_group("enemies")
+	var enemies: Array = Engine.get_main_loop().current_scene.get_tree().get_nodes_in_group("enemies")
 	var nearest: Node3D = null
 	var nearest_dist := max_range
 
