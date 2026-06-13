@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://addons/ui_flow/examples/free_demo/demo_components.gd" id="1"]
+[ext_resource type="Script" path="res://addons/ui_flow/components/data_grid.gd" id="2"]
 
 [node name="UIFlowDemoComponents" type="Control"]
 layout_mode = 3
@@ -18,15 +19,16 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -250.0
-offset_top = -200.0
-offset_right = 250.0
-offset_bottom = 200.0
+offset_left = -300.0
+offset_top = -350.0
+offset_right = 300.0
+offset_bottom = 350.0
 grow_horizontal = 2
 grow_vertical = 2
 
 [node name="VBox" type="VBoxContainer" parent="Panel"]
 layout_mode = 2
+size_flags_vertical = 3
 theme_override_constants/separation = 12
 
 [node name="Title" type="Label" parent="Panel/VBox"]
@@ -98,6 +100,76 @@ text = "Confirm"
 layout_mode = 2
 custom_minimum_size = Vector2(120, 32)
 text = "Alert"
+
+[node name="Sep3" type="HSeparator" parent="Panel/VBox"]
+layout_mode = 2
+
+[node name="TooltipSection" type="VBoxContainer" parent="Panel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="SectionTitle" type="Label" parent="Panel/VBox/TooltipSection"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Tooltip"
+
+[node name="DemoBtn" type="Button" parent="Panel/VBox/TooltipSection"]
+layout_mode = 2
+custom_minimum_size = Vector2(200, 32)
+text = "Hover me (Tooltip)"
+
+[node name="Sep4" type="HSeparator" parent="Panel/VBox"]
+layout_mode = 2
+
+[node name="HoverHintSection" type="VBoxContainer" parent="Panel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="SectionTitle" type="Label" parent="Panel/VBox/HoverHintSection"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Hover Hint (BBCode)"
+
+[node name="DemoBtn" type="Button" parent="Panel/VBox/HoverHintSection"]
+layout_mode = 2
+custom_minimum_size = Vector2(200, 32)
+text = "Hover me (BBCode Hint)"
+
+[node name="Sep5" type="HSeparator" parent="Panel/VBox"]
+layout_mode = 2
+
+[node name="ContextMenuSection" type="VBoxContainer" parent="Panel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="SectionTitle" type="Label" parent="Panel/VBox/ContextMenuSection"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Context Menu"
+
+[node name="DemoBtn" type="Button" parent="Panel/VBox/ContextMenuSection"]
+layout_mode = 2
+custom_minimum_size = Vector2(200, 32)
+text = "Click me (Context Menu)"
+
+[node name="Sep6" type="HSeparator" parent="Panel/VBox"]
+layout_mode = 2
+
+[node name="DataGridSection" type="VBoxContainer" parent="Panel/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 6
+
+[node name="SectionTitle" type="Label" parent="Panel/VBox/DataGridSection"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Data Grid"
+
+[node name="Grid" type="PanelContainer" parent="Panel/VBox/DataGridSection"]
+layout_mode = 2
+size_flags_vertical = 3
+custom_minimum_size = Vector2(0, 120)
+script = ExtResource("2")
 
 [node name="BackButton" type="Button" parent="Panel/VBox"]
 layout_mode = 2

@@ -33,6 +33,17 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.137, 0.098, 0.176, 1)
 
+[node name="FeatureTag" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 1
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 380.0
+offset_bottom = 24.0
+theme_override_font_sizes/font_size = 10
+theme_override_colors/font_color = Color(0.5, 0.8, 1.0, 0.5)
+text = "UIFlowTransitionEffect | enter_transition | exit_transition"
+
 [node name="Center" type="VBoxContainer" parent="."]
 layout_mode = 1
 anchors_preset = 8

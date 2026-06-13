@@ -18,10 +18,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -220.0
-offset_top = -180.0
-offset_right = 220.0
-offset_bottom = 180.0
+offset_left = -250.0
+offset_top = -250.0
+offset_right = 250.0
+offset_bottom = 250.0
 grow_horizontal = 2
 grow_vertical = 2
 
@@ -64,6 +64,31 @@ theme_override_font_sizes/font_size = 18
 text = "Lives: 3"
 horizontal_alignment = 1
 
+[node name="ComboLabel" type="Label" parent="Panel/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Combo: 0x"
+horizontal_alignment = 1
+
+[node name="BonusLabel" type="Label" parent="Panel/VBox"]
+visible = false
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "BONUS ACTIVE!"
+horizontal_alignment = 1
+modulate = Color(1, 0.8, 0, 1)
+
+[node name="DangerPanel" type="PanelContainer" parent="Panel/VBox"]
+visible = false
+layout_mode = 2
+
+[node name="DangerLabel" type="Label" parent="Panel/VBox/DangerPanel"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "LOW LIVES!"
+horizontal_alignment = 1
+modulate = Color(1, 0.2, 0.2, 1)
+
 [node name="Sep2" type="HSeparator" parent="Panel/VBox"]
 layout_mode = 2
 
@@ -74,13 +99,18 @@ alignment = 1
 
 [node name="AddScore" type="Button" parent="Panel/VBox/Buttons"]
 layout_mode = 2
-custom_minimum_size = Vector2(140, 40)
-text = "Add Score +10"
+custom_minimum_size = Vector2(120, 40)
+text = "Score +10"
 
 [node name="LoseLife" type="Button" parent="Panel/VBox/Buttons"]
 layout_mode = 2
-custom_minimum_size = Vector2(140, 40)
+custom_minimum_size = Vector2(120, 40)
 text = "Lose Life"
+
+[node name="AddCombo" type="Button" parent="Panel/VBox/Buttons"]
+layout_mode = 2
+custom_minimum_size = Vector2(120, 40)
+text = "Combo +1"
 
 [node name="BackButton" type="Button" parent="Panel/VBox"]
 layout_mode = 2
