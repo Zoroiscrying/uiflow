@@ -12,10 +12,13 @@ signal back_pressed
 
 var _navigator: UIFlowNavigator = null
 var _default_focus_node: WeakRef = null
+var _action_manager: UIInputActionManager = null
 
 
 func setup(navigator: UIFlowNavigator) -> void:
 	_navigator = navigator
+	_action_manager = UIInputActionManager.new()
+	add_child(_action_manager)
 
 
 ## Set the default focus node for the current page.
@@ -29,6 +32,20 @@ func set_default_focus(node: Control) -> void:
 func grab_focus(node: Control) -> void:
 	if node and is_instance_valid(node) and node.is_inside_tree():
 		node.grab_focus()
+
+
+## Get input prompts for the current top page.
+func get_current_prompts() -> Array:
+	var top_page := _get_top_page()
+	if top_page and _action_manager:
+		return _action_manager.get_prompts(top_page)
+	return []
+
+
+func _get_top_page() -> UIFlowPage:
+	if _navigator == null or _navigator._stack.is_empty():
+		return null
+	return _navigator._stack.back()["instance"] as UIFlowPage
 
 
 func _unhandled_input(event: InputEvent) -> void:

@@ -209,8 +209,8 @@ public partial class UIFlowNavigator : Node
 
         if (old.Instance is UIFlowPage oldPage)
         {
-            oldPage.OnClosed();
-            oldPage.OnDestroyed();
+            oldPage.InvokeClosed();
+            oldPage.InvokeDestroyed();
         }
         if (IsInstanceValid(old.Instance) && old.Instance.IsInsideTree())
         {

@@ -46,21 +46,33 @@ static func find_children(node: Node, predicate: Callable) -> Array:
 
 
 ## Find first child by type.
-static func find_childByType(node: Node, type: Variant) -> Node:
+static func find_child_by_type(node: Node, type: Variant) -> Node:
 	return find_child(node, func(child): return is_instance_of(child, type))
+
+## Deprecated: use find_child_by_type.
+static func find_childByType(node: Node, type: Variant) -> Node:
+	return find_child_by_type(node, type)
 
 
 ## Find all children by type.
-static func find_childrenByType(node: Node, type: Variant) -> Array:
+static func find_children_by_type(node: Node, type: Variant) -> Array:
 	return find_children(node, func(child): return is_instance_of(child, type))
+
+## Deprecated: use find_children_by_type.
+static func find_childrenByType(node: Node, type: Variant) -> Array:
+	return find_children_by_type(node, type)
 
 
 ## Find child by name (direct child only).
-static func find_childByName(node: Node, child_name: String) -> Node:
+static func find_child_by_name(node: Node, child_name: String) -> Node:
 	for child in node.get_children():
 		if child.name == child_name:
 			return child
 	return null
+
+## Deprecated: use find_child_by_name.
+static func find_childByName(node: Node, child_name: String) -> Node:
+	return find_child_by_name(node, child_name)
 
 
 ## Find descendant by name (recursive).
@@ -109,11 +121,11 @@ static func reserve_children(parent: Node, count: int, template: PackedScene, on
 
 ## Same as reserve_children but uses a factory function instead of a scene.
 ## [codeblock]
-## UIFlowUtils.reserve_childrenFactory($List, 10, func(): return Label.new(), func(label, i):
+## UIFlowUtils.reserve_children_factory($List, 10, func(): return Label.new(), func(label, i):
 ##     label.text = "Item %d" % i
 ## )
 ## [/codeblock]
-static func reserve_childrenFactory(parent: Node, count: int, factory: Callable, on_update: Callable = Callable()) -> void:
+static func reserve_children_factory(parent: Node, count: int, factory: Callable, on_update: Callable = Callable()) -> void:
 	var current_count: int = parent.get_child_count()
 
 	while parent.get_child_count() < count:
@@ -129,6 +141,10 @@ static func reserve_childrenFactory(parent: Node, count: int, factory: Callable,
 		for i in range(count):
 			var child: Node = parent.get_child(i)
 			on_update.call(child, i)
+
+## Deprecated: use reserve_children_factory.
+static func reserve_childrenFactory(parent: Node, count: int, factory: Callable, on_update: Callable = Callable()) -> void:
+	reserve_children_factory(parent, count, factory, on_update)
 
 
 # ── Batch Operations ─────────────────────────────────────────────────────────

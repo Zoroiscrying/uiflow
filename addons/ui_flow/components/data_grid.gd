@@ -49,7 +49,7 @@ func _ready() -> void:
 
 func _setup_layout() -> void:
 	var margin := MarginContainer.new()
-	margin.SetAnchorsPreset(Control.PRESET_FULL_RECT)
+	margin.set_anchors_preset(Control.PRESET_FULL_RECT)
 	margin.add_theme_constant_override("margin_left", 4)
 	margin.add_theme_constant_override("margin_right", 4)
 	margin.add_theme_constant_override("margin_top", 4)
@@ -194,7 +194,9 @@ func _select_row(index: int) -> void:
 
 func _update_sort_indicator() -> void:
 	# Update header button text with sort arrow
-	for i in range(_header_container.get_child_count()):
+	for i in range(_columns.size()):
+		if i >= _header_container.get_child_count():
+			break
 		var btn: Button = _header_container.get_child(i) as Button
 		if btn == null:
 			continue

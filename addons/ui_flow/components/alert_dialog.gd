@@ -7,6 +7,7 @@ var _overlay: ColorRect
 var _panel: PanelContainer
 var _title_label: Label
 var _message_label: Label
+var _ok_button: Button
 var _active: bool = false
 
 
@@ -66,13 +67,13 @@ func _component_ready() -> void:
 	vbox.add_child(_message_label)
 
 	# OK button
-	var ok_btn := Button.new()
-	ok_btn.name = "OKButton"
-	ok_btn.text = "OK"
-	ok_btn.pressed.connect(func(): _hide_dialog())
+	_ok_button = Button.new()
+	_ok_button.name = "OKButton"
+	_ok_button.text = "OK"
+	_ok_button.pressed.connect(func(): _hide_dialog())
 	var btn_container := HBoxContainer.new()
 	btn_container.alignment = BoxContainer.ALIGNMENT_CENTER
-	btn_container.add_child(ok_btn)
+	btn_container.add_child(_ok_button)
 	vbox.add_child(btn_container)
 
 	visible = false
@@ -90,11 +91,9 @@ func show_alert(title: String, message: String, on_close: Callable = Callable())
 	_title_label.text = title
 	_message_label.text = message
 
-	# Store callback
+	# Connect close callback (one-shot prevents accumulation)
 	if on_close.is_valid():
-		var btn: Button = _panel.get_node("VBox/OKButton/OKButton") if _panel.has_node("VBox/OKButton/OKButton") else null
-		# Find the OK button in the tree
-		_find_ok_button().pressed.connect(on_close, CONNECT_ONE_SHOT)
+		_ok_button.pressed.connect(on_close, CONNECT_ONE_SHOT)
 
 	# Show with animation
 	visible = true
@@ -107,19 +106,7 @@ func show_alert(title: String, message: String, on_close: Callable = Callable())
 	tween.tween_property(_panel, "modulate:a", 1.0, 0.15)
 	tween.tween_property(_panel, "scale", Vector2.ONE, 0.2).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
 
-	# Focus OK button
-	_find_ok_button().grab_focus()
-
-
-func _find_ok_button() -> Button:
-	for child in _panel.get_children():
-		if child is VBoxContainer:
-			for vbox_child in child.get_children():
-				if vbox_child is HBoxContainer:
-					for btn_child in vbox_child.get_children():
-						if btn_child is Button:
-							return btn_child
-	return null
+	_ok_button.grab_focus()
 
 
 func _hide_dialog() -> void:

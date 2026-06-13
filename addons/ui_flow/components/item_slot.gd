@@ -135,5 +135,6 @@ func _on_item_drop(data: Variant) -> void:
 
 
 func _on_drag_dropped(target) -> void:
+	var dragged_item := _item
 	set_item(null)
-	item_dragged.emit(_item, slot_index)
+	item_dragged.emit(dragged_item, slot_index)

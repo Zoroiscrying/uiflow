@@ -8,17 +8,20 @@ const SCENE_DIR_SETTING := "ui_flow/scene_directory"
 const DEFAULT_SCENE_DIR := "res://UIScene/"
 
 var _flow_dock: Control
+var _inspector_plugin: EditorInspectorPlugin
 
 
 func _enter_tree() -> void:
 	_ensure_project_settings()
 	_setup_dock()
 	_setup_tool_menu()
+	_setup_inspector_plugin()
 
 
 func _exit_tree() -> void:
 	_cleanup_dock()
 	_cleanup_tool_menu()
+	_cleanup_inspector_plugin()
 
 
 func _enable_plugin() -> void:
@@ -110,10 +113,10 @@ func _create_page_files(class_name_str: String) -> void:
 	var script_content := """## %s — UIFlow page.
 extends UIFlowPage
 
-func _on_created(_data: Dictionary = {}) -> void:
+func _on_created(_data: Variant = null) -> void:
 	pass
 
-func _on_opened(_data: Dictionary = {}) -> void:
+func _on_opened(_data: Variant = null) -> void:
 	pass
 
 func _on_hidden() -> void:
@@ -162,3 +165,16 @@ script = ExtResource("1")
 func _on_open_scene_dir() -> void:
 	var scene_dir: String = ProjectSettings.get_setting(SCENE_DIR_SETTING, DEFAULT_SCENE_DIR)
 	OS.shell_open(ProjectSettings.globalize_path(scene_dir))
+
+
+# ── Inspector Plugin ──────────────────────────────────────────────────────────
+
+func _setup_inspector_plugin() -> void:
+	_inspector_plugin = preload("res://addons/ui_flow/editor/page_inspector_plugin.gd").new()
+	add_inspector_plugin(_inspector_plugin)
+
+
+func _cleanup_inspector_plugin() -> void:
+	if _inspector_plugin:
+		remove_inspector_plugin(_inspector_plugin)
+		_inspector_plugin = null

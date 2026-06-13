@@ -49,6 +49,7 @@ func push(page_class: GDScript, data: Variant = null, page_theme: UIFlowTheme = 
 		var current_page: UIFlowPage = current["instance"] as UIFlowPage
 		if current_page and current_page.has_method("_on_hidden"):
 			current_page._on_hidden()
+		current_page.visible = false
 
 	# Instantiate and add to tree
 	var instance: Control = scene.instantiate()
@@ -162,9 +163,11 @@ func _cleanup_after_pop(top_instance: Control, top_class: GDScript) -> void:
 	if _stack.size() > 0:
 		var below: Dictionary = _stack.back()
 		var below_page: UIFlowPage = below["instance"] as UIFlowPage
-		if below_page and below_page.has_method("_on_shown"):
-			below_page._on_shown()
-
+		if below_page and is_instance_valid(below_page):
+			below_page.visible = true
+			if below_page.has_method("_on_shown"):
+				below_page._on_shown()
+			
 	page_popped.emit(top_class)
 	page_closed.emit(top_class)
 

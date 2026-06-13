@@ -76,10 +76,7 @@ func _process(delta: float) -> void:
 func _set_text(value: String) -> void:
 	hint_text = value
 	if _label:
-		if use_bbcode:
-			_label.text = value
-		else:
-			_label.text = value
+		_label.text = value
 
 
 func _on_hover_start() -> void:

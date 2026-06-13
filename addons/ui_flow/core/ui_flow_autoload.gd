@@ -11,11 +11,15 @@ var Scenes: UIFlowSceneResolver
 var FlowInput: UIFlowInputHandler
 ## Theme utilities and named color palette.
 var ThemeHelper: UIFlowThemeHelper
+## Global configuration.
+var Config: UIFlowConfig
 
 # ── Internal ─────────────────────────────────────────────────────────────────
 
 var _page_container: Control
 var _custom_ui_root: Control = null
+
+const _CONFIG_PATH := "res://ui_flow_config.tres"
 
 
 # ── Signals (forwarded from Router) ─────────────────────────────────────────
@@ -27,8 +31,16 @@ signal page_closed(page_class: GDScript)
 
 
 func _ready() -> void:
+	_load_config()
+
 	Scenes = UIFlowSceneResolver.new()
 	ThemeHelper = UIFlowThemeHelper.new()
+
+	# Apply config to scene resolver
+	if Config and not Config.scene_directory.is_empty():
+		Scenes._scene_dir = Config.scene_directory
+		if not Scenes._scene_dir.ends_with("/"):
+			Scenes._scene_dir += "/"
 
 	Router = UIFlowNavigator.new()
 	Router.name = "UIFlowNavigator"
@@ -41,6 +53,13 @@ func _ready() -> void:
 	add_child(FlowInput)
 	FlowInput.setup(Router)
 	FlowInput.back_pressed.connect(_on_back_pressed)
+
+
+func _load_config() -> void:
+	if ResourceLoader.exists(_CONFIG_PATH):
+		Config = load(_CONFIG_PATH) as UIFlowConfig
+	if Config == null:
+		Config = UIFlowConfig.new()
 
 
 func _on_back_pressed() -> void:
