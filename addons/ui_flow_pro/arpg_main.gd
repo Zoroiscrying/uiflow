@@ -1,4 +1,4 @@
-## SurvivorsMain â€” wave survival game controller with EventBus integration.
+## SurvivorsMain â€?wave survival game controller with EventBus integration.
 extends Node3D
 
 @export var player_stats: SurvivorsPlayerStats
@@ -161,7 +161,7 @@ func _setup_player() -> void:
 	starter.range = 10.0
 	player_stats.add_weapon(starter)
 
-	var weapon_mgr_script = preload("res://addons/ui_flow/examples/survivors/weapon_manager.gd")
+	var weapon_mgr_script = preload("res://addons/ui_flow_pro/weapon_manager.gd")
 	var weapon_mgr := weapon_mgr_script.new()
 	weapon_mgr.name = "WeaponManager"
 	_player.add_child(weapon_mgr)
@@ -169,47 +169,47 @@ func _setup_player() -> void:
 	_player._weapon_manager = weapon_mgr
 
 
-# Map page class â†’ API snippets for code panel
+# Map page class â†?API snippets for code panel
 const _PAGE_SNIPPETS: Dictionary = {
 	"SurvivorsHUDPage": [
-		{"title": "bind_signal â€” Bind signal to property", "code": "UIFlow.bind_signal(\n    _health_bar, \"value\",\n    player_stats.health_changed)"},
-		{"title": "bind_signal_t â€” Signal with transform", "code": "UIFlow.bind_signal_t(\n    _gold_label, \"text\",\n    player_stats.gold_changed,\n    func(v): return \"%d G\" % v)"},
-		{"title": "bind_visible â€” Conditional visibility", "code": "UIFlow.bind_visible(\n    _wave_label,\n    player_stats.wave_active_changed,\n    func(active): return active)"},
-		{"title": "UIFlowDataStyle â€” Data-driven styling", "code": "var style := UIFlowDataStyle.new()\nstyle.add_rule(\n    func(v): return v < max_hp * 0.25,\n    {\"pulse\": true})\nstyle.bind_signal(health_changed)"},
-		{"title": "UIFlowTooltip â€” Hover tooltip", "code": "UIFlowTooltip.attach(slot,\n    \"Pistol\\nDMG: 5 | CD: 0.3s\")"},
-		{"title": "UIInputActionNode â€” Input declaration", "code": "# Scene node:\nOpenBackpack (UIInputActionNode)\n  action_name = &\"open_backpack\"\n  godot_action = &\"open_backpack\"\n  label = \"Backpack\""},
+		{"title": "bind_signal â€?Bind signal to property", "code": "UIFlow.bind_signal(\n    _health_bar, \"value\",\n    player_stats.health_changed)"},
+		{"title": "bind_signal_t â€?Signal with transform", "code": "UIFlow.bind_signal_t(\n    _gold_label, \"text\",\n    player_stats.gold_changed,\n    func(v): return \"%d G\" % v)"},
+		{"title": "bind_visible â€?Conditional visibility", "code": "UIFlow.bind_visible(\n    _wave_label,\n    player_stats.wave_active_changed,\n    func(active): return active)"},
+		{"title": "UIFlowDataStyle â€?Data-driven styling", "code": "var style := UIFlowDataStyle.new()\nstyle.add_rule(\n    func(v): return v < max_hp * 0.25,\n    {\"pulse\": true})\nstyle.bind_signal(health_changed)"},
+		{"title": "UIFlowTooltip â€?Hover tooltip", "code": "UIFlowTooltip.attach(slot,\n    \"Pistol\\nDMG: 5 | CD: 0.3s\")"},
+		{"title": "UIInputActionNode â€?Input declaration", "code": "# Scene node:\nOpenBackpack (UIInputActionNode)\n  action_name = &\"open_backpack\"\n  godot_action = &\"open_backpack\"\n  label = \"Backpack\""},
 	],
 	"SurvivorsLevelUpPage": [
-		{"title": "stagger_fade_in â€” Staggered entry", "code": "UIFlow.anim_stagger_fade(_card_container)"},
-		{"title": "anim_hover â€” Hover animation", "code": "card.mouse_entered.connect(\n    func(): UIFlow.anim_hover_enter(card))\ncard.mouse_exited.connect(\n    func(): UIFlow.anim_hover_exit(card))"},
-		{"title": "UIFlow.pop() â€” Close page", "code": "func _select_card(index):\n    _on_selected.call(_cards[index])\n    UIFlow.pop()"},
+		{"title": "stagger_fade_in â€?Staggered entry", "code": "UIFlow.anim_stagger_fade(_card_container)"},
+		{"title": "anim_hover â€?Hover animation", "code": "card.mouse_entered.connect(\n    func(): UIFlow.anim_hover_enter(card))\ncard.mouse_exited.connect(\n    func(): UIFlow.anim_hover_exit(card))"},
+		{"title": "UIFlow.pop() â€?Close page", "code": "func _select_card(index):\n    _on_selected.call(_cards[index])\n    UIFlow.pop()"},
 	],
 	"SurvivorsShopPage": [
-		{"title": "UIFlowHoverHint â€” BBCode hint", "code": "UIFlowHoverHint.attach(row,\n    \"[b]Iron Sword[/b]\\nATK +5\",\n    true)"},
-		{"title": "stagger_fade_in â€” List animation", "code": "UIFlow.anim_stagger_fade(_item_list)"},
+		{"title": "UIFlowHoverHint â€?BBCode hint", "code": "UIFlowHoverHint.attach(row,\n    \"[b]Iron Sword[/b]\\nATK +5\",\n    true)"},
+		{"title": "stagger_fade_in â€?List animation", "code": "UIFlow.anim_stagger_fade(_item_list)"},
 		{"title": "Data parameter passing", "code": "UIFlow.push(SurvivorsShopPage, {\n    \"player_stats\": player_stats,\n    \"items\": _shop_items,\n})"},
 	],
 	"SurvivorsWaveSummaryPage": [
-		{"title": "UIFlowDataGrid â€” Data table", "code": "grid.add_column(\"Enemy\", 150, false)\ngrid.add_column(\"Killed\", 80, true)\ngrid.set_data([[\"Goblin\", \"5\"], ...])"},
+		{"title": "UIFlowDataGrid â€?Data table", "code": "grid.add_column(\"Enemy\", 150, false)\ngrid.add_column(\"Killed\", 80, true)\ngrid.set_data([[\"Goblin\", \"5\"], ...])"},
 		{"title": "Callable callback passing", "code": "UIFlow.push(SurvivorsWaveSummaryPage, {\n    \"on_shop\": func(): open_shop(),\n    \"on_skip\": func(): next_wave(),\n})"},
 	],
 	"SurvivorsBackpackPage": [
-		{"title": "UIFlowInventoryGrid â€” Grid layout", "code": "@onready var _grid: UIFlowInventoryGrid\n_grid.setup(inventory_data)"},
-		{"title": "UIFlowContextMenu â€” Right-click menu", "code": "var menu := UIFlowContextMenu.new()\nmenu.add_item(\"Equip\", func(): equip())\nmenu.add_item(\"Drop\", func(): drop())\nmenu.show_at(pos)"},
-		{"title": "UIFlowTooltip â€” Item tooltip", "code": "UIFlowTooltip.attach(slot,\n    item.item_name)"},
+		{"title": "UIFlowInventoryGrid â€?Grid layout", "code": "@onready var _grid: UIFlowInventoryGrid\n_grid.setup(inventory_data)"},
+		{"title": "UIFlowContextMenu â€?Right-click menu", "code": "var menu := UIFlowContextMenu.new()\nmenu.add_item(\"Equip\", func(): equip())\nmenu.add_item(\"Drop\", func(): drop())\nmenu.show_at(pos)"},
+		{"title": "UIFlowTooltip â€?Item tooltip", "code": "UIFlowTooltip.attach(slot,\n    item.item_name)"},
 	],
 	"SurvivorsEquipmentPage": [
-		{"title": "UIFlowItemSlot â€” Equipment slot", "code": "var slot := UIFlowItemSlot.new()\nslot.accept_type = &\"weapon\"\nslot.is_equip_slot = true"},
-		{"title": "UIFlowDataStyle â€” Stat coloring", "code": "style.add_rule(\n    func(v): return v > 0,\n    {\"modulate\": Color.GREEN})"},
-		{"title": "UIFlowHoverHint â€” BBCode hint", "code": "UIFlowHoverHint.attach(slot,\n    \"[b]Iron Sword[/b]\\nATK +5\")"},
+		{"title": "UIFlowItemSlot â€?Equipment slot", "code": "var slot := UIFlowItemSlot.new()\nslot.accept_type = &\"weapon\"\nslot.is_equip_slot = true"},
+		{"title": "UIFlowDataStyle â€?Stat coloring", "code": "style.add_rule(\n    func(v): return v > 0,\n    {\"modulate\": Color.GREEN})"},
+		{"title": "UIFlowHoverHint â€?BBCode hint", "code": "UIFlowHoverHint.attach(slot,\n    \"[b]Iron Sword[/b]\\nATK +5\")"},
 	],
 	"SurvivorsPausePage": [
 		{"title": "process_mode = ALWAYS", "code": "func _ready():\n    process_mode = Node.PROCESS_MODE_ALWAYS"},
 		{"title": "get_tree().paused", "code": "func _on_opened():\n    get_tree().paused = true\nfunc _on_closed():\n    get_tree().paused = false"},
-		{"title": "UIFlowUI.Confirm â€” Confirm dialog", "code": "UIFlowUI.Confirm.show_confirm(\n    \"Quit?\", \"Return to menu?\",\n    func(): UIFlow.pop_to_root())"},
+		{"title": "UIFlowUI.Confirm â€?Confirm dialog", "code": "UIFlowUI.Confirm.show_confirm(\n    \"Quit?\", \"Return to menu?\",\n    func(): UIFlow.pop_to_root())"},
 	],
 	"GameOverPage": [
-		{"title": "UIFlowDataGrid â€” Stats table", "code": "grid.add_column(\"Stat\", 150)\ngrid.add_column(\"Value\", 100)\ngrid.set_data([[\"Waves\", \"5\"], ...])"},
+		{"title": "UIFlowDataGrid â€?Stats table", "code": "grid.add_column(\"Stat\", 150)\ngrid.add_column(\"Value\", 100)\ngrid.set_data([[\"Waves\", \"5\"], ...])"},
 		{"title": "UIFlow.pop_to_root()", "code": "# Return to root page (HUD)\nUIFlow.pop_to_root()"},
 	],
 }
@@ -309,7 +309,7 @@ func _end_wave() -> void:
 
 
 func _spawn_enemies(count: int) -> void:
-	var enemy_script := preload("res://addons/ui_flow/examples/survivors/scenes/arpg_enemy.gd")
+	var enemy_script := preload("res://addons/ui_flow_pro/scenes/arpg_enemy.gd")
 	var points := _spawn_points.get_children()
 
 	for i in range(count):
@@ -340,7 +340,7 @@ func _on_enemy_died(enemy_name: String, xp: int, gold: int) -> void:
 
 	player_stats.gold += gold
 
-	var gem_script = preload("res://addons/ui_flow/examples/survivors/xp_gem.gd")
+	var gem_script = preload("res://addons/ui_flow_pro/xp_gem.gd")
 	var gem: Area3D = gem_script.new()
 	gem.xp_amount = xp
 	gem.position = _player.global_position + Vector3(randf_range(-3, 3), 0, randf_range(-3, 3))

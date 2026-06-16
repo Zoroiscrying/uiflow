@@ -1,6 +1,6 @@
 [gd_scene load_steps=14 format=3]
 
-[ext_resource type="Script" path="res://addons/ui_flow/examples/survivors/arpg_main.gd" id="1"]
+[ext_resource type="Script" path="res://addons/ui_flow_pro/arpg_main.gd" id="1"]
 [ext_resource type="PackedScene" path="res://addons/ui_flow/examples/scenes/player_character.tscn" id="2"]
 
 [sub_resource type="Environment" id="1"]

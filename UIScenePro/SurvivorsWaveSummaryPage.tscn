@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3]
 
-[ext_resource type="Script" path="res://addons/ui_flow/examples/survivors/wave_summary_page.gd" id="1"]
+[ext_resource type="Script" path="res://addons/ui_flow_pro/wave_summary_page.gd" id="1"]
 [ext_resource type="Script" path="res://addons/ui_flow/components/data_grid.gd" id="2"]
 
 [node name="SurvivorsWaveSummaryPage" type="Control"]

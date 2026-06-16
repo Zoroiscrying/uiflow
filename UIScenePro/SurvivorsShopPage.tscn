@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3]
 
-[ext_resource type="Script" path="res://addons/ui_flow/examples/survivors/shop_page.gd" id="1"]
+[ext_resource type="Script" path="res://addons/ui_flow_pro/shop_page.gd" id="1"]
 
 [node name="SurvivorsShopPage" type="Control"]
 layout_mode = 3

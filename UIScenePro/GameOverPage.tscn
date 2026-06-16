@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3]
 
-[ext_resource type="Script" path="res://addons/ui_flow/examples/survivors/game_over_page.gd" id="1"]
+[ext_resource type="Script" path="res://addons/ui_flow_pro/game_over_page.gd" id="1"]
 [ext_resource type="Script" path="res://addons/ui_flow/components/data_grid.gd" id="2"]
 
 [node name="GameOverPage" type="Control"]
