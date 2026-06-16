@@ -7,7 +7,7 @@ func _can_begin(object: Object) -> bool:
 	if object is Control:
 		var script = object.get_script()
 		if script:
-			var global_name := script.get_global_name()
+			var global_name: String = script.get_global_name()
 			if global_name == "UIFlowPage":
 				return true
 			# Check parent scripts

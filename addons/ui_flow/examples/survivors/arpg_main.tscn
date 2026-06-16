@@ -1,0 +1,115 @@
+[gd_scene load_steps=14 format=3]
+
+[ext_resource type="Script" path="res://addons/ui_flow/examples/survivors/arpg_main.gd" id="1"]
+[ext_resource type="PackedScene" path="res://addons/ui_flow/examples/scenes/player_character.tscn" id="2"]
+
+[sub_resource type="Environment" id="1"]
+background_mode = 2
+background_color = Color(0.06, 0.06, 0.09, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.15, 0.15, 0.2, 1)
+ambient_light_energy = 0.5
+
+[sub_resource type="PlaneMesh" id="2"]
+size = Vector2(40, 40)
+
+[sub_resource type="StandardMaterial3D" id="3"]
+albedo_color = Color(0.12, 0.14, 0.1, 1)
+
+[sub_resource type="WorldBoundaryShape3D" id="4"]
+
+[sub_resource type="BoxMesh" id="5"]
+size = Vector3(40, 1.5, 0.4)
+
+[sub_resource type="StandardMaterial3D" id="6"]
+albedo_color = Color(0.25, 0.25, 0.3, 1)
+
+[sub_resource type="BoxShape3D" id="7"]
+size = Vector3(40, 1.5, 0.4)
+
+[sub_resource type="BoxMesh" id="8"]
+size = Vector3(0.4, 1.5, 40)
+
+[sub_resource type="BoxShape3D" id="9"]
+size = Vector3(0.4, 1.5, 40)
+
+[node name="SurvivorsMain" type="Node3D"]
+script = ExtResource("1")
+
+[node name="Environment" type="WorldEnvironment" parent="."]
+environment = SubResource("1")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.707, 0.707, 0, -0.707, 0.707, 0, 0, 0)
+light_energy = 0.9
+light_color = Color(1, 0.95, 0.9, 1)
+shadow_enabled = true
+
+[node name="Ground" type="StaticBody3D" parent="."]
+
+[node name="Mesh" type="MeshInstance3D" parent="Ground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+mesh = SubResource("2")
+material_override = SubResource("3")
+
+[node name="Collision" type="CollisionShape3D" parent="Ground"]
+shape = SubResource("4")
+
+[node name="ArenaWalls" type="Node3D" parent="."]
+
+[node name="WallN" type="StaticBody3D" parent="ArenaWalls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, -20)
+
+[node name="Mesh" type="MeshInstance3D" parent="ArenaWalls/WallN"]
+mesh = SubResource("5")
+material_override = SubResource("6")
+
+[node name="Col" type="CollisionShape3D" parent="ArenaWalls/WallN"]
+shape = SubResource("7")
+
+[node name="WallS" type="StaticBody3D" parent="ArenaWalls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 20)
+
+[node name="Mesh" type="MeshInstance3D" parent="ArenaWalls/WallS"]
+mesh = SubResource("5")
+material_override = SubResource("6")
+
+[node name="Col" type="CollisionShape3D" parent="ArenaWalls/WallS"]
+shape = SubResource("7")
+
+[node name="WallW" type="StaticBody3D" parent="ArenaWalls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 0.75, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="ArenaWalls/WallW"]
+mesh = SubResource("8")
+material_override = SubResource("6")
+
+[node name="Col" type="CollisionShape3D" parent="ArenaWalls/WallW"]
+shape = SubResource("9")
+
+[node name="WallE" type="StaticBody3D" parent="ArenaWalls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 0.75, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="ArenaWalls/WallE"]
+mesh = SubResource("8")
+material_override = SubResource("6")
+
+[node name="Col" type="CollisionShape3D" parent="ArenaWalls/WallE"]
+shape = SubResource("9")
+
+[node name="SpawnPoints" type="Node3D" parent="."]
+
+[node name="SpawnN" type="Node3D" parent="SpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -18)
+
+[node name="SpawnS" type="Node3D" parent="SpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 18)
+
+[node name="SpawnW" type="Node3D" parent="SpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18, 0, 0)
+
+[node name="SpawnE" type="Node3D" parent="SpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, 0, 0)
+
+[node name="Player" parent="." instance=ExtResource("2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
