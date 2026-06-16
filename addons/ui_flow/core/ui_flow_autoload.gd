@@ -38,9 +38,7 @@ func _ready() -> void:
 
 	# Apply config to scene resolver
 	if Config and not Config.scene_directory.is_empty():
-		Scenes._scene_dir = Config.scene_directory
-		if not Scenes._scene_dir.ends_with("/"):
-			Scenes._scene_dir += "/"
+		Scenes.add_scene_dir(Config.scene_directory)
 
 	Router = UIFlowNavigator.new()
 	Router.name = "UIFlowNavigator"
