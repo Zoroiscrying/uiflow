@@ -156,8 +156,8 @@ func _setup_player() -> void:
 	starter.range = 10.0
 	player_stats.add_weapon(starter)
 
-	var weapon_mgr_script = preload("res://addons/ui_flow/examples/survivors/weapon_manager.gd")
-	var weapon_mgr := weapon_mgr_script.new()
+	var weapon_mgr_script = preload("res://addons/ui_flow_pro/weapon_manager.gd")
+	var weapon_mgr = weapon_mgr_script.new()
 	weapon_mgr.name = "WeaponManager"
 	_player.add_child(weapon_mgr)
 	weapon_mgr.setup(player_stats)
@@ -235,7 +235,7 @@ func _end_wave() -> void:
 
 
 func _spawn_enemies(count: int) -> void:
-	var enemy_script := preload("res://addons/ui_flow/examples/survivors/scenes/arpg_enemy.gd")
+	var enemy_script = preload("res://addons/ui_flow_pro/scenes/arpg_enemy.gd")
 	var points := _spawn_points.get_children()
 
 	for i in range(count):
@@ -266,7 +266,7 @@ func _on_enemy_died(enemy_name: String, xp: int, gold: int) -> void:
 
 	player_stats.gold += gold
 
-	var gem_script = preload("res://addons/ui_flow/examples/survivors/xp_gem.gd")
+	var gem_script = preload("res://addons/ui_flow_pro/xp_gem.gd")
 	var gem: Area3D = gem_script.new()
 	gem.xp_amount = xp
 	gem.position = _player.global_position + Vector3(randf_range(-3, 3), 0, randf_range(-3, 3))
