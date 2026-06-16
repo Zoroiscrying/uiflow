@@ -15,3 +15,6 @@ Thumbs.db
 # GdUnit4
 /addons/gdUnit4/
 /reports/
+
+# Worktrees (public repo mirrors)
+/.worktrees/
