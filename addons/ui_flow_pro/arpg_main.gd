@@ -224,13 +224,14 @@ func _end_wave() -> void:
 		"wave": _wave,
 		"kills": _kill_tracker,
 		"on_shop": func():
-			UIFlow.push(SurvivorsShopPage, {
+			UIFlow.replace(SurvivorsShopPage, {
 				"player_stats": player_stats,
 				"items": _shop_items,
 				"inventory_data": _inventory_data,
 			}),
 		"on_skip": func():
-			pass
+			get_tree().paused = false
+			UIFlow.pop()
 	})
 
 

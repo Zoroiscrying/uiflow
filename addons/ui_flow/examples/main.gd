@@ -23,8 +23,8 @@ const _PAGE_SNIPPETS: Dictionary = {
 		{"title": "bind_signal — Property binding", "code": "UIFlow.bind_signal(\n    _health_bar, \"value\",\n    emitter.health_changed)"},
 	],
 	"UIFlowDemoTransitions": [
-		{"title": "UIFlow.push + enter_transition", "code": "UIFlow.push(TransitionDemoPage, {\n    \"transition_name\": \"Fade\",\n    \"enter_preset\": UIFlowTransitionType.Type.FADE,\n    \"enter_duration\": 0.3,\n})"},
-		{"title": "exit_transition — Exit animation", "code": "# Configure in .tscn:\nexit_transition = UIFlowTransitionRef\n    .get_exit_effect()"},
+		{"title": "UIFlow.push + enter_effect", "code": "UIFlow.push(TransitionDemoPage, {\n    \"transition_name\": \"Fade\",\n    \"enter_preset\": UIFlowTransitionType.Type.FADE,\n    \"enter_duration\": 0.3,\n})"},
+		{"title": "exit_effect — Exit animation", "code": "# Configure in .tscn or code:\nexit_effect = UIFlowFadeEffect.new()"},
 	],
 	"UIFlowDemoComponents": [
 		{"title": "UIFlowUI.Toast — Notification", "code": "UIFlowUI.Toast.show_toast(\n    \"Hello!\", \"info\", 3.0)"},
@@ -35,7 +35,7 @@ const _PAGE_SNIPPETS: Dictionary = {
 		{"title": "apply_builtin_theme — Switch theme", "code": "UIFlow.apply_builtin_theme(\"dark\")\nUIFlow.apply_builtin_theme(\"light\")"},
 	],
 	"TransitionDemoPage": [
-		{"title": "enter_transition — Entry animation", "code": "var effect := UIFlowFadeEffect.new()\neffect.duration = 0.3\nvar ref := UIFlowTransitionRef.new()\nref.enter_effect = effect\nenter_transition = ref"},
+		{"title": "enter_effect — Entry animation", "code": "var effect := UIFlowFadeEffect.new()\neffect.duration = 0.3\nenter_effect = effect"},
 	],
 }
 

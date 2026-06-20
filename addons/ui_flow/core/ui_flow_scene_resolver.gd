@@ -5,8 +5,8 @@
 ## 2. Convention-based: searches in all registered scene directories
 class_name UIFlowSceneResolver
 
-## Default scene directory (configurable in Project Settings).
-const DEFAULT_SCENE_DIR := "res://addons/ui_flow/examples/scenes/UIScene/"
+## Default scene directory for user pages.
+const DEFAULT_SCENE_DIR := "res://UIScene/"
 const SETTING_SCENE_DIR := "ui_flow/scene_directory"
 
 var _custom_mappings: Dictionary = {} # GDScript -> PackedScene
@@ -31,7 +31,11 @@ func _load_settings() -> void:
 				custom_dir += "/"
 			_scene_dirs.append(custom_dir)
 
-	# Add pro scene directory if it exists
+	# Add addon internal scene directories (for demos)
+	var addon_demo_dir := "res://addons/ui_flow/examples/scenes/UIScene/"
+	if not _scene_dirs.has(addon_demo_dir):
+		_scene_dirs.append(addon_demo_dir)
+
 	var pro_dir := "res://addons/ui_flow_pro/examples/scenes/"
 	if not _scene_dirs.has(pro_dir):
 		_scene_dirs.append(pro_dir)
@@ -65,19 +69,50 @@ func resolve(page_class: GDScript) -> PackedScene:
 		_cache[page_class] = scene
 		return scene
 
-	# Convention-based resolution across all scene directories
+	# Convention-based resolution across all scene directories (recursive)
 	var class_name_str: String = page_class.get_global_name()
 	if class_name_str.is_empty():
 		push_error("UIFlow: Cannot resolve scene for unnamed script: %s" % page_class.resource_path)
 		return null
 
+	var scene_filename: String = class_name_str + ".tscn"
 	for scene_dir in _scene_dirs:
-		var scene_path: String = scene_dir + class_name_str + ".tscn"
-		if ResourceLoader.exists(scene_path):
-			var scene: PackedScene = load(scene_path) as PackedScene
+		var result := _search_recursive(scene_dir, scene_filename)
+		if result:
+			var scene: PackedScene = load(result) as PackedScene
 			if scene:
 				_cache[page_class] = scene
 				return scene
 
 	push_error("UIFlow: Scene not found for class '%s'. Searched in: %s. Use UIFlow.register_scene() to set a custom path." % [class_name_str, ", ".join(_scene_dirs)])
 	return null
+
+
+## Recursively search a directory for a scene file.
+func _search_recursive(dir_path: String, filename: String) -> String:
+	# Try direct path first
+	var direct_path: String = dir_path + filename
+	if ResourceLoader.exists(direct_path):
+		return direct_path
+
+	# Search subdirectories
+	var dir := DirAccess.open(dir_path)
+	if dir == null:
+		return ""
+
+	dir.list_dir_begin()
+	var entry := dir.get_next()
+	while entry != "":
+		if entry.begins_with("."):
+			entry = dir.get_next()
+			continue
+		if dir.current_is_dir():
+			var sub_path: String = dir_path + entry + "/"
+			var found := _search_recursive(sub_path, filename)
+			if not found.is_empty():
+				dir.list_dir_end()
+				return found
+		entry = dir.get_next()
+	dir.list_dir_end()
+
+	return ""

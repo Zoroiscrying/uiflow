@@ -25,9 +25,7 @@ func _on_created(data: Variant = null) -> void:
 	if preset != UIFlowTransitionType.Type.NONE:
 		var effect := _create_effect(preset, duration, ease, trans)
 		if effect:
-			var ref := UIFlowTransitionRef.new()
-			ref.enter_effect = effect
-			enter_transition = ref
+			enter_effect = effect
 
 	var trans_name: String = data.get("transition_name", "Unknown")
 	$Center/NameLabel.text = "Transition: %s" % trans_name

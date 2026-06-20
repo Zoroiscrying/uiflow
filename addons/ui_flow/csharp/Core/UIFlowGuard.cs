@@ -11,14 +11,14 @@ namespace UIFlow.Core
     /// </summary>
     public class UIFlowGuard
     {
-        private readonly List<Func<GDScript, GDScript, object, bool>> _globalGuards = new();
-        private readonly Dictionary<GDScript, List<Func<GDScript, object, bool>>> _pageGuards = new();
+        private readonly List<Func<Script, Script, object, bool>> _globalGuards = new();
+        private readonly Dictionary<Script, List<Func<Script, object, bool>>> _pageGuards = new();
 
         /// <summary>
         /// Add a global guard that checks all navigation.
         /// Guard receives (fromPage, toPage, data) and returns true to allow, false to block.
         /// </summary>
-        public void AddGuard(Func<GDScript, GDScript, object, bool> guard)
+        public void AddGuard(Func<Script, Script, object, bool> guard)
         {
             _globalGuards.Add(guard);
         }
@@ -26,7 +26,7 @@ namespace UIFlow.Core
         /// <summary>
         /// Remove a global guard.
         /// </summary>
-        public void RemoveGuard(Func<GDScript, GDScript, object, bool> guard)
+        public void RemoveGuard(Func<Script, Script, object, bool> guard)
         {
             _globalGuards.Remove(guard);
         }
@@ -35,17 +35,17 @@ namespace UIFlow.Core
         /// Add a guard for a specific target page.
         /// Guard receives (fromPage, data) and returns true to allow, false to block.
         /// </summary>
-        public void AddPageGuard(GDScript pageClass, Func<GDScript, object, bool> guard)
+        public void AddPageGuard(Script pageClass, Func<Script, object, bool> guard)
         {
             if (!_pageGuards.ContainsKey(pageClass))
-                _pageGuards[pageClass] = new List<Func<GDScript, object, bool>>();
+                _pageGuards[pageClass] = new List<Func<Script, object, bool>>();
             _pageGuards[pageClass].Add(guard);
         }
 
         /// <summary>
         /// Remove a page-specific guard.
         /// </summary>
-        public void RemovePageGuard(GDScript pageClass, Func<GDScript, object, bool> guard)
+        public void RemovePageGuard(Script pageClass, Func<Script, object, bool> guard)
         {
             if (_pageGuards.TryGetValue(pageClass, out var guards))
                 guards.Remove(guard);
@@ -54,7 +54,7 @@ namespace UIFlow.Core
         /// <summary>
         /// Check if navigation is allowed. Returns true if allowed, false if blocked.
         /// </summary>
-        public bool CanNavigate(GDScript fromPage, GDScript toPage, object data = null)
+        public bool CanNavigate(Script fromPage, Script toPage, object data = null)
         {
             foreach (var guard in _globalGuards)
             {

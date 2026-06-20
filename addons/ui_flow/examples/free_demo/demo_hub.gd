@@ -31,7 +31,12 @@ func _on_opened(_data: Variant = null) -> void:
 	UIFlow.set_default_focus(_buttons.get_child(0) as Button)
 
 
+func _on_hidden() -> void:
+	UIFlow.anim_fade_out(self, 0.2)
+
+
 func _on_shown() -> void:
+	UIFlow.anim_fade_in(self, 0.2)
 	UIFlow.set_default_focus(_buttons.get_child(0) as Button)
 
 

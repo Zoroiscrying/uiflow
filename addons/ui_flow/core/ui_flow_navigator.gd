@@ -27,11 +27,13 @@ func get_guard():
 
 
 ## Push a new page onto the stack.
+## If the page is already in the stack, moves it to the top.
 ## Returns the page instance. Returns null if blocked by a guard.
 func push(page_class: GDScript, data: Variant = null, page_theme: UIFlowTheme = null) -> Control:
-	# No-op if page is already in stack — return existing instance
+	# If already in stack, move to top
 	var existing := get_page(page_class)
 	if existing:
+		_move_to_top(page_class)
 		return existing
 
 	# Check guards
@@ -49,15 +51,13 @@ func push(page_class: GDScript, data: Variant = null, page_theme: UIFlowTheme = 
 		var current_page: UIFlowPage = current["instance"] as UIFlowPage
 		if current_page and current_page.has_method("_on_hidden"):
 			current_page._on_hidden()
-		current_page.visible = false
 
 	# Instantiate and add to tree
 	var instance: Control = scene.instantiate()
 	# Check if the enter effect wants the node to start hidden
 	var starts_hidden := false
-	if instance is UIFlowPage and instance.enter_transition:
-		var effect = instance.enter_transition.get_enter_effect()
-		if effect and effect.starts_hidden:
+	if instance is UIFlowPage and instance.enter_effect:
+		if instance.enter_effect.starts_hidden:
 			starts_hidden = true
 	instance.visible = not starts_hidden
 	instance.modulate.a = 0.0 if starts_hidden else 1.0
@@ -164,7 +164,6 @@ func _cleanup_after_pop(top_instance: Control, top_class: GDScript) -> void:
 		var below: Dictionary = _stack.back()
 		var below_page: UIFlowPage = below["instance"] as UIFlowPage
 		if below_page and is_instance_valid(below_page):
-			below_page.visible = true
 			if below_page.has_method("_on_shown"):
 				below_page._on_shown()
 			
@@ -198,6 +197,49 @@ func pop_to_root() -> void:
 		pop()
 
 
+## Close a specific page by class, anywhere in the stack.
+## If the page is the top page, plays exit animation first.
+## If the page is in the middle, removes it directly.
+func close(page_class: GDScript) -> void:
+	if _stack.is_empty():
+		return
+
+	# Find the page in the stack
+	var target_index := -1
+	for i in range(_stack.size()):
+		if _stack[i]["class"] == page_class:
+			target_index = i
+			break
+
+	if target_index == -1:
+		push_warning("UIFlow: Page class not found in stack, cannot close.")
+		return
+
+	var entry: Dictionary = _stack[target_index]
+	var instance: Control = entry["instance"]
+	var page: UIFlowPage = instance as UIFlowPage
+
+	# If it's the top page, use pop() for proper exit animation
+	if target_index == _stack.size() - 1:
+		pop()
+		return
+
+	# Otherwise, remove directly
+	_stack.remove_at(target_index)
+
+	if page:
+		if page.has_method("_on_closed"):
+			page._on_closed()
+		if page.has_method("_on_destroyed"):
+			page._on_destroyed()
+
+	if is_instance_valid(instance) and instance.is_inside_tree():
+		_container.remove_child(instance)
+		instance.queue_free()
+
+	page_closed.emit(page_class)
+
+
 ## Find a page instance by class.
 func get_page(page_class: GDScript) -> Control:
 	for entry in _stack:
@@ -212,6 +254,47 @@ func has_page(page_class: GDScript) -> bool:
 		if entry["class"] == page_class:
 			return true
 	return false
+
+
+## Check if a page is the top page in the stack.
+func is_on_top(page_class: GDScript) -> bool:
+	if _stack.is_empty():
+		return false
+	return _stack.back()["class"] == page_class
+
+
+## Move an existing page to the top of the stack.
+## Calls _on_hidden on the current top, moves the page, calls _on_shown.
+func _move_to_top(page_class: GDScript) -> void:
+	var target_index := -1
+	for i in range(_stack.size()):
+		if _stack[i]["class"] == page_class:
+			target_index = i
+			break
+
+	if target_index == -1 or target_index == _stack.size() - 1:
+		return  # Not found or already on top
+
+	# Notify current top it's being hidden
+	var current_top: Dictionary = _stack.back()
+	var current_page: UIFlowPage = current_top["instance"] as UIFlowPage
+	if current_page and current_page.has_method("_on_hidden"):
+		current_page._on_hidden()
+
+	# Move to top
+	var entry: Dictionary = _stack[target_index]
+	_stack.remove_at(target_index)
+	_stack.push_back(entry)
+
+	# Bring to front in the scene tree
+	var instance: Control = entry["instance"]
+	if instance.is_inside_tree():
+		_container.move_child(instance, _container.get_child_count() - 1)
+
+	# Notify moved page it's now shown
+	var moved_page: UIFlowPage = instance as UIFlowPage
+	if moved_page and moved_page.has_method("_on_shown"):
+		moved_page._on_shown()
 
 
 ## Get current top page class.

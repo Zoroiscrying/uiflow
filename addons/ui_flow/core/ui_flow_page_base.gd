@@ -21,12 +21,11 @@ class_name UIFlowPage extends Control
 ## If true, this page intercepts all input. Lower pages don't receive back/cancel.
 @export var is_modal: bool = false
 
-## Transition played when this page is pushed onto the stack.
-## Configure in Inspector: preset type, custom script, or Animation resource.
-@export var enter_transition: UIFlowTransitionRef = null
+## Transition effect played when this page is pushed onto the stack.
+@export var enter_effect: UIFlowTransitionEffect = null
 
-## Transition played when this page is popped from the stack.
-@export var exit_transition: UIFlowTransitionRef = null
+## Transition effect played when this page is popped from the stack.
+@export var exit_effect: UIFlowTransitionEffect = null
 
 ## NodePath to the control that should receive focus when the page opens.
 @export var default_focus_path: NodePath = ""
@@ -89,23 +88,15 @@ func _apply_default_focus() -> void:
 
 ## Called by Navigator after _on_opened. Plays enter animation.
 func _play_enter_animation() -> void:
-	if enter_transition == null:
-		return
-	var effect = enter_transition.get_enter_effect()
-	if effect:
-		effect.play_enter(self)
+	if enter_effect:
+		enter_effect.play_enter(self)
 
 
 ## Called by Navigator before removal. Plays exit animation.
 ## [param on_complete] is called when the animation finishes.
 func _play_exit_animation(on_complete: Callable = Callable()) -> void:
-	if exit_transition == null:
-		if on_complete.is_valid():
-			on_complete.call()
-		return
-	var effect = exit_transition.get_exit_effect()
-	if effect:
-		effect.play_exit(self, on_complete)
+	if exit_effect:
+		exit_effect.play_exit(self, on_complete)
 	else:
 		if on_complete.is_valid():
 			on_complete.call()

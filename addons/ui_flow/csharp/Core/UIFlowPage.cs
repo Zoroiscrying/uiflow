@@ -10,8 +10,8 @@ namespace UIFlow.Core;
 public partial class UIFlowPage : Control
 {
     [Export] public bool IsModal { get; set; }
-    [Export] public UIFlowTransitionRef EnterTransition { get; set; }
-    [Export] public UIFlowTransitionRef ExitTransition { get; set; }
+    [Export] public UIFlowTransitionEffect EnterEffect { get; set; }
+    [Export] public UIFlowTransitionEffect ExitEffect { get; set; }
     [Export] public NodePath DefaultFocusPath { get; set; }
 
     private Dictionary<StringName, UIInputActionNode> _actionNodes = new();
@@ -54,21 +54,13 @@ public partial class UIFlowPage : Control
 
     internal void PlayEnterAnimation()
     {
-        if (EnterTransition == null) return;
-        var effect = EnterTransition.GetEnterEffect();
-        effect?.PlayEnter(this);
+        EnterEffect?.PlayEnter(this);
     }
 
     internal void PlayExitAnimation(Callable onComplete = default)
     {
-        if (ExitTransition == null)
-        {
-            if (onComplete.IsValid) onComplete.Call();
-            return;
-        }
-        var effect = ExitTransition.GetExitEffect();
-        if (effect != null)
-            effect.PlayExit(this, onComplete);
+        if (ExitEffect != null)
+            ExitEffect.PlayExit(this, onComplete);
         else if (onComplete.IsValid)
             onComplete.Call();
     }

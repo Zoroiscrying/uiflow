@@ -28,14 +28,18 @@ public partial class UIFlowNavigator : Node
     }
 
     /// <summary>
-    /// Push a page onto the stack. Returns the page instance.
-    /// No-op if page_class is already in the stack.
+    /// Push a page onto the stack. If the page is already in the stack, moves it to the top.
+    /// Returns the page instance. Returns null if blocked by a guard or scene not found.
     /// </summary>
     public Control Push(Script pageClass, Dictionary data = null, UIFlowTheme pageTheme = null)
     {
-        // No-op if already in stack
+        // If already in stack, move to top
         var existing = GetPage(pageClass);
-        if (existing != null) return existing;
+        if (existing != null)
+        {
+            MoveToTop(pageClass);
+            return existing;
+        }
 
         var scene = _sceneResolver.Resolve(pageClass);
         if (scene == null) return null;
@@ -53,14 +57,10 @@ public partial class UIFlowNavigator : Node
         // Instantiate
         var instance = (Control)scene.Instantiate();
 
-        // Check if page has enter animation
+        // Check if page has enter animation that wants to start hidden
         bool startsHidden = false;
-        if (instance is UIFlowPage page && page.EnterTransition != null)
-        {
-            var effect = page.EnterTransition.GetEnterEffect();
-            if (effect != null && effect.StartsHidden)
-                startsHidden = true;
-        }
+        if (instance is UIFlowPage page && page.EnterEffect != null && page.EnterEffect.StartsHidden)
+            startsHidden = true;
 
         instance.Visible = !startsHidden;
         instance.Modulate = new Color(1, 1, 1, startsHidden ? 0f : 1f);
@@ -99,12 +99,8 @@ public partial class UIFlowNavigator : Node
         }
 
         bool startsHidden = false;
-        if (instance is UIFlowPage page && page.EnterTransition != null)
-        {
-            var effect = page.EnterTransition.GetEnterEffect();
-            if (effect != null && effect.StartsHidden)
-                startsHidden = true;
-        }
+        if (instance is UIFlowPage page && page.EnterEffect != null && page.EnterEffect.StartsHidden)
+            startsHidden = true;
 
         instance.Visible = !startsHidden;
         instance.Modulate = new Color(1, 1, 1, startsHidden ? 0f : 1f);
@@ -140,13 +136,9 @@ public partial class UIFlowNavigator : Node
         _stack.RemoveAt(_stack.Count - 1);
 
         if (top.Instance is UIFlowPage page)
-        {
             page.PlayExitAnimation(() => CleanupAfterPop(top));
-        }
         else
-        {
             CleanupAfterPop(top);
-        }
     }
 
     private void CleanupAfterPop(StackEntry top)
@@ -166,35 +158,12 @@ public partial class UIFlowNavigator : Node
         if (_stack.Count > 0)
         {
             var below = _stack[^1];
-            if (below.Instance is UIFlowPage belowPage)
+            if (below.Instance is UIFlowPage belowPage && IsInstanceValid(belowPage))
                 belowPage.InvokeShown();
         }
 
         PagePopped?.Invoke(top.Class);
         PageClosed?.Invoke(top.Class);
-    }
-
-    public Control GetPage(Script pageClass)
-    {
-        foreach (var entry in _stack)
-            if (entry.Class == pageClass) return entry.Instance;
-        return null;
-    }
-
-    public bool HasPage(Script pageClass) => GetPage(pageClass) != null;
-
-    public Script CurrentPageClass() => _stack.Count > 0 ? _stack[^1].Class : null;
-
-    public Control CurrentPageInstance() => _stack.Count > 0 ? _stack[^1].Instance : null;
-
-    public int Depth() => _stack.Count;
-
-    public StringName[] NavigationPath()
-    {
-        var path = new StringName[_stack.Count];
-        for (int i = 0; i < _stack.Count; i++)
-            path[i] = _stack[i].Class.GetGlobalName();
-        return path;
     }
 
     /// <summary>
@@ -228,5 +197,118 @@ public partial class UIFlowNavigator : Node
     {
         while (_stack.Count > 1)
             Pop();
+    }
+
+    /// <summary>
+    /// Close a specific page by class, anywhere in the stack.
+    /// If the page is the top page, plays exit animation first.
+    /// If the page is in the middle, removes it directly.
+    /// </summary>
+    public void Close(Script pageClass)
+    {
+        if (_stack.Count == 0) return;
+
+        int targetIndex = -1;
+        for (int i = 0; i < _stack.Count; i++)
+        {
+            if (_stack[i].Class == pageClass)
+            {
+                targetIndex = i;
+                break;
+            }
+        }
+
+        if (targetIndex == -1)
+        {
+            GD.PushWarning($"UIFlow: Page class not found in stack, cannot close.");
+            return;
+        }
+
+        // If it's the top page, use Pop() for proper exit animation
+        if (targetIndex == _stack.Count - 1)
+        {
+            Pop();
+            return;
+        }
+
+        // Otherwise, remove directly
+        var entry = _stack[targetIndex];
+        _stack.RemoveAt(targetIndex);
+
+        if (entry.Instance is UIFlowPage page)
+        {
+            page.InvokeClosed();
+            page.InvokeDestroyed();
+        }
+
+        if (IsInstanceValid(entry.Instance) && entry.Instance.IsInsideTree())
+        {
+            _container.RemoveChild(entry.Instance);
+            entry.Instance.QueueFree();
+        }
+
+        PageClosed?.Invoke(entry.Class);
+    }
+
+    /// <summary>
+    /// Move an existing page to the top of the stack.
+    /// </summary>
+    public void MoveToTop(Script pageClass)
+    {
+        int targetIndex = -1;
+        for (int i = 0; i < _stack.Count; i++)
+        {
+            if (_stack[i].Class == pageClass)
+            {
+                targetIndex = i;
+                break;
+            }
+        }
+
+        if (targetIndex == -1 || targetIndex == _stack.Count - 1)
+            return; // Not found or already on top
+
+        // Notify current top it's being hidden
+        var currentTop = _stack[^1];
+        if (currentTop.Instance is UIFlowPage currentPage)
+            currentPage.InvokeHidden();
+
+        // Move to top
+        var entry = _stack[targetIndex];
+        _stack.RemoveAt(targetIndex);
+        _stack.Add(entry);
+
+        // Bring to front in the scene tree
+        if (entry.Instance.IsInsideTree())
+            _container.MoveChild(entry.Instance, _container.GetChildCount() - 1);
+
+        // Notify moved page it's now shown
+        if (entry.Instance is UIFlowPage movedPage)
+            movedPage.InvokeShown();
+    }
+
+    public Control GetPage(Script pageClass)
+    {
+        foreach (var entry in _stack)
+            if (entry.Class == pageClass) return entry.Instance;
+        return null;
+    }
+
+    public bool HasPage(Script pageClass) => GetPage(pageClass) != null;
+
+    public bool IsOnTop(Script pageClass) => _stack.Count > 0 && _stack[^1].Class == pageClass;
+
+    public Script CurrentPageClass() => _stack.Count > 0 ? _stack[^1].Class : null;
+
+    public Control CurrentPageInstance() => _stack.Count > 0 ? _stack[^1].Instance : null;
+
+    public int Depth() => _stack.Count;
+
+    public StringName[] NavigationPath()
+    {
+        var path = new StringName[_stack.Count];
+        for (int i = 0; i < _stack.Count; i++)
+            path[i] = _stack[i].Class.GetGlobalName();
+        return path;
     }
 }

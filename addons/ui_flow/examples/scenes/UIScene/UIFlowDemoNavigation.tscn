@@ -39,7 +39,7 @@ horizontal_alignment = 1
 [node name="Desc" type="Label" parent="Panel/VBox"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 14
-text = "Push a new page onto the stack.\nPop to go back."
+text = "Push/Pop/Replace pages on the stack.\nF1: Toggle code panel"
 horizontal_alignment = 1
 modulate = Color(1, 1, 1, 0.6)
 
@@ -55,7 +55,12 @@ horizontal_alignment = 1
 [node name="PushButton" type="Button" parent="Panel/VBox"]
 layout_mode = 2
 custom_minimum_size = Vector2(200, 40)
-text = "Push Another Page"
+text = "Push Data Binding Page"
+
+[node name="ReplaceButton" type="Button" parent="Panel/VBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(200, 40)
+text = "Replace with Transitions"
 
 [node name="BackButton" type="Button" parent="Panel/VBox"]
 layout_mode = 2

@@ -86,9 +86,9 @@ func _create_section(page: Control) -> VBoxContainer:
 	vbox.add_child(focus_info)
 
 	var transition_info := Label.new()
-	var has_enter := page.enter_transition != null
-	var has_exit := page.exit_transition != null
-	transition_info.text = "  enter_transition: %s\n  exit_transition: %s" % [
+	var has_enter := page.enter_effect != null
+	var has_exit := page.exit_effect != null
+	transition_info.text = "  enter_effect: %s\n  exit_effect: %s" % [
 		"set" if has_enter else "(none)",
 		"set" if has_exit else "(none)"
 	]

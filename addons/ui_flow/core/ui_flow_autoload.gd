@@ -125,6 +125,11 @@ func pop_to_root() -> void:
 	Router.pop_to_root()
 
 
+## Close a specific page by class, anywhere in the stack.
+func close(page_class: GDScript) -> void:
+	Router.close(page_class)
+
+
 ## Get the class of the current top page.
 func current_page() -> GDScript:
 	return Router.current_page_class()
@@ -148,6 +153,11 @@ func get_page(page_class: GDScript) -> Control:
 ## Check if a page is in the stack.
 func has_page(page_class: GDScript) -> bool:
 	return Router.has_page(page_class)
+
+
+## Check if a page is the top page in the stack.
+func is_on_top(page_class: GDScript) -> bool:
+	return Router.is_on_top(page_class)
 
 
 # ── Guard shortcuts ──────────────────────────────────────────────────────────

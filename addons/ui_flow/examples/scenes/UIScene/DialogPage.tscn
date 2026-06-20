@@ -1,39 +1,15 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene format=3 uid="uid://dgelvntr08j0"]
 
-[ext_resource type="Script" path="res://addons/ui_flow/examples/dialog_page.gd" id="1"]
-[ext_resource type="Script" path="res://addons/ui_flow/core/ui_flow_input_action_node.gd" id="2"]
-[ext_resource type="Script" path="res://addons/ui_flow/resources/flow_transition_ref.gd" id="3"]
-[ext_resource type="Script" path="res://addons/ui_flow/transitions/effects/fade_effect.gd" id="4"]
-[ext_resource type="Script" path="res://addons/ui_flow/transitions/effects/scale_effect.gd" id="5"]
-[ext_resource type="Script" path="res://addons/ui_flow/transitions/effects/sequenced_effect.gd" id="6"]
+[ext_resource type="Script" uid="uid://dcrkbi5vvepm5" path="res://addons/ui_flow/examples/dialog_page.gd" id="1"]
+[ext_resource type="Script" uid="uid://pxcdy2526t4" path="res://addons/ui_flow/core/ui_flow_input_action_node.gd" id="2"]
+[ext_resource type="Script" uid="uid://cspscwmv2yfg7" path="res://addons/ui_flow/transitions/effects/fade_effect.gd" id="3"]
 
 [sub_resource type="Resource" id="1"]
-script = ExtResource("4")
-from_current = false
-from_alpha = 0.0
-to_alpha = 1.0
+script = ExtResource("3")
 duration = 0.15
 ease_type = 1
-trans_type = 0
 
-[sub_resource type="Resource" id="2"]
-script = ExtResource("5")
-from_current = true
-to_scale = Vector2(1, 1)
-duration = 0.2
-ease_type = 2
-trans_type = 5
-
-[sub_resource type="Resource" id="3"]
-script = ExtResource("6")
-effects = [SubResource("1"), SubResource("2")]
-
-[sub_resource type="Resource" id="4"]
-script = ExtResource("3")
-enter_effect = SubResource("3")
-exit_effect = SubResource("1")
-
-[node name="DialogPage" type="Control"]
+[node name="DialogPage" type="Control" unique_id=1410559893]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -42,17 +18,15 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1")
 is_modal = true
-enter_transition = SubResource("4")
-exit_transition = SubResource("1")
+exit_effect = SubResource("1")
 
-[node name="ContinueAction" type="Node" parent="."]
+[node name="ContinueAction" type="Node" parent="." unique_id=1334809352]
 script = ExtResource("2")
 action_name = &"continue"
-action_type = 0
 godot_action = &"ui_accept"
 label = "Continue"
 
-[node name="Dimmer" type="ColorRect" parent="."]
+[node name="Dimmer" type="ColorRect" parent="." unique_id=298685504]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -61,38 +35,38 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 0.3)
 
-[node name="DialogBox" type="PanelContainer" parent="."]
+[node name="DialogBox" type="PanelContainer" parent="." unique_id=1763441073]
 layout_mode = 1
 anchors_preset = 12
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_top = -160.0
 offset_left = 40.0
+offset_top = -160.0
 offset_right = -40.0
 offset_bottom = -20.0
 grow_horizontal = 2
 grow_vertical = 0
 
-[node name="VBox" type="VBoxContainer" parent="DialogBox"]
+[node name="VBox" type="VBoxContainer" parent="DialogBox" unique_id=693620666]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="Speaker" type="Label" parent="DialogBox/VBox"]
+[node name="Speaker" type="Label" parent="DialogBox/VBox" unique_id=538564957]
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
 text = "NPC"
 
-[node name="Text" type="RichTextLabel" parent="DialogBox/VBox"]
+[node name="Text" type="RichTextLabel" parent="DialogBox/VBox" unique_id=1690117118]
 layout_mode = 2
 size_flags_vertical = 3
 bbcode_enabled = true
 text = "Hello, traveler! Welcome to our village."
 fit_content = true
 
-[node name="Prompt" type="Label" parent="DialogBox/VBox"]
+[node name="Prompt" type="Label" parent="DialogBox/VBox" unique_id=642463076]
+modulate = Color(1, 1, 1, 0.5)
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
 text = "[Enter] Continue"
 horizontal_alignment = 2
-modulate = Color(1, 1, 1, 0.5)

@@ -4,53 +4,51 @@ class_name UIFlowCodePanel extends Control
 var _panel: PanelContainer
 var _title_label: Label
 var _snippets_container: VBoxContainer
-var _tab_button: Button
-var _is_open: bool = false
-var _panel_width: float = 380.0
+var _toggle_button: Button
+var _is_expanded: bool = true
+var _expanded_width: float = 380.0
+var _collapsed_width: float = 32.0
 
 
 func _ready() -> void:
 	var vp := get_viewport()
 	if vp:
 		size = vp.get_visible_rect().size
-	get_viewport().size_changed.connect(func():
-		var v := get_viewport()
-		if v:
-			size = v.get_visible_rect().size
-			_tab_button.position = Vector2(size.x - 40, size.y / 2 - 40)
-			_panel.position = Vector2(size.x - _panel_width, 0)
-			_panel.size = Vector2(_panel_width, size.y)
-	)
+	get_viewport().size_changed.connect(_on_viewport_resized)
 
-	_build_tab_button()
 	_build_panel()
 
 
-func _build_tab_button() -> void:
-	_tab_button = Button.new()
-	_tab_button.text = "< >"
-	_tab_button.custom_minimum_size = Vector2(32, 80)
-	_tab_button.position = Vector2(size.x - 40, size.y / 2 - 40)
-	_tab_button.pressed.connect(func(): toggle())
-	add_child(_tab_button)
+func _on_viewport_resized() -> void:
+	var vp := get_viewport()
+	if vp:
+		size = vp.get_visible_rect().size
+		_update_layout()
 
 
 func _build_panel() -> void:
 	_panel = PanelContainer.new()
-	_panel.visible = false
-	_panel.position = Vector2(size.x - _panel_width, 0)
-	_panel.size = Vector2(_panel_width, size.y)
+	_panel.position = Vector2(size.x - _expanded_width, 0)
+	_panel.size = Vector2(_expanded_width, size.y)
 	add_child(_panel)
 
-	var root_vbox := VBoxContainer.new()
-	root_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	root_vbox.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	_panel.add_child(root_vbox)
+	var root_hbox := HBoxContainer.new()
+	root_hbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	root_hbox.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	root_hbox.add_theme_constant_override("separation", 0)
+	_panel.add_child(root_hbox)
+
+	# Content area
+	var content := VBoxContainer.new()
+	content.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	content.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	content.name = "Content"
+	root_hbox.add_child(content)
 
 	# Header
 	var header := HBoxContainer.new()
 	header.add_theme_constant_override("separation", 8)
-	root_vbox.add_child(header)
+	content.add_child(header)
 
 	_title_label = Label.new()
 	_title_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -58,32 +56,67 @@ func _build_panel() -> void:
 	_title_label.text = "UIFlow API"
 	header.add_child(_title_label)
 
-	var close_btn := Button.new()
-	close_btn.text = "×"
-	close_btn.custom_minimum_size = Vector2(28, 28)
-	close_btn.pressed.connect(func(): toggle())
-	header.add_child(close_btn)
+	var collapse_btn := Button.new()
+	collapse_btn.text = "»"
+	collapse_btn.custom_minimum_size = Vector2(28, 28)
+	collapse_btn.pressed.connect(func(): collapse())
+	header.add_child(collapse_btn)
 
 	var sep := HSeparator.new()
-	root_vbox.add_child(sep)
+	content.add_child(sep)
 
 	# Scrollable snippets
 	var scroll := ScrollContainer.new()
 	scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	root_vbox.add_child(scroll)
+	content.add_child(scroll)
 
 	_snippets_container = VBoxContainer.new()
 	_snippets_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_snippets_container.add_theme_constant_override("separation", 12)
 	scroll.add_child(_snippets_container)
 
+	# Toggle button (always visible, on the left edge of the panel)
+	_toggle_button = Button.new()
+	_toggle_button.text = "«"
+	_toggle_button.custom_minimum_size = Vector2(_collapsed_width, 60)
+	_toggle_button.position = Vector2(0, size.y / 2 - 30)
+	_toggle_button.pressed.connect(func(): expand())
+	_toggle_button.visible = false
+	_toggle_button.z_index = 10
+	add_child(_toggle_button)
 
-## Toggle the code panel visibility.
+
+func _update_layout() -> void:
+	if _panel.visible:
+		_panel.position = Vector2(size.x - _expanded_width, 0)
+		_panel.size = Vector2(_expanded_width, size.y)
+	_toggle_button.position = Vector2(size.x - _collapsed_width, size.y / 2 - 30)
+
+
+## Collapse the panel to a narrow strip.
+func collapse() -> void:
+	_is_expanded = false
+	_panel.visible = false
+	_toggle_button.visible = true
+	_toggle_button.position = Vector2(size.x - _collapsed_width, size.y / 2 - 30)
+
+
+## Expand the panel to full width.
+func expand() -> void:
+	_is_expanded = true
+	_panel.visible = true
+	_toggle_button.visible = false
+	_panel.position = Vector2(size.x - _expanded_width, 0)
+	_panel.size = Vector2(_expanded_width, size.y)
+
+
+## Toggle expanded/collapsed state.
 func toggle() -> void:
-	_is_open = not _is_open
-	_panel.visible = _is_open
-	_tab_button.visible = not _is_open
+	if _is_expanded:
+		collapse()
+	else:
+		expand()
 
 
 ## Show API snippets for a page. Each snippet: { "title": String, "code": String }
@@ -113,6 +146,4 @@ func show_snippets(page_name: String, snippets: Array) -> void:
 
 		_snippets_container.add_child(block)
 
-	_panel.visible = true
-	_is_open = true
-	_tab_button.visible = false
+	expand()

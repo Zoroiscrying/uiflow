@@ -38,7 +38,7 @@ namespace UIFlow.Core
 
             // Apply config to scene resolver
             if (Config != null && !string.IsNullOrEmpty(Config.SceneDirectory))
-                Scenes.SetSceneDir(Config.SceneDirectory);
+                Scenes.AddSceneDir(Config.SceneDirectory);
 
             var uiLayer = new CanvasLayer { Name = "UIFlowPageLayer", Layer = 10 };
             AddChild(uiLayer);
@@ -92,6 +92,10 @@ namespace UIFlow.Core
             => Instance?.Router.Replace(pageClass, data, theme);
 
         public static void PopToRoot() => Instance?.Router.PopToRoot();
+
+        public static void Close(Script pageClass) => Instance?.Router.Close(pageClass);
+
+        public static bool IsOnTop(Script pageClass) => Instance?.Router.IsOnTop(pageClass) ?? false;
 
         public static T CurrentPage<T>() where T : UIFlowPage
             => Instance?.Router.CurrentPageInstance() as T;
