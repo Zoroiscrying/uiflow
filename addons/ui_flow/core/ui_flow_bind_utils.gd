@@ -148,5 +148,20 @@ static func bind_slider(slider: Range, sig: Signal, setter: Callable) -> UIFlowB
 		updating = false
 	slider.value_changed.connect(slider_cb)
 
-	# Wrap signal connection in binding for cleanup
-	return UIFlowBinding.new(sig, signal_cb)
+	return UIFlowSliderBinding.new(slider, sig, signal_cb, slider_cb)
+
+
+## Binding that also manages a slider callback for cleanup.
+class UIFlowSliderBinding extends UIFlowBinding:
+	var _slider: Range
+	var _slider_callable: Callable
+
+	func _init(p_slider: Range, p_sig: Signal, p_signal_cb: Callable, p_slider_callable: Callable) -> void:
+		super._init(p_sig, p_signal_cb)
+		_slider = p_slider
+		_slider_callable = p_slider_callable
+
+	func unbind() -> void:
+		if is_instance_valid(_slider) and _slider.value_changed.is_connected(_slider_callable):
+			_slider.value_changed.disconnect(_slider_callable)
+		super.unbind()

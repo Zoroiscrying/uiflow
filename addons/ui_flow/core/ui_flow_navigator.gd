@@ -60,7 +60,6 @@ func push(page_class: GDScript, data: Variant = null, page_theme: UIFlowTheme = 
 		if instance.enter_effect.starts_hidden:
 			starts_hidden = true
 	instance.visible = not starts_hidden
-	instance.modulate.a = 0.0 if starts_hidden else 1.0
 	_container.add_child(instance)
 
 	# Apply theme

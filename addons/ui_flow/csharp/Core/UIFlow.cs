@@ -52,7 +52,7 @@ namespace UIFlow.Core
             Router = new UIFlowNavigator();
             Router.Name = "UIFlowNavigator";
             AddChild(Router);
-            Router.Setup(_pageContainer, Scenes);
+            Router.Setup(_pageContainer, Scenes, _guard);
 
             Router.PageOpened += c => PageOpened?.Invoke(c);
             Router.PageClosed += c => PageClosed?.Invoke(c);

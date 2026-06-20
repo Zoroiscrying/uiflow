@@ -15,6 +15,7 @@ func play_enter(node: Control, callback: Callable = Callable()) -> void:
 		_on_finished(callback)
 		return
 	node.visible = true
+	node.modulate.a = 1.0
 	if not from_current:
 		var viewport_size: Vector2 = node.get_viewport_rect().size
 		node.position += _get_offset(viewport_size)

@@ -19,12 +19,15 @@ public partial class UIFlowNavigator : Node
     private UIFlowSceneResolver _sceneResolver;
     private Control _container;
 
+    private UIFlowGuard _guard;
+
     private record StackEntry(Script Class, Control Instance, PackedScene Scene);
 
-    public void Setup(Control container, UIFlowSceneResolver resolver)
+    public void Setup(Control container, UIFlowSceneResolver resolver, UIFlowGuard guard)
     {
         _container = container;
         _sceneResolver = resolver;
+        _guard = guard;
     }
 
     /// <summary>
@@ -43,6 +46,12 @@ public partial class UIFlowNavigator : Node
 
         var scene = _sceneResolver.Resolve(pageClass);
         if (scene == null) return null;
+
+        // Guard check
+        if (_guard != null && !_guard.CanNavigate(
+            _stack.Count > 0 ? _stack[^1].Class : null,
+            pageClass, data))
+            return null;
 
         data ??= new Dictionary();
 
@@ -63,7 +72,6 @@ public partial class UIFlowNavigator : Node
             startsHidden = true;
 
         instance.Visible = !startsHidden;
-        instance.Modulate = new Color(1, 1, 1, startsHidden ? 0f : 1f);
         _container.AddChild(instance);
 
         // Apply theme
@@ -102,11 +110,16 @@ public partial class UIFlowNavigator : Node
         if (instance is UIFlowPage page && page.EnterEffect != null && page.EnterEffect.StartsHidden)
             startsHidden = true;
 
+        var pageClass = instance.GetScript();
+        if (_guard != null && !_guard.CanNavigate(
+            _stack.Count > 0 ? _stack[^1].Class : null,
+            pageClass, data))
+            return null;
+
         instance.Visible = !startsHidden;
-        instance.Modulate = new Color(1, 1, 1, startsHidden ? 0f : 1f);
         _container.AddChild(instance);
 
-        _stack.Add(new StackEntry(instance.GetScript(), instance, null));
+        _stack.Add(new StackEntry(pageClass, instance, null));
 
         if (instance is UIFlowPage newPage)
         {

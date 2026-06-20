@@ -17,6 +17,7 @@ func play_enter(node: Control, callback: Callable = Callable()) -> void:
 		_on_finished(callback)
 		return
 	node.visible = true
+	node.modulate.a = 1.0
 	if not from_current:
 		node.scale = from_scale
 	var tween := _create_tween(node)
