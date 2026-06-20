@@ -36,6 +36,12 @@ func push(page_class: GDScript, data: Variant = null, page_theme: UIFlowTheme = 
 		_move_to_top(page_class)
 		return existing
 
+	# Check max stack depth
+	var max_depth: int = UIFlow.Config.max_stack_depth if UIFlow.Config else 50
+	if _stack.size() >= max_depth:
+		push_warning("UIFlow: Max stack depth (%d) reached, cannot push new page." % max_depth)
+		return null
+
 	# Check guards
 	var from_class: GDScript = current_page_class()
 	if _guard and not _guard.can_navigate(from_class, page_class, data):

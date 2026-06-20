@@ -47,6 +47,14 @@ public partial class UIFlowNavigator : Node
         var scene = _sceneResolver.Resolve(pageClass);
         if (scene == null) return null;
 
+        // Max stack depth check
+        var maxDepth = UIFlow.Instance?.Config?.MaxStackDepth ?? 50;
+        if (_stack.Count >= maxDepth)
+        {
+            GD.PushWarning($"UIFlow: Max stack depth ({maxDepth}) reached, cannot push new page.");
+            return null;
+        }
+
         // Guard check
         if (_guard != null && !_guard.CanNavigate(
             _stack.Count > 0 ? _stack[^1].Class : null,

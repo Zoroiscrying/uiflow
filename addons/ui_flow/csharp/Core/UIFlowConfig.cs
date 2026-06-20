@@ -5,7 +5,7 @@ namespace UIFlow.Core
     /// <summary>
     /// Global UIFlow configuration resource.
     /// Create one of these in your project to customize UIFlow behavior.
-    /// Save as res://ui_flow_config.tres
+    /// Settings can also be configured via Project Settings → UIFlow.
     /// </summary>
     [Tool]
     public partial class UIFlowConfig : Resource
@@ -16,5 +16,9 @@ namespace UIFlow.Core
         [Export] public string BackAction { get; set; } = "ui_cancel";
         [Export] public bool AutoFocusOnPush { get; set; } = true;
         [Export] public bool RestoreFocusOnPop { get; set; } = true;
+
+        [Export(PropertyHint.Range, "1,200,1")] public int MaxStackDepth { get; set; } = 50;
+        [Export] public bool ModalCloseOnBack { get; set; } = true;
+        [Export] public string DefaultThemeName { get; set; } = "dark";
     }
 }

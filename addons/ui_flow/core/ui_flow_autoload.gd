@@ -40,6 +40,10 @@ func _ready() -> void:
 	if Config and not Config.scene_directory.is_empty():
 		Scenes.add_scene_dir(Config.scene_directory)
 
+	# Apply default theme from config
+	if Config and not Config.default_theme_name.is_empty():
+		ThemeHelper.apply_builtin(Config.default_theme_name)
+
 	Router = UIFlowNavigator.new()
 	Router.name = "UIFlowNavigator"
 	add_child(Router)
@@ -58,6 +62,18 @@ func _load_config() -> void:
 		Config = load(_CONFIG_PATH) as UIFlowConfig
 	if Config == null:
 		Config = UIFlowConfig.new()
+
+	# Override from ProjectSettings if present
+	if ProjectSettings.has_setting("ui_flow/scene_directory"):
+		var dir: String = ProjectSettings.get_setting("ui_flow/scene_directory")
+		if not dir.is_empty():
+			Config.scene_directory = dir
+	if ProjectSettings.has_setting("ui_flow/max_stack_depth"):
+		Config.max_stack_depth = ProjectSettings.get_setting("ui_flow/max_stack_depth") as int
+	if ProjectSettings.has_setting("ui_flow/modal_close_on_back"):
+		Config.modal_close_on_back = ProjectSettings.get_setting("ui_flow/modal_close_on_back") as bool
+	if ProjectSettings.has_setting("ui_flow/default_theme_name"):
+		Config.default_theme_name = ProjectSettings.get_setting("ui_flow/default_theme_name") as String
 
 
 func _on_back_pressed() -> void:
@@ -290,6 +306,7 @@ func bind_slider(slider: Range, sig: Signal, setter: Callable) -> UIFlowBindUtil
 
 ## Bind an array signal to a UI template list.
 ## Automatically creates/updates/destroys instances when the array changes.
+## Optionally provide a key function for stable item identity (preserves instances across reordering).
 ##
 ## Example:
 ## [codeblock]
@@ -303,8 +320,8 @@ func bind_slider(slider: Range, sig: Signal, setter: Callable) -> UIFlowBindUtil
 ## [/codeblock]
 const _ListBinderClass = preload("res://addons/ui_flow/core/ui_flow_list_binder.gd")
 
-func bind_list(container: Node, sig: Signal, template: PackedScene, binder: Callable):
-	return _ListBinderClass.new(container, sig, template, binder)
+func bind_list(container: Node, sig: Signal, template: PackedScene, binder: Callable, key_func: Callable = Callable()):
+	return _ListBinderClass.new(container, sig, template, binder, key_func)
 
 
 # ── Input shortcuts ──────────────────────────────────────────────────────────

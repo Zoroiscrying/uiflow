@@ -40,6 +40,10 @@ namespace UIFlow.Core
             if (Config != null && !string.IsNullOrEmpty(Config.SceneDirectory))
                 Scenes.AddSceneDir(Config.SceneDirectory);
 
+            // Apply default theme from config
+            if (Config != null && !string.IsNullOrEmpty(Config.DefaultThemeName))
+                ThemeHelper.ApplyBuiltin(Config.DefaultThemeName);
+
             var uiLayer = new CanvasLayer { Name = "UIFlowPageLayer", Layer = 10 };
             AddChild(uiLayer);
 
@@ -70,6 +74,20 @@ namespace UIFlow.Core
             if (ResourceLoader.Exists(ConfigPath))
                 Config = GD.Load<UIFlowConfig>(ConfigPath);
             Config ??= new UIFlowConfig();
+
+            // Override from ProjectSettings if present
+            if (ProjectSettings.HasSetting("ui_flow/scene_directory"))
+            {
+                var dir = (string)ProjectSettings.GetSetting("ui_flow/scene_directory");
+                if (!string.IsNullOrEmpty(dir))
+                    Config.SceneDirectory = dir;
+            }
+            if (ProjectSettings.HasSetting("ui_flow/max_stack_depth"))
+                Config.MaxStackDepth = (int)ProjectSettings.GetSetting("ui_flow/max_stack_depth");
+            if (ProjectSettings.HasSetting("ui_flow/modal_close_on_back"))
+                Config.ModalCloseOnBack = (bool)ProjectSettings.GetSetting("ui_flow/modal_close_on_back");
+            if (ProjectSettings.HasSetting("ui_flow/default_theme_name"))
+                Config.DefaultThemeName = (string)ProjectSettings.GetSetting("ui_flow/default_theme_name");
         }
 
         // ── Router shortcuts ─────────────────────────────────────────────────────
@@ -189,6 +207,12 @@ namespace UIFlow.Core
 
         public static UIFlowBindUtils.UIFlowBinding BindSlider(Range slider, Signal signal, Action<float> setter)
             => UIFlowBindUtils.BindSlider(slider, signal, setter);
+
+        /// <summary>
+        /// Bind an array signal to a UI template list. Optionally provide a key function for stable item identity.
+        /// </summary>
+        public static UIFlowListBinder BindList(Node container, Signal signal, PackedScene template, Action<Control, object, int> binder, Func<object, int, object> keyFunc = null)
+            => new UIFlowListBinder(container, signal, template, binder, keyFunc);
 
         // ── Theme ────────────────────────────────────────────────────────────────
 

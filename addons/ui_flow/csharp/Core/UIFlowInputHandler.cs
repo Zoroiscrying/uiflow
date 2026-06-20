@@ -4,11 +4,7 @@ using Godot;
 namespace UIFlow.Core
 {
     /// <summary>
-    /// Input Manager — routes input to the topmost page.
-    /// Rules:
-    /// 1. Input goes to the topmost page first
-    /// 2. Modal pages intercept all input
-    /// 3. Back/cancel is handled per-page via OnBack override
+    /// Input Manager — routes back/cancel input to the topmost page.
     /// </summary>
     public partial class UIFlowInputHandler : Node
     {
@@ -56,27 +52,42 @@ namespace UIFlow.Core
 
         public override void _UnhandledInput(InputEvent @event)
         {
-            if (_navigator == null)
+            if (_navigator == null || _navigator.Stack.Count == 0)
                 return;
-
             if (!@event.IsActionPressed("ui_cancel"))
                 return;
 
-            var stack = _navigator.Stack;
-            for (int i = stack.Count - 1; i >= 0; i--)
-            {
-                var page = stack[i]["instance"] as UIFlowPage;
-                if (page == null || !GodotObject.IsInstanceValid(page))
-                    continue;
+            var topPage = GetTopPage();
+            if (topPage == null || !GodotObject.IsInstanceValid(topPage))
+                return;
 
-                page.InvokeBack();
+            // Modal pages intercept back input
+            if (topPage.IsModal)
+            {
+                topPage.InvokeBack();
+                if (UIFlow.Instance?.Config?.ModalCloseOnBack ?? true)
+                {
+                    if (_navigator.Stack.Count > 1)
+                        _navigator.Pop();
+                    else
+                        EmitSignal(SignalName.BackPressed);
+                }
                 GetViewport().SetInputAsHandled();
                 return;
             }
 
-            var topPage = stack.Count > 0 ? stack.Back()["instance"] as UIFlowPage : null;
-            if (topPage != null && topPage.IsModal)
+            // Non-modal: try page-specific back handler
+            topPage.InvokeBack();
+            if (_navigator.Stack.Count > 1)
+            {
+                _navigator.Pop();
                 GetViewport().SetInputAsHandled();
+                return;
+            }
+
+            // Root page
+            EmitSignal(SignalName.BackPressed);
+            GetViewport().SetInputAsHandled();
         }
     }
 }

@@ -62,7 +62,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	if top_page.is_modal:
 		if top_page.has_method("_on_back"):
 			top_page._on_back()
-		else:
+		elif UIFlow.Config and UIFlow.Config.modal_close_on_back:
 			# Default: pop modal if there's something below it
 			if _navigator._stack.size() > 1:
 				_navigator.pop()
