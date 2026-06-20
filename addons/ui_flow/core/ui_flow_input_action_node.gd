@@ -50,3 +50,29 @@ enum Type {
 
 ## Emitted when enabled state changes.
 signal enabled_changed(value: bool)
+
+
+func _ready() -> void:
+	_try_register()
+
+
+func _exit_tree() -> void:
+	_try_unregister()
+
+
+func _try_register() -> void:
+	var parent := get_parent()
+	while parent != null:
+		if parent is UIFlowPage:
+			parent._register_action(self)
+			return
+		parent = parent.get_parent()
+
+
+func _try_unregister() -> void:
+	var parent := get_parent()
+	while parent != null:
+		if parent is UIFlowPage:
+			parent._unregister_action(self)
+			return
+		parent = parent.get_parent()

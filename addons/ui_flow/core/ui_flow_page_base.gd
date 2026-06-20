@@ -40,12 +40,30 @@ func _ready() -> void:
 	_discover_actions()
 
 
-## Auto-discover UIInputActionNode children.
+## Auto-discover UIInputActionNode descendants recursively.
 func _discover_actions() -> void:
 	_action_nodes.clear()
-	for child in get_children():
-		if child is UIInputActionNode:
-			_action_nodes[child.action_name] = child
+	for descendant in _find_descendants(self):
+		if descendant is UIInputActionNode:
+			_action_nodes[descendant.action_name] = descendant
+
+
+func _find_descendants(node: Node) -> Array:
+	var result: Array = []
+	for child in node.get_children():
+		result.append(child)
+		result.append_array(_find_descendants(child))
+	return result
+
+
+## Called by UIInputActionNode when it enters the tree.
+func _register_action(action: UIInputActionNode) -> void:
+	_action_nodes[action.action_name] = action
+
+
+## Called by UIInputActionNode when it exits the tree.
+func _unregister_action(action: UIInputActionNode) -> void:
+	_action_nodes.erase(action.action_name)
 
 
 # ── Lifecycle (override these in subclasses) ─────────────────────────────────

@@ -25,11 +25,34 @@ public partial class UIFlowPage : Control
     private void DiscoverActions()
     {
         _actionNodes.Clear();
-        foreach (var child in GetChildren())
+        foreach (var descendant in FindDescendants(this))
         {
-            if (child is UIInputActionNode action)
+            if (descendant is UIInputActionNode action)
                 _actionNodes[action.ActionName] = action;
         }
+    }
+
+    private static List<Node> FindDescendants(Node node)
+    {
+        var result = new List<Node>();
+        foreach (var child in node.GetChildren())
+        {
+            result.Add(child);
+            result.AddRange(FindDescendants(child));
+        }
+        return result;
+    }
+
+    /// <summary>Called by UIInputActionNode when it enters the tree.</summary>
+    public void RegisterAction(UIInputActionNode action)
+    {
+        _actionNodes[action.ActionName] = action;
+    }
+
+    /// <summary>Called by UIInputActionNode when it exits the tree.</summary>
+    public void UnregisterAction(UIInputActionNode action)
+    {
+        _actionNodes.Remove(action.ActionName);
     }
 
     // ── Lifecycle (override in subclasses) ───────────────────────────────────
