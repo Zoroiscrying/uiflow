@@ -14,6 +14,7 @@ public partial class UIFlowPage : Control
     [Export] public bool IsModal { get; set; }
     [Export] public UIFlowTransitionEffect EnterEffect { get; set; }
     [Export] public UIFlowTransitionEffect ExitEffect { get; set; }
+    [Export] public bool ExitReversesEnter { get; set; }
     [Export] public NodePath DefaultFocusPath { get; set; }
 
     private Dictionary<StringName, UIInputActionNode> _actionNodes = new();

@@ -22,6 +22,9 @@ Thumbs.db
 # Free mirror scratch directory
 /.mirror-free/
 
+# Python
+__pycache__/
+
 # Non-plugin files
 /.reasonix/
 /docs/superpowers/
