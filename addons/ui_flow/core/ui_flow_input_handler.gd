@@ -51,7 +51,8 @@ func _get_top_page() -> UIFlowPage:
 func _unhandled_input(event: InputEvent) -> void:
 	if _navigator == null or _navigator._stack.is_empty():
 		return
-	if not event.is_action_pressed("ui_cancel"):
+	var back_action: StringName = UIFlow.Config.back_action if UIFlow.Config else &"ui_cancel"
+	if not event.is_action_pressed(back_action):
 		return
 
 	var top_page := _get_top_page()

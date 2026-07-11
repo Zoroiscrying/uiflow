@@ -27,7 +27,7 @@ namespace UIFlow.Core
             var actionList = new List<UIInputActionNode>();
             foreach (var action in actions)
             {
-                if (action is UIInputActionNode node)
+                if (action.AsGodotObject() is UIInputActionNode node)
                     actionList.Add(node);
             }
             _pageActions[page.GetInstanceId()] = actionList;

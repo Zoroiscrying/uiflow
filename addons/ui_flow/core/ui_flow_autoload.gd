@@ -13,6 +13,8 @@ var FlowInput: UIFlowInputHandler
 var ThemeHelper: UIFlowThemeHelper
 ## Global configuration.
 var Config: UIFlowConfig
+## Cross-page event bus (pub/sub with sticky support).
+var EventBus: UIFlowEventBus
 
 # ── Internal ─────────────────────────────────────────────────────────────────
 
@@ -35,6 +37,7 @@ func _ready() -> void:
 
 	Scenes = UIFlowSceneResolver.new()
 	ThemeHelper = UIFlowThemeHelper.new()
+	EventBus = UIFlowEventBus.new()
 
 	# Apply config to scene resolver
 	if Config and not Config.scene_directory.is_empty():
@@ -123,6 +126,18 @@ func push(page_class: GDScript, data: Variant = null, page_theme: UIFlowTheme = 
 func push_instance(instance: Control, data: Variant = null) -> Control:
 	_ensure_page_container()
 	return Router.push_instance(instance, data)
+
+
+## Push a page asynchronously. Await the returned Control to wait for the page to open.
+func push_async(page_class: GDScript, data: Variant = null, page_theme: UIFlowTheme = null) -> Control:
+	_ensure_page_container()
+	return await Router.push_async(page_class, data, page_theme)
+
+
+## Push a page asynchronously with an optional loading page shown while loading.
+func push_async_with_loading(page_class: GDScript, data: Variant = null, page_theme: UIFlowTheme = null, loading_page_class: GDScript = null) -> Control:
+	_ensure_page_container()
+	return await Router.push_async_with_loading(page_class, data, page_theme, loading_page_class)
 
 
 ## Pop the top page.
@@ -367,3 +382,59 @@ func _apply_theme_to_container() -> void:
 	if uiflow_theme == null:
 		return
 	_page_container.theme = uiflow_theme.build_godot_theme()
+
+
+# ── Event Bus shortcuts ──────────────────────────────────────────────────────
+
+## Publish an event to all subscribers of a topic.
+func publish(topic: String, data: Variant = null) -> void:
+	EventBus.publish(topic, data)
+
+
+## Publish a sticky event. New subscribers will immediately receive this value.
+func publish_sticky(topic: String, data: Variant = null) -> void:
+	EventBus.publish_sticky(topic, data)
+
+
+## Subscribe to a topic. Returns a token for unsubscribing.
+## Optionally pass [param subscriber] for auto-cleanup when the subscriber is freed.
+func subscribe(topic: String, callback: Callable, subscriber: Object = null, once: bool = false) -> int:
+	return EventBus.subscribe(topic, callback, subscriber, once)
+
+
+## Subscribe to a topic, auto-removing after the first event.
+func subscribe_once(topic: String, callback: Callable, subscriber: Object = null) -> int:
+	return EventBus.subscribe_once(topic, callback, subscriber)
+
+
+## Unsubscribe by token.
+func unsubscribe(token: int) -> void:
+	EventBus.unsubscribe(token)
+
+
+## Get the latest sticky value for a topic, or null if none.
+func get_sticky(topic: String) -> Variant:
+	return EventBus.get_sticky(topic)
+
+
+# ── Object Pool ──────────────────────────────────────────────────────────────
+
+## Pre-instantiate and pool page instances for frequently used pages.
+## Call this during loading screens to avoid hitching when opening pages.
+func warm_up(page_classes: Array[GDScript]) -> void:
+	Scenes.warm_up(page_classes)
+
+
+## Asynchronously load scenes and pre-instantiate pooled page instances.
+func warm_up_async(page_classes: Array[GDScript]) -> void:
+	await Scenes.warm_up_async(page_classes)
+
+
+## Asynchronously load page scenes into cache without instantiating them.
+func load_scenes_async(page_classes: Array) -> void:
+	await Scenes.load_scenes_async(page_classes)
+
+
+## Clear all pooled instances.
+func clear_pool() -> void:
+	Scenes.clear_pool()

@@ -1,34 +1,29 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene format=3 uid="uid://b7b0bpxwqcsvk"]
 
-[ext_resource type="Script" path="res://addons/ui_flow/examples/shop_page.gd" id="1"]
-[ext_resource type="Script" path="res://addons/ui_flow/core/ui_flow_input_action_node.gd" id="2"]
-[ext_resource type="Script" path="res://addons/ui_flow/transitions/effects/scale_effect.gd" id="3"]
-[ext_resource type="Script" path="res://addons/ui_flow/transitions/effects/sequenced_effect.gd" id="4"]
+[ext_resource type="Script" uid="uid://cukltn1rtt8ss" path="res://addons/ui_flow/examples/shop_page.gd" id="1"]
+[ext_resource type="Script" uid="uid://pxcdy2526t4" path="res://addons/ui_flow/core/ui_flow_input_action_node.gd" id="2"]
+[ext_resource type="Script" uid="uid://cgkovp1vgqd0h" path="res://addons/ui_flow/transitions/effects/scale_effect.gd" id="3"]
+[ext_resource type="Script" uid="uid://1kye0jvjpc1s" path="res://addons/ui_flow/transitions/effects/sequenced_effect.gd" id="4"]
 
 [sub_resource type="Resource" id="1"]
 script = ExtResource("3")
-from_current = false
-starts_hidden = true
-from_scale = Vector2(0, 0)
-to_scale = Vector2(0.5, 0.5)
 duration = 0.15
-ease_type = 2
-trans_type = 0
+hidden_scale = Vector2(0, 0)
+visible_scale = Vector2(0.5, 0.5)
 
 [sub_resource type="Resource" id="2"]
 script = ExtResource("3")
-from_current = true
 starts_hidden = false
-to_scale = Vector2(1, 1)
+from_current = true
 duration = 0.2
-ease_type = 2
 trans_type = 5
+visible_scale = Vector2(1, 1)
 
 [sub_resource type="Resource" id="3"]
 script = ExtResource("4")
-effects = [SubResource("1"), SubResource("2")]
+effects = Array[Resource]([SubResource("1"), SubResource("2")])
 
-[node name="ShopPage" type="Control"]
+[node name="ShopPage" type="Control" unique_id=1770148916]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -40,14 +35,13 @@ is_modal = true
 enter_effect = SubResource("3")
 exit_effect = SubResource("3")
 
-[node name="CloseAction" type="Node" parent="."]
+[node name="CloseAction" type="Node" parent="." unique_id=1963970066]
 script = ExtResource("2")
 action_name = &"close"
-action_type = 0
 godot_action = &"ui_cancel"
 label = "Close"
 
-[node name="Dimmer" type="ColorRect" parent="."]
+[node name="Dimmer" type="ColorRect" parent="." unique_id=568456018]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -56,7 +50,7 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 0.5)
 
-[node name="Panel" type="PanelContainer" parent="."]
+[node name="Panel" type="PanelContainer" parent="." unique_id=1550019029]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -70,46 +64,46 @@ offset_bottom = 180.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VBox" type="VBoxContainer" parent="Panel"]
+[node name="VBox" type="VBoxContainer" parent="Panel" unique_id=1922878016]
 layout_mode = 2
 theme_override_constants/separation = 16
 alignment = 1
 
-[node name="Title" type="Label" parent="Panel/VBox"]
+[node name="Title" type="Label" parent="Panel/VBox" unique_id=1968771412]
 layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "Shop"
 horizontal_alignment = 1
 
-[node name="Desc" type="Label" parent="Panel/VBox"]
+[node name="Desc" type="Label" parent="Panel/VBox" unique_id=1859623842]
+modulate = Color(1, 1, 1, 0.7)
 layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "Welcome! Browse our wares."
 horizontal_alignment = 1
-modulate = Color(1, 1, 1, 0.7)
 
-[node name="Sep" type="HSeparator" parent="Panel/VBox"]
+[node name="Sep" type="HSeparator" parent="Panel/VBox" unique_id=934858064]
 layout_mode = 2
 
-[node name="Item1" type="Button" parent="Panel/VBox"]
-layout_mode = 2
+[node name="Item1" type="Button" parent="Panel/VBox" unique_id=1571060431]
 custom_minimum_size = Vector2(300, 36)
+layout_mode = 2
 text = "Health Potion - 50 Gold"
 
-[node name="Item2" type="Button" parent="Panel/VBox"]
-layout_mode = 2
+[node name="Item2" type="Button" parent="Panel/VBox" unique_id=26679533]
 custom_minimum_size = Vector2(300, 36)
+layout_mode = 2
 text = "Mana Potion - 50 Gold"
 
-[node name="Item3" type="Button" parent="Panel/VBox"]
-layout_mode = 2
+[node name="Item3" type="Button" parent="Panel/VBox" unique_id=984571159]
 custom_minimum_size = Vector2(300, 36)
+layout_mode = 2
 text = "Iron Sword - 200 Gold"
 
-[node name="Sep2" type="HSeparator" parent="Panel/VBox"]
+[node name="Sep2" type="HSeparator" parent="Panel/VBox" unique_id=159680656]
 layout_mode = 2
 
-[node name="CloseButton" type="Button" parent="Panel/VBox"]
-layout_mode = 2
+[node name="CloseButton" type="Button" parent="Panel/VBox" unique_id=1912738194]
 custom_minimum_size = Vector2(200, 36)
+layout_mode = 2
 text = "Close"

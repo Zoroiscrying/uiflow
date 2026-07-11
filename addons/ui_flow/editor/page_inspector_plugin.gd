@@ -88,9 +88,12 @@ func _create_section(page: Control) -> VBoxContainer:
 	var transition_info := Label.new()
 	var has_enter := page.enter_effect != null
 	var has_exit := page.exit_effect != null
+	var exit_text := "set" if has_exit else "(none)"
+	if not has_exit and page.exit_reverses_enter:
+		exit_text = "(reverses enter)"
 	transition_info.text = "  enter_effect: %s\n  exit_effect: %s" % [
 		"set" if has_enter else "(none)",
-		"set" if has_exit else "(none)"
+		exit_text
 	]
 	transition_info.add_theme_font_size_override("font_size", 11)
 	vbox.add_child(transition_info)

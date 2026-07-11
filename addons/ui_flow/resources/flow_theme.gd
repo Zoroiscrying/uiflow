@@ -3,6 +3,9 @@
 ## Supports parent-child inheritance: child themes override only what they set,
 ## inheriting everything else from the parent chain.
 ##
+## Extensible: arbitrary properties can be stored via set_property() / get_property().
+## Standard properties are exposed as @export for editor UX.
+##
 ## Hierarchy:
 ## [codeblock]
 ## Global Theme (UIFlow.apply_theme)
@@ -20,6 +23,16 @@ enum ColorSlot {
 	ON_PRIMARY, ON_SECONDARY, ON_SURFACE,
 }
 
+# ── Internal storage ─────────────────────────────────────────────────────────
+
+## All theme values stored in a Dictionary for extensibility.
+## Keys are String property names, values are Variant.
+var _properties: Dictionary = {}
+
+## Tracks which properties were explicitly set on this theme (not inherited).
+## Keys are String property names, values are `true`.
+var _has: Dictionary = {}
+
 # ── Parent ───────────────────────────────────────────────────────────────────
 
 ## Parent theme — unset properties inherit from here.
@@ -28,329 +41,292 @@ enum ColorSlot {
 		parent_theme = v
 		notify_property_list_changed()
 
-# ── Overrides ────────────────────────────────────────────────────────────────
-# Each _has_* flag tracks whether the property was explicitly set.
-# If false, the getter delegates to parent_theme.
+# ── Theme Name ───────────────────────────────────────────────────────────────
 
-var _has_primary: bool = false
-var _has_secondary: bool = false
-var _has_accent: bool = false
-var _has_error: bool = false
-var _has_warning: bool = false
-var _has_success: bool = false
-var _has_info: bool = false
-var _has_background: bool = false
-var _has_surface: bool = false
-var _has_on_primary: bool = false
-var _has_on_secondary: bool = false
-var _has_on_surface: bool = false
+@export var theme_name: String = "":
+	get: return get_property("theme_name", "") as String
+	set(v): set_property("theme_name", v)
 
-var _has_font_regular: bool = false
-var _has_font_bold: bool = false
-var _has_font_mono: bool = false
-var _has_font_size_title: bool = false
-var _has_font_size_heading: bool = false
-var _has_font_size_body: bool = false
-var _has_font_size_small: bool = false
-
-var _has_spacing_xs: bool = false
-var _has_spacing_sm: bool = false
-var _has_spacing_md: bool = false
-var _has_spacing_lg: bool = false
-var _has_spacing_xl: bool = false
-
-var _has_radius_sm: bool = false
-var _has_radius_md: bool = false
-var _has_radius_lg: bool = false
-
-# ── Raw values ───────────────────────────────────────────────────────────────
-
-var _primary: Color = Color(0.3, 0.5, 0.9)
-var _secondary: Color = Color(0.5, 0.5, 0.5)
-var _accent: Color = Color(0.9, 0.6, 0.2)
-var _error: Color = Color(0.9, 0.3, 0.3)
-var _warning: Color = Color(0.9, 0.7, 0.2)
-var _success: Color = Color(0.3, 0.8, 0.4)
-var _info: Color = Color(0.4, 0.7, 0.9)
-var _background: Color = Color(0.1, 0.1, 0.12)
-var _surface: Color = Color(0.15, 0.15, 0.18)
-var _on_primary: Color = Color.WHITE
-var _on_secondary: Color = Color.WHITE
-var _on_surface: Color = Color(0.9, 0.9, 0.9)
-
-var _font_regular: Font = null
-var _font_bold: Font = null
-var _font_mono: Font = null
-var _font_size_title: int = 28
-var _font_size_heading: int = 18
-var _font_size_body: int = 14
-var _font_size_small: int = 12
-
-var _spacing_xs: int = 4
-var _spacing_sm: int = 8
-var _spacing_md: int = 12
-var _spacing_lg: int = 20
-var _spacing_xl: int = 32
-
-var _radius_sm: int = 4
-var _radius_md: int = 8
-var _radius_lg: int = 12
-
-# ── @export properties (set _has_* flag on assignment) ───────────────────────
+# ── @export properties (backed by _properties / _has) ───────────────────────
 
 @export_group("Brand Colors")
 @export var primary: Color:
-	get: return _primary
-	set(v): _primary = v; _has_primary = true
+	get: return _get_prop("primary", Color(0.31, 0.55, 1.0))
+	set(v): _set_prop("primary", v)
 
 @export var secondary: Color:
-	get: return _secondary
-	set(v): _secondary = v; _has_secondary = true
+	get: return _get_prop("secondary", Color(0.54, 0.56, 0.6))
+	set(v): _set_prop("secondary", v)
 
 @export var accent: Color:
-	get: return _accent
-	set(v): _accent = v; _has_accent = true
+	get: return _get_prop("accent", Color(0.98, 0.67, 0.0))
+	set(v): _set_prop("accent", v)
 
 @export_group("Semantic Colors")
 @export var error: Color:
-	get: return _error
-	set(v): _error = v; _has_error = true
+	get: return _get_prop("error", Color(0.95, 0.45, 0.45))
+	set(v): _set_prop("error", v)
 
 @export var warning: Color:
-	get: return _warning
-	set(v): _warning = v; _has_warning = true
+	get: return _get_prop("warning", Color(0.95, 0.75, 0.25))
+	set(v): _set_prop("warning", v)
 
 @export var success: Color:
-	get: return _success
-	set(v): _success = v; _has_success = true
+	get: return _get_prop("success", Color(0.35, 0.8, 0.45))
+	set(v): _set_prop("success", v)
 
 @export var info: Color:
-	get: return _info
-	set(v): _info = v; _has_info = true
+	get: return _get_prop("info", Color(0.45, 0.7, 0.95))
+	set(v): _set_prop("info", v)
 
 @export_group("Surface Colors")
 @export var background: Color:
-	get: return _background
-	set(v): _background = v; _has_background = true
+	get: return _get_prop("background", Color(0.06, 0.06, 0.08))
+	set(v): _set_prop("background", v)
 
 @export var surface: Color:
-	get: return _surface
-	set(v): _surface = v; _has_surface = true
+	get: return _get_prop("surface", Color(0.11, 0.11, 0.14))
+	set(v): _set_prop("surface", v)
+
+@export var separator: Color:
+	get: return _get_prop("separator", Color(1, 1, 1, 0.12))
+	set(v): _set_prop("separator", v)
+
+@export var disabled: Color:
+	get: return _get_prop("disabled", Color(0.5, 0.5, 0.5, 0.5))
+	set(v): _set_prop("disabled", v)
+
+@export var scrollbar_track: Color:
+	get: return _get_prop("scrollbar_track", Color(1, 1, 1, 0.08))
+	set(v): _set_prop("scrollbar_track", v)
+
+@export var scrollbar_grabber: Color:
+	get: return _get_prop("scrollbar_grabber", Color(1, 1, 1, 0.35))
+	set(v): _set_prop("scrollbar_grabber", v)
+
+@export var shadow: Color:
+	get: return _get_prop("shadow", Color(0, 0, 0, 0.4))
+	set(v): _set_prop("shadow", v)
 
 @export_group("Text Colors")
 @export var on_primary: Color:
-	get: return _on_primary
-	set(v): _on_primary = v; _has_on_primary = true
+	get: return _get_prop("on_primary", Color.WHITE)
+	set(v): _set_prop("on_primary", v)
 
 @export var on_secondary: Color:
-	get: return _on_secondary
-	set(v): _on_secondary = v; _has_on_secondary = true
+	get: return _get_prop("on_secondary", Color.WHITE)
+	set(v): _set_prop("on_secondary", v)
 
 @export var on_surface: Color:
-	get: return _on_surface
-	set(v): _on_surface = v; _has_on_surface = true
+	get: return _get_prop("on_surface", Color(0.9, 0.9, 0.92))
+	set(v): _set_prop("on_surface", v)
 
 @export_group("Typography")
 @export var font_regular: Font:
-	get: return _font_regular
-	set(v): _font_regular = v; _has_font_regular = true
+	get: return _get_prop("font_regular", null)
+	set(v): _set_prop("font_regular", v)
 
 @export var font_bold: Font:
-	get: return _font_bold
-	set(v): _font_bold = v; _has_font_bold = true
+	get: return _get_prop("font_bold", null)
+	set(v): _set_prop("font_bold", v)
 
 @export var font_mono: Font:
-	get: return _font_mono
-	set(v): _font_mono = v; _has_font_mono = true
+	get: return _get_prop("font_mono", null)
+	set(v): _set_prop("font_mono", v)
 
 @export var font_size_title: int:
-	get: return _font_size_title
-	set(v): _font_size_title = v; _has_font_size_title = true
+	get: return _get_prop("font_size_title", 28)
+	set(v): _set_prop("font_size_title", v)
 
 @export var font_size_heading: int:
-	get: return _font_size_heading
-	set(v): _font_size_heading = v; _has_font_size_heading = true
+	get: return _get_prop("font_size_heading", 18)
+	set(v): _set_prop("font_size_heading", v)
 
 @export var font_size_body: int:
-	get: return _font_size_body
-	set(v): _font_size_body = v; _has_font_size_body = true
+	get: return _get_prop("font_size_body", 14)
+	set(v): _set_prop("font_size_body", v)
 
 @export var font_size_small: int:
-	get: return _font_size_small
-	set(v): _font_size_small = v; _has_font_size_small = true
+	get: return _get_prop("font_size_small", 12)
+	set(v): _set_prop("font_size_small", v)
 
 @export_group("Spacing")
 @export var spacing_xs: int:
-	get: return _spacing_xs
-	set(v): _spacing_xs = v; _has_spacing_xs = true
+	get: return _get_prop("spacing_xs", 4)
+	set(v): _set_prop("spacing_xs", v)
 
 @export var spacing_sm: int:
-	get: return _spacing_sm
-	set(v): _spacing_sm = v; _has_spacing_sm = true
+	get: return _get_prop("spacing_sm", 8)
+	set(v): _set_prop("spacing_sm", v)
 
 @export var spacing_md: int:
-	get: return _spacing_md
-	set(v): _spacing_md = v; _has_spacing_md = true
+	get: return _get_prop("spacing_md", 12)
+	set(v): _set_prop("spacing_md", v)
 
 @export var spacing_lg: int:
-	get: return _spacing_lg
-	set(v): _spacing_lg = v; _has_spacing_lg = true
+	get: return _get_prop("spacing_lg", 20)
+	set(v): _set_prop("spacing_lg", v)
 
 @export var spacing_xl: int:
-	get: return _spacing_xl
-	set(v): _spacing_xl = v; _has_spacing_xl = true
+	get: return _get_prop("spacing_xl", 32)
+	set(v): _set_prop("spacing_xl", v)
 
 @export_group("Border Radius")
 @export var radius_sm: int:
-	get: return _radius_sm
-	set(v): _radius_sm = v; _has_radius_sm = true
+	get: return _get_prop("radius_sm", 4)
+	set(v): _set_prop("radius_sm", v)
 
 @export var radius_md: int:
-	get: return _radius_md
-	set(v): _radius_md = v; _has_radius_md = true
+	get: return _get_prop("radius_md", 8)
+	set(v): _set_prop("radius_md", v)
 
 @export var radius_lg: int:
-	get: return _radius_lg
-	set(v): _radius_lg = v; _has_radius_lg = true
+	get: return _get_prop("radius_lg", 12)
+	set(v): _set_prop("radius_lg", v)
 
-# ── Resolved getters (walk parent chain) ─────────────────────────────────────
+# ── Internal helpers ───────────────────────────────────────────────────────────
 
-func resolved_primary() -> Color:
-	if _has_primary: return _primary
-	if parent_theme: return parent_theme.resolved_primary()
-	return _primary
+func _get_prop(name: String, default_value: Variant) -> Variant:
+	if _has.has(name):
+		return _properties.get(name, default_value)
+	if parent_theme:
+		return parent_theme.get_property(name, default_value)
+	return default_value
 
-func resolved_secondary() -> Color:
-	if _has_secondary: return _secondary
-	if parent_theme: return parent_theme.resolved_secondary()
-	return _secondary
-
-func resolved_accent() -> Color:
-	if _has_accent: return _accent
-	if parent_theme: return parent_theme.resolved_accent()
-	return _accent
-
-func resolved_error() -> Color:
-	if _has_error: return _error
-	if parent_theme: return parent_theme.resolved_error()
-	return _error
-
-func resolved_warning() -> Color:
-	if _has_warning: return _warning
-	if parent_theme: return parent_theme.resolved_warning()
-	return _warning
-
-func resolved_success() -> Color:
-	if _has_success: return _success
-	if parent_theme: return parent_theme.resolved_success()
-	return _success
-
-func resolved_info() -> Color:
-	if _has_info: return _info
-	if parent_theme: return parent_theme.resolved_info()
-	return _info
-
-func resolved_background() -> Color:
-	if _has_background: return _background
-	if parent_theme: return parent_theme.resolved_background()
-	return _background
-
-func resolved_surface() -> Color:
-	if _has_surface: return _surface
-	if parent_theme: return parent_theme.resolved_surface()
-	return _surface
-
-func resolved_on_primary() -> Color:
-	if _has_on_primary: return _on_primary
-	if parent_theme: return parent_theme.resolved_on_primary()
-	return _on_primary
-
-func resolved_on_secondary() -> Color:
-	if _has_on_secondary: return _on_secondary
-	if parent_theme: return parent_theme.resolved_on_secondary()
-	return _on_secondary
-
-func resolved_on_surface() -> Color:
-	if _has_on_surface: return _on_surface
-	if parent_theme: return parent_theme.resolved_on_surface()
-	return _on_surface
-
-func resolved_font_regular() -> Font:
-	if _has_font_regular and _font_regular: return _font_regular
-	if parent_theme: return parent_theme.resolved_font_regular()
-	return _font_regular
-
-func resolved_font_bold() -> Font:
-	if _has_font_bold and _font_bold: return _font_bold
-	if parent_theme: return parent_theme.resolved_font_bold()
-	return _font_bold
-
-func resolved_font_mono() -> Font:
-	if _has_font_mono and _font_mono: return _font_mono
-	if parent_theme: return parent_theme.resolved_font_mono()
-	return _font_mono
-
-func resolved_font_size_title() -> int:
-	if _has_font_size_title: return _font_size_title
-	if parent_theme: return parent_theme.resolved_font_size_title()
-	return _font_size_title
-
-func resolved_font_size_heading() -> int:
-	if _has_font_size_heading: return _font_size_heading
-	if parent_theme: return parent_theme.resolved_font_size_heading()
-	return _font_size_heading
-
-func resolved_font_size_body() -> int:
-	if _has_font_size_body: return _font_size_body
-	if parent_theme: return parent_theme.resolved_font_size_body()
-	return _font_size_body
-
-func resolved_font_size_small() -> int:
-	if _has_font_size_small: return _font_size_small
-	if parent_theme: return parent_theme.resolved_font_size_small()
-	return _font_size_small
-
-func resolved_spacing_xs() -> int:
-	if _has_spacing_xs: return _spacing_xs
-	if parent_theme: return parent_theme.resolved_spacing_xs()
-	return _spacing_xs
-
-func resolved_spacing_sm() -> int:
-	if _has_spacing_sm: return _spacing_sm
-	if parent_theme: return parent_theme.resolved_spacing_sm()
-	return _spacing_sm
-
-func resolved_spacing_md() -> int:
-	if _has_spacing_md: return _spacing_md
-	if parent_theme: return parent_theme.resolved_spacing_md()
-	return _spacing_md
-
-func resolved_spacing_lg() -> int:
-	if _has_spacing_lg: return _spacing_lg
-	if parent_theme: return parent_theme.resolved_spacing_lg()
-	return _spacing_lg
-
-func resolved_spacing_xl() -> int:
-	if _has_spacing_xl: return _spacing_xl
-	if parent_theme: return parent_theme.resolved_spacing_xl()
-	return _spacing_xl
-
-func resolved_radius_sm() -> int:
-	if _has_radius_sm: return _radius_sm
-	if parent_theme: return parent_theme.resolved_radius_sm()
-	return _radius_sm
-
-func resolved_radius_md() -> int:
-	if _has_radius_md: return _radius_md
-	if parent_theme: return parent_theme.resolved_radius_md()
-	return _radius_md
-
-func resolved_radius_lg() -> int:
-	if _has_radius_lg: return _radius_lg
-	if parent_theme: return parent_theme.resolved_radius_lg()
-	return _radius_lg
+func _set_prop(name: String, value: Variant) -> void:
+	_properties[name] = value
+	_has[name] = true
+	emit_changed()
 
 # ── Public API ───────────────────────────────────────────────────────────────
+
+## Get any property by name, walking the parent chain if not set locally.
+func get_property(property_name: String, default_value: Variant = null) -> Variant:
+	if _has.has(property_name):
+		return _properties.get(property_name, default_value)
+	if parent_theme:
+		return parent_theme.get_property(property_name, default_value)
+	return default_value
+
+## Set any property by name.
+func set_property(property_name: String, value: Variant) -> void:
+	_properties[property_name] = value
+	_has[property_name] = true
+	emit_changed()
+
+## Check if this theme has a local override for a given property.
+func has_override(property_name: String) -> bool:
+	return _has.has(property_name)
+
+## Remove a local override, reverting to parent/inherited value.
+func remove_override(property_name: String) -> void:
+	_properties.erase(property_name)
+	_has.erase(property_name)
+	emit_changed()
+
+## Get all property names that have local overrides.
+func get_local_keys() -> Array:
+	return _has.keys()
+
+# ── Backward-compatible resolved_* getters ───────────────────────────────────
+
+func resolved_primary() -> Color:
+	return get_property("primary", Color(0.31, 0.55, 1.0))
+
+func resolved_secondary() -> Color:
+	return get_property("secondary", Color(0.54, 0.56, 0.6))
+
+func resolved_accent() -> Color:
+	return get_property("accent", Color(0.98, 0.67, 0.0))
+
+func resolved_error() -> Color:
+	return get_property("error", Color(0.95, 0.45, 0.45))
+
+func resolved_warning() -> Color:
+	return get_property("warning", Color(0.95, 0.75, 0.25))
+
+func resolved_success() -> Color:
+	return get_property("success", Color(0.35, 0.8, 0.45))
+
+func resolved_info() -> Color:
+	return get_property("info", Color(0.45, 0.7, 0.95))
+
+func resolved_background() -> Color:
+	return get_property("background", Color(0.06, 0.06, 0.08))
+
+func resolved_surface() -> Color:
+	return get_property("surface", Color(0.11, 0.11, 0.14))
+
+func resolved_separator() -> Color:
+	return get_property("separator", Color(1, 1, 1, 0.12))
+
+func resolved_disabled() -> Color:
+	return get_property("disabled", Color(0.5, 0.5, 0.5, 0.5))
+
+func resolved_scrollbar_track() -> Color:
+	return get_property("scrollbar_track", Color(1, 1, 1, 0.08))
+
+func resolved_scrollbar_grabber() -> Color:
+	return get_property("scrollbar_grabber", Color(1, 1, 1, 0.35))
+
+func resolved_shadow() -> Color:
+	return get_property("shadow", Color(0, 0, 0, 0.4))
+
+func resolved_on_primary() -> Color:
+	return get_property("on_primary", Color.WHITE)
+
+func resolved_on_secondary() -> Color:
+	return get_property("on_secondary", Color.WHITE)
+
+func resolved_on_surface() -> Color:
+	return get_property("on_surface", Color(0.9, 0.9, 0.92))
+
+func resolved_font_regular() -> Font:
+	return get_property("font_regular", null)
+
+func resolved_font_bold() -> Font:
+	return get_property("font_bold", null)
+
+func resolved_font_mono() -> Font:
+	return get_property("font_mono", null)
+
+func resolved_font_size_title() -> int:
+	return get_property("font_size_title", 28)
+
+func resolved_font_size_heading() -> int:
+	return get_property("font_size_heading", 18)
+
+func resolved_font_size_body() -> int:
+	return get_property("font_size_body", 14)
+
+func resolved_font_size_small() -> int:
+	return get_property("font_size_small", 12)
+
+func resolved_spacing_xs() -> int:
+	return get_property("spacing_xs", 4)
+
+func resolved_spacing_sm() -> int:
+	return get_property("spacing_sm", 8)
+
+func resolved_spacing_md() -> int:
+	return get_property("spacing_md", 12)
+
+func resolved_spacing_lg() -> int:
+	return get_property("spacing_lg", 20)
+
+func resolved_spacing_xl() -> int:
+	return get_property("spacing_xl", 32)
+
+func resolved_radius_sm() -> int:
+	return get_property("radius_sm", 4)
+
+func resolved_radius_md() -> int:
+	return get_property("radius_md", 8)
+
+func resolved_radius_lg() -> int:
+	return get_property("radius_lg", 12)
+
+# ── ColorSlot API (backward compatible) ──────────────────────────────────────
 
 func get_color(slot: ColorSlot) -> Color:
 	match slot:
@@ -370,35 +346,18 @@ func get_color(slot: ColorSlot) -> Color:
 
 func set_color(slot: ColorSlot, color: Color) -> void:
 	match slot:
-		ColorSlot.PRIMARY: primary = color
-		ColorSlot.SECONDARY: secondary = color
-		ColorSlot.ACCENT: accent = color
-		ColorSlot.ERROR: error = color
-		ColorSlot.WARNING: warning = color
-		ColorSlot.SUCCESS: success = color
-		ColorSlot.INFO: info = color
-		ColorSlot.BACKGROUND: background = color
-		ColorSlot.SURFACE: surface = color
-		ColorSlot.ON_PRIMARY: on_primary = color
-		ColorSlot.ON_SECONDARY: on_secondary = color
-		ColorSlot.ON_SURFACE: on_surface = color
-
-## Check if this theme has a local override for a given property.
-func has_override(property_name: String) -> bool:
-	match property_name:
-		"primary": return _has_primary
-		"secondary": return _has_secondary
-		"accent": return _has_accent
-		"error": return _has_error
-		"warning": return _has_warning
-		"success": return _has_success
-		"info": return _has_info
-		"background": return _has_background
-		"surface": return _has_surface
-		"on_primary": return _has_on_primary
-		"on_secondary": return _has_on_secondary
-		"on_surface": return _has_on_surface
-		_: return false
+		ColorSlot.PRIMARY: set_property("primary", color)
+		ColorSlot.SECONDARY: set_property("secondary", color)
+		ColorSlot.ACCENT: set_property("accent", color)
+		ColorSlot.ERROR: set_property("error", color)
+		ColorSlot.WARNING: set_property("warning", color)
+		ColorSlot.SUCCESS: set_property("success", color)
+		ColorSlot.INFO: set_property("info", color)
+		ColorSlot.BACKGROUND: set_property("background", color)
+		ColorSlot.SURFACE: set_property("surface", color)
+		ColorSlot.ON_PRIMARY: set_property("on_primary", color)
+		ColorSlot.ON_SECONDARY: set_property("on_secondary", color)
+		ColorSlot.ON_SURFACE: set_property("on_surface", color)
 
 # ── Build Godot Theme ────────────────────────────────────────────────────────
 
@@ -411,6 +370,11 @@ func build_godot_theme() -> Theme:
 	var c_background := resolved_background()
 	var c_on_surface := resolved_on_surface()
 	var c_on_primary := resolved_on_primary()
+	var c_separator := resolved_separator()
+	var c_disabled := resolved_disabled()
+	var c_scrollbar_track := resolved_scrollbar_track()
+	var c_scrollbar_grabber := resolved_scrollbar_grabber()
+	var c_shadow := resolved_shadow()
 	var f_regular := resolved_font_regular()
 	var f_bold := resolved_font_bold()
 	var f_mono := resolved_font_mono()
@@ -466,7 +430,14 @@ func build_godot_theme() -> Theme:
 	t.set_color("font_color", "Button", c_on_surface)
 	t.set_color("font_hover_color", "Button", c_on_surface)
 	t.set_color("font_pressed_color", "Button", c_on_primary)
+	t.set_color("font_disabled_color", "Button", c_disabled)
 	t.set_font_size("font_size", "Button", fs_body)
+
+	var btn_disabled := StyleBoxFlat.new()
+	btn_disabled.bg_color = c_surface.darkened(0.15)
+	btn_disabled.set_corner_radius_all(r_sm)
+	btn_disabled.set_content_margin_all(sp_md)
+	t.set_stylebox("disabled", "Button", btn_disabled)
 
 	# ── Label ──
 	t.set_color("font_color", "Label", c_on_surface)
@@ -486,22 +457,31 @@ func build_godot_theme() -> Theme:
 	t.set_stylebox("panel", "PanelContainer", panel_container_style)
 
 	# ── Slider ──
-	var slider_style := StyleBoxFlat.new()
-	slider_style.bg_color = c_background.lightened(0.1)
-	slider_style.set_corner_radius_all(r_sm)
-	slider_style.content_margin_top = 4
-	slider_style.content_margin_bottom = 4
-	t.set_stylebox("slider", "HSlider", slider_style)
+	var hslider_track := StyleBoxFlat.new()
+	hslider_track.bg_color = c_background.lightened(0.1)
+	hslider_track.set_corner_radius_all(r_sm)
+	hslider_track.content_margin_top = 4
+	hslider_track.content_margin_bottom = 4
+	t.set_stylebox("slider", "HSlider", hslider_track)
+
+	var vslider_track := StyleBoxFlat.new()
+	vslider_track.bg_color = c_background.lightened(0.1)
+	vslider_track.set_corner_radius_all(r_sm)
+	vslider_track.content_margin_left = 4
+	vslider_track.content_margin_right = 4
+	t.set_stylebox("slider", "VSlider", vslider_track)
 
 	var slider_grabber := StyleBoxFlat.new()
 	slider_grabber.bg_color = c_primary
 	slider_grabber.set_corner_radius_all(r_sm)
 	t.set_stylebox("grabber", "HSlider", slider_grabber)
+	t.set_stylebox("grabber", "VSlider", slider_grabber)
 
 	var slider_area := StyleBoxFlat.new()
 	slider_area.bg_color = c_primary.darkened(0.3)
 	slider_area.set_corner_radius_all(r_sm)
 	t.set_stylebox("grabber_area", "HSlider", slider_area)
+	t.set_stylebox("grabber_area", "VSlider", slider_area)
 
 	# ── ProgressBar ──
 	var progress_bg := StyleBoxFlat.new()
@@ -520,6 +500,48 @@ func build_godot_theme() -> Theme:
 	# ── CheckButton ──
 	t.set_color("font_color", "CheckButton", c_on_surface)
 	t.set_font_size("font_size", "CheckButton", fs_body)
+
+	# ── Separator ──
+	var sep_h := StyleBoxLine.new()
+	sep_h.color = c_separator
+	sep_h.thickness = 1
+	sep_h.grow_begin = 0
+	sep_h.grow_end = 0
+	t.set_stylebox("separator", "HSeparator", sep_h)
+
+	var sep_v := StyleBoxLine.new()
+	sep_v.color = c_separator
+	sep_v.thickness = 1
+	sep_v.grow_begin = 0
+	sep_v.grow_end = 0
+	t.set_stylebox("separator", "VSeparator", sep_v)
+
+	# ── ScrollBar ──
+	var scrollbar_track_h := StyleBoxFlat.new()
+	scrollbar_track_h.bg_color = c_scrollbar_track
+	scrollbar_track_h.set_corner_radius_all(r_sm)
+	scrollbar_track_h.content_margin_top = 3
+	scrollbar_track_h.content_margin_bottom = 3
+	t.set_stylebox("scroll", "HScrollBar", scrollbar_track_h)
+
+	var scrollbar_track_v := StyleBoxFlat.new()
+	scrollbar_track_v.bg_color = c_scrollbar_track
+	scrollbar_track_v.set_corner_radius_all(r_sm)
+	scrollbar_track_v.content_margin_left = 3
+	scrollbar_track_v.content_margin_right = 3
+	t.set_stylebox("scroll", "VScrollBar", scrollbar_track_v)
+
+	var scrollbar_grabber := StyleBoxFlat.new()
+	scrollbar_grabber.bg_color = c_scrollbar_grabber
+	scrollbar_grabber.set_corner_radius_all(r_sm)
+	t.set_stylebox("grabber", "HScrollBar", scrollbar_grabber)
+	t.set_stylebox("grabber", "VScrollBar", scrollbar_grabber)
+
+	var scrollbar_grabber_highlight := StyleBoxFlat.new()
+	scrollbar_grabber_highlight.bg_color = c_scrollbar_grabber.lightened(0.2)
+	scrollbar_grabber_highlight.set_corner_radius_all(r_sm)
+	t.set_stylebox("grabber_highlight", "HScrollBar", scrollbar_grabber_highlight)
+	t.set_stylebox("grabber_highlight", "VScrollBar", scrollbar_grabber_highlight)
 
 	# ── LineEdit ──
 	var le_normal := StyleBoxFlat.new()

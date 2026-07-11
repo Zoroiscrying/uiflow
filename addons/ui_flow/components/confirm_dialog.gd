@@ -129,10 +129,9 @@ func show_confirm(title: String, message: String, on_confirm: Callable, on_cance
 
 
 func _hide_dialog() -> void:
-	var tween: Tween = create_tween().set_parallel(true)
-	tween.tween_property(_overlay, "modulate:a", 0.0, 0.1)
-	tween.tween_property(_panel, "modulate:a", 0.0, 0.1)
-	tween.finished.connect(func():
-		visible = false
-		_active = false
-	)
+	visible = false
+	_active = false
+	# Reset opacity for next show
+	_overlay.modulate.a = 1.0
+	_panel.modulate.a = 1.0
+	_panel.scale = Vector2.ONE

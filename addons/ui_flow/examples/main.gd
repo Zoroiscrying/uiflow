@@ -34,6 +34,14 @@ const _PAGE_SNIPPETS: Dictionary = {
 	"UIFlowDemoTheme": [
 		{"title": "apply_builtin_theme — Switch theme", "code": "UIFlow.apply_builtin_theme(\"dark\")\nUIFlow.apply_builtin_theme(\"light\")"},
 	],
+	"UIFlowDemoTimelineAsync": [
+		{"title": "UIFlowTimelineEffect — Scene configured", "code": "# TimelineAsyncTargetPage has enter_effect set in its .tscn\nUIFlow.push(TimelineAsyncTargetPage, {\n    \"title\": \"Timeline: Scale → Scale (Punch)\",\n})"},
+		{"title": "push_async_with_loading", "code": "await UIFlow.push_async_with_loading(\n    AsyncTargetPage, {}, null, LoadingPage)"},
+		{"title": "load_scenes_async — Pre-warm", "code": "await UIFlow.load_scenes_async(\n    [AsyncTargetPage, ShopPage])"},
+	],
+	"AsyncLoadingPage": [
+		{"title": "Loading page class", "code": "# In UIFlowConfig:\nloading_page_class = AsyncLoadingPage"},
+	],
 	"TransitionDemoPage": [
 		{"title": "enter_effect — Entry animation", "code": "var effect := UIFlowFadeEffect.new()\neffect.duration = 0.3\nenter_effect = effect"},
 	],
@@ -41,6 +49,7 @@ const _PAGE_SNIPPETS: Dictionary = {
 
 
 func _ready() -> void:
+	UIFlow.pop_to_root()
 	_setup_code_panel()
 	await get_tree().process_frame
 	UIFlow.push(DemoHub)

@@ -1,3 +1,4 @@
+@tool
 ## Slide effect — animates node position only.
 class_name UIFlowSlideEffect extends UIFlowTransitionEffect
 

@@ -3,8 +3,6 @@ class_name SettingsPageExample extends UIFlowPage
 
 @export var settings: SettingsData
 
-var _bindings: Array[UIFlowBindUtils.UIFlowBinding] = []
-
 
 func _on_back_pressed() -> void:
 	UIFlow.pop()

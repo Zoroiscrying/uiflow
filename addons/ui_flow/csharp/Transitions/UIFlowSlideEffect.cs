@@ -4,7 +4,6 @@ namespace UIFlow.Transitions;
 
 public enum SlideDirection { Left, Right, Up, Down }
 
-[GlobalClass]
 public partial class UIFlowSlideEffect : UIFlowTransitionEffect
 {
     [Export] public SlideDirection Direction { get; set; } = SlideDirection.Left;

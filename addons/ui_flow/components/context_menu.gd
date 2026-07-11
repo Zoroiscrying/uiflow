@@ -88,7 +88,8 @@ func add_submenu(label: String) -> UIFlowContextMenu:
 
 	var sub := UIFlowContextMenu.new()
 	sub.name = "Submenu_" + label
-	# Submenu will be added to the viewport when opened
+	sub.visible = false
+	add_child(sub)
 
 	btn.mouse_entered.connect(func():
 		_show_submenu(sub, btn)
@@ -130,6 +131,8 @@ func close() -> void:
 
 func _show_submenu(sub: UIFlowContextMenu, anchor: Control) -> void:
 	_hide_submenu()
+	if sub.is_inside_tree() and sub.get_parent() != get_viewport():
+		sub.get_parent().remove_child(sub)
 	if not sub.is_inside_tree():
 		get_viewport().add_child(sub)
 

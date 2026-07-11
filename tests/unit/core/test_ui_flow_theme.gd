@@ -5,8 +5,8 @@ extends GdUnitTestSuite
 ## Test: default values without parent
 func test_default_values() -> void:
 	var theme := UIFlowTheme.new()
-	assert_that(theme.resolved_primary()).is_equal(Color(0.3, 0.5, 0.9))
-	assert_that(theme.resolved_surface()).is_equal(Color(0.15, 0.15, 0.18))
+	assert_that(theme.resolved_primary()).is_equal(Color(0.31, 0.55, 1.0))
+	assert_that(theme.resolved_surface()).is_equal(Color(0.11, 0.11, 0.14))
 	assert_that(theme.resolved_font_size_body()).is_equal(14)
 	assert_that(theme.resolved_spacing_sm()).is_equal(8)
 
@@ -114,3 +114,45 @@ func test_build_godot_theme_uses_parent() -> void:
 	var fill: StyleBoxFlat = godot_theme.get_stylebox("fill", "ProgressBar") as StyleBoxFlat
 	assert_that(fill).is_not_null()
 	assert_that(fill.bg_color).is_equal(Color.RED)
+
+
+## Test: get_property/set_property for arbitrary keys
+func test_get_set_property() -> void:
+	var theme := UIFlowTheme.new()
+	theme.set_property("custom_shadow", Color.BLACK)
+	assert_that(theme.get_property("custom_shadow")).is_equal(Color.BLACK)
+	assert_that(theme.has_override("custom_shadow")).is_true()
+
+
+## Test: remove_override reverts to parent
+func test_remove_override() -> void:
+	var parent := UIFlowTheme.new()
+	parent.primary = Color.BLUE
+
+	var child := UIFlowTheme.new()
+	child.parent_theme = parent
+	child.primary = Color.RED
+	assert_that(child.resolved_primary()).is_equal(Color.RED)
+
+	child.remove_override("primary")
+	assert_that(child.has_override("primary")).is_false()
+	assert_that(child.resolved_primary()).is_equal(Color.BLUE)
+
+
+## Test: get_local_keys returns only overridden keys
+func test_get_local_keys() -> void:
+	var theme := UIFlowTheme.new()
+	theme.set_property("shadow", Color.BLACK)
+	theme.set_property("glow", Color.YELLOW)
+	var keys = theme.get_local_keys()
+	assert_that(keys).has_size(2)
+	assert_that(keys).contains("shadow")
+	assert_that(keys).contains("glow")
+
+
+## Test: theme_name property
+func test_theme_name() -> void:
+	var theme := UIFlowTheme.new()
+	theme.theme_name = "dark_pro"
+	assert_that(theme.theme_name).is_equal("dark_pro")
+	assert_that(theme.has_override("theme_name")).is_true()

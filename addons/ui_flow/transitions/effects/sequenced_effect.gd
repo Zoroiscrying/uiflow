@@ -1,3 +1,4 @@
+@tool
 ## Sequenced effect — plays multiple effects one after another.
 ##
 ## Usage:

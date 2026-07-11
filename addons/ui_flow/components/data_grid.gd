@@ -123,11 +123,11 @@ func get_selected() -> Array:
 
 
 func _rebuild() -> void:
-	# Clear old
+	# Clear old immediately to avoid deferred-delete leaks in tests
 	for child in _header_container.get_children():
-		child.queue_free()
+		child.free()
 	for child in _rows_container.get_children():
-		child.queue_free()
+		child.free()
 
 	# Build header
 	for i in range(_columns.size()):
@@ -162,13 +162,16 @@ func _rebuild() -> void:
 		# Row click
 		var idx := row_idx
 		var click_rect := ColorRect.new()
+		click_rect.name = "ClickRect"
 		click_rect.color = Color.TRANSPARENT
 		click_rect.mouse_filter = Control.MOUSE_FILTER_STOP
-		click_rect.custom_minimum_size = Vector2(0, 0)
+		click_rect.set_anchors_preset(Control.PRESET_FULL_RECT)
+		click_rect.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 		click_rect.gui_input.connect(func(event: InputEvent):
 			if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 				_select_row(idx)
 		)
+		row.add_child(click_rect)
 
 		_rows_container.add_child(row)
 

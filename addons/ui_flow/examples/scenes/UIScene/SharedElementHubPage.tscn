@@ -1,0 +1,145 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://addons/ui_flow/examples/shared_element/shared_element_hub_page.gd" id="1_hub"]
+
+[node name="SharedElementHubPage" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_hub")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.1, 0.12, 0.16, 1)
+
+[node name="Title" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_top = 0.0
+anchor_right = 0.5
+anchor_bottom = 0.0
+offset_left = -300.0
+offset_top = 40.0
+offset_right = 300.0
+offset_bottom = 90.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 32
+text = "Shared Element Transition Demo"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_top = 0.0
+anchor_right = 0.5
+anchor_bottom = 0.0
+offset_left = -350.0
+offset_top = 95.0
+offset_right = 350.0
+offset_bottom = 140.0
+grow_horizontal = 2
+text = "Each colored icon is the same node reparented and morphed into the detail page."
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="SettingsIcon" type="ColorRect" parent="."]
+layout_mode = 0
+offset_left = 100.0
+offset_top = 400.0
+offset_right = 148.0
+offset_bottom = 448.0
+color = Color(0.2, 0.6, 1, 1)
+
+[node name="SettingsButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 170.0
+offset_top = 405.0
+offset_right = 300.0
+offset_bottom = 443.0
+text = "Settings"
+
+[node name="ShopIcon" type="ColorRect" parent="."]
+layout_mode = 0
+offset_left = 100.0
+offset_top = 500.0
+offset_right = 148.0
+offset_bottom = 548.0
+color = Color(0.2, 0.8, 0.4, 1)
+
+[node name="ShopButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 170.0
+offset_top = 505.0
+offset_right = 300.0
+offset_bottom = 543.0
+text = "Shop"
+
+[node name="BagIcon" type="ColorRect" parent="."]
+layout_mode = 0
+offset_left = 100.0
+offset_top = 600.0
+offset_right = 148.0
+offset_bottom = 648.0
+color = Color(0.8, 0.3, 0.9, 1)
+
+[node name="BagButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 170.0
+offset_top = 605.0
+offset_right = 300.0
+offset_bottom = 643.0
+text = "Bag"
+
+[node name="SettingsHint" type="Label" parent="."]
+layout_mode = 0
+offset_left = 320.0
+offset_top = 410.0
+offset_right = 580.0
+offset_bottom = 443.0
+text = "Straight line + size morph"
+vertical_alignment = 1
+
+[node name="ShopHint" type="Label" parent="."]
+layout_mode = 0
+offset_left = 320.0
+offset_top = 510.0
+offset_right = 580.0
+offset_bottom = 543.0
+text = "Curve2D arc path"
+vertical_alignment = 1
+
+[node name="BagHint" type="Label" parent="."]
+layout_mode = 0
+offset_left = 320.0
+offset_top = 610.0
+offset_right = 580.0
+offset_bottom = 643.0
+text = "Rotation + scale morph"
+vertical_alignment = 1
+
+[node name="Usage" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -450.0
+offset_top = -120.0
+offset_right = 450.0
+offset_bottom = -40.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "To reproduce: place a Control with the same name in both pages, then assign a UIFlowSharedElementTransition resource to the target page's enter_effect and exit_effect."
+horizontal_alignment = 1
+autowrap_mode = 3

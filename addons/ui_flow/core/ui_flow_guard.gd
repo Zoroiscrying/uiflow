@@ -22,8 +22,9 @@
 ## [/codeblock]
 class_name UIFlowGuard extends RefCounted
 
-## Guard function type: (from_page: GDScript, to_page: GDScript, data: Dictionary) -> bool
+## Guard function type: (from_page: GDScript, to_page: GDScript, data: Variant) -> bool
 ## Return true to allow navigation, false to block.
+## [param data] is the navigation payload passed to push()/replace().
 var _global_guards: Array[Callable] = []
 
 ## Page-specific guards: page_class -> Array[Callable]

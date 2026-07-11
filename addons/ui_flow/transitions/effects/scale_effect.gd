@@ -1,11 +1,12 @@
+@tool
 ## Scale effect — animates node scale only.
 class_name UIFlowScaleEffect extends UIFlowTransitionEffect
 
-## Start scale (used when from_current=false).
-@export var from_scale: Vector2 = Vector2.ZERO
+## Scale when the page is visible (enter target, exit start).
+@export var hidden_scale: Vector2 = Vector2.ZERO
 
-## Target scale for enter animation.
-@export var to_scale: Vector2 = Vector2.ONE
+## Scale when the page is hidden (enter start, exit target).
+@export var visible_scale: Vector2 = Vector2.ONE
 
 
 func _init() -> void:
@@ -19,13 +20,13 @@ func play_enter(node: Control, callback: Callable = Callable()) -> void:
 	node.visible = true
 	node.modulate.a = 1.0
 	if not from_current:
-		node.scale = from_scale
+		node.scale = hidden_scale
 	var tween := _create_tween(node)
 	if tween:
-		tween.tween_property(node, "scale", to_scale, duration).set_ease(ease_type).set_trans(trans_type)
+		tween.tween_property(node, "scale", visible_scale, duration).set_ease(ease_type).set_trans(trans_type)
 		tween.finished.connect(func(): _on_finished(callback), CONNECT_ONE_SHOT)
 	else:
-		node.scale = to_scale
+		node.scale = visible_scale
 		_on_finished(callback)
 
 
@@ -35,7 +36,7 @@ func play_exit(node: Control, callback: Callable = Callable()) -> void:
 		return
 	var tween := _create_tween(node)
 	if tween:
-		tween.tween_property(node, "scale", from_scale, duration).set_ease(ease_type).set_trans(trans_type)
+		tween.tween_property(node, "scale", hidden_scale, duration).set_ease(ease_type).set_trans(trans_type)
 		tween.finished.connect(func(): _on_finished(callback), CONNECT_ONE_SHOT)
 	else:
 		_on_finished(callback)

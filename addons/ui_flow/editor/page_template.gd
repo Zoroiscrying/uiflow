@@ -3,19 +3,19 @@
 extends UIFlowPage
 
 func _on_created(_data: Variant = null) -> void:
-	pass
+	super._on_created(_data)
 
 func _on_opened(_data: Variant = null) -> void:
-	pass
+	super._on_opened(_data)
 
 func _on_hidden() -> void:
-	pass
+	super._on_hidden()
 
 func _on_shown() -> void:
-	pass
+	super._on_shown()
 
 func _on_closed() -> void:
-	pass
+	super._on_closed()
 
 func _on_destroyed() -> void:
-	pass
+	super._on_destroyed()

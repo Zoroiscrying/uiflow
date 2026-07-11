@@ -19,6 +19,9 @@ Thumbs.db
 # Worktrees (public repo mirrors)
 /.worktrees/
 
+# Free mirror scratch directory
+/.mirror-free/
+
 # Non-plugin files
 /.reasonix/
 /docs/superpowers/

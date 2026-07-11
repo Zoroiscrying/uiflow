@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace UIFlow.Utils;
 
@@ -121,19 +122,19 @@ public static class UIFlowUtils
     public static void SetVisible(IEnumerable<Control> nodes, bool visible)
     {
         foreach (var node in nodes)
-            if (IsInstanceValid(node)) node.Visible = visible;
+            if (GodotObject.IsInstanceValid(node)) node.Visible = visible;
     }
 
     public static void SetAlpha(IEnumerable<CanvasItem> nodes, float alpha)
     {
         foreach (var node in nodes)
-            if (IsInstanceValid(node)) node.Modulate = new Color(1, 1, 1, alpha);
+            if (GodotObject.IsInstanceValid(node)) node.Modulate = new Color(1, 1, 1, alpha);
     }
 
     public static void SetButtonsEnabled(IEnumerable<BaseButton> buttons, bool enabled)
     {
         foreach (var btn in buttons)
-            if (IsInstanceValid(btn)) btn.Disabled = !enabled;
+            if (GodotObject.IsInstanceValid(btn)) btn.Disabled = !enabled;
     }
 
     public static void ClearChildren(Node parent)
@@ -143,5 +144,24 @@ public static class UIFlowUtils
             parent.RemoveChild(child);
             child.QueueFree();
         }
+    }
+
+    /// <summary>
+    /// Yields until the next process frame. Falls back to Task.Yield()
+    /// if no UIFlow instance is available.
+    /// </summary>
+    public static async Task NextFrame()
+    {
+        var instance = global::UIFlow.Core.UIFlow.Instance;
+        if (instance != null && GodotObject.IsInstanceValid(instance))
+        {
+            var tree = instance.GetTree();
+            if (tree != null)
+            {
+                await instance.ToSignal(tree, SceneTree.SignalName.ProcessFrame);
+                return;
+            }
+        }
+        await Task.Yield();
     }
 }

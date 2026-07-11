@@ -53,17 +53,22 @@ signal enabled_changed(value: bool)
 
 
 func _ready() -> void:
+	# Skip in the editor to avoid placeholder instance call failures.
+	if Engine.is_editor_hint():
+		return
 	_try_register()
 
 
 func _exit_tree() -> void:
+	if Engine.is_editor_hint():
+		return
 	_try_unregister()
 
 
 func _try_register() -> void:
 	var parent := get_parent()
 	while parent != null:
-		if parent is UIFlowPage:
+		if parent is UIFlowPage and parent.get_script() != null:
 			parent._register_action(self)
 			return
 		parent = parent.get_parent()
@@ -72,7 +77,7 @@ func _try_register() -> void:
 func _try_unregister() -> void:
 	var parent := get_parent()
 	while parent != null:
-		if parent is UIFlowPage:
+		if parent is UIFlowPage and parent.get_script() != null:
 			parent._unregister_action(self)
 			return
 		parent = parent.get_parent()

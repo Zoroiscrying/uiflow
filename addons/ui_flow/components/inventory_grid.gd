@@ -42,13 +42,21 @@ func _create_slots() -> void:
 
 func _update_all_slots() -> void:
 	for i in range(_slots.size()):
-		var item := inventory_data.get_item(i)
+		var item: ItemData = inventory_data.get_item(i)
 		_slots[i].set_item(item)
 
 
-func _on_item_dropped(item: ItemData, from_index: int, to_index: int) -> void:
+func _on_item_dropped(item: ItemData, from_index: int, old_item: ItemData, to_index: int) -> void:
+	if from_index == to_index:
+		# Dropped on same slot: refresh UI to restore after _on_drag_dropped cleared _item
+		inventory_data.items_changed.emit()
+		return
 	if from_index >= 0:
+		# Internal move within inventory (move_item now handles to_index out of range)
 		inventory_data.move_item(from_index, to_index)
 	else:
-		inventory_data.slots[to_index] = item
-		inventory_data.items_changed.emit()
+		# Item from external source (e.g., equipment unequip).
+		# If the target slot is occupied, return the displaced item to inventory first.
+		if old_item:
+			inventory_data.add_item(old_item)
+		inventory_data.set_item(to_index, item)

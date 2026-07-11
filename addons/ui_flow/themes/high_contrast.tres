@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="UIFlowTheme" format=3 uid="uid://ca7e1ktxkbmbl"]
+
+[ext_resource type="Script" uid="uid://d0kxoyltg6who" path="res://addons/ui_flow/resources/flow_theme.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+theme_name = "high_contrast"
+primary = Color(0, 0.69, 1, 1)
+secondary = Color(1, 1, 1, 1)
+accent = Color(1, 0.92, 0, 1)
+error = Color(1, 0.32, 0.32, 1)
+warning = Color(1, 0.84, 0.25, 1)
+success = Color(0.41, 0.94, 0.68, 1)
+info = Color(0.25, 0.77, 1, 1)
+surface = Color(0.1, 0.1, 0.1, 1)
+on_surface = Color(1, 1, 1, 1)
+font_size_title = 28
+font_size_heading = 18
+font_size_body = 14
+font_size_small = 12
+spacing_xs = 4
+spacing_sm = 8
+spacing_md = 12
+spacing_lg = 20
+spacing_xl = 32
+radius_sm = 4
+radius_md = 8
+radius_lg = 12
+separator = Color(1, 1, 1, 0.5)
+disabled = Color(0.7, 0.7, 0.7, 1)
+scrollbar_track = Color(1, 1, 1, 0.25)
+scrollbar_grabber = Color(1, 1, 1, 1)
+shadow = Color(0, 0, 0, 0.8)

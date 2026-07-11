@@ -2,7 +2,6 @@ using Godot;
 
 namespace UIFlow.Transitions;
 
-[GlobalClass]
 public partial class UIFlowScaleEffect : UIFlowTransitionEffect
 {
     [Export] public Vector2 FromScale { get; set; } = Vector2.Zero;

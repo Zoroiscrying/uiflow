@@ -1,4 +1,5 @@
 using Godot;
+using UIFlow.Transitions;
 
 namespace UIFlow.Core
 {
@@ -20,5 +21,7 @@ namespace UIFlow.Core
         [Export(PropertyHint.Range, "1,200,1")] public int MaxStackDepth { get; set; } = 50;
         [Export] public bool ModalCloseOnBack { get; set; } = true;
         [Export] public string DefaultThemeName { get; set; } = "dark";
+        [Export] public bool EnableObjectPooling { get; set; } = false;
+        [Export(PropertyHint.Range, "1,50,1")] public int MaxPoolSize { get; set; } = 5;
     }
 }

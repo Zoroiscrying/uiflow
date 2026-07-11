@@ -2,7 +2,6 @@ using Godot;
 
 namespace UIFlow.Transitions;
 
-[GlobalClass]
 public partial class UIFlowFadeEffect : UIFlowTransitionEffect
 {
     [Export] public float FromAlpha { get; set; }

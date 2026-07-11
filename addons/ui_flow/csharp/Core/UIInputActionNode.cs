@@ -6,7 +6,6 @@ namespace UIFlow.Core;
 /// Input action declaration node. Add as a child of UIFlowPage.
 /// Automatically registers itself with the nearest parent UIFlowPage.
 /// </summary>
-[GlobalClass]
 public partial class UIInputActionNode : Node
 {
     public enum Type { Button, Axis1D, Axis2D, LongPress, DoubleTap, Hold, Chord }

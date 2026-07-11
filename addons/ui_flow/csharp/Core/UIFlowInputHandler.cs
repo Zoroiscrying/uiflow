@@ -45,14 +45,14 @@ namespace UIFlow.Core
 
         private UIFlowPage GetTopPage()
         {
-            if (_navigator == null || _navigator.Stack.Count == 0)
+            if (_navigator == null || _navigator.Depth() == 0)
                 return null;
-            return _navigator.Stack.Back()["instance"] as UIFlowPage;
+            return _navigator.CurrentPageInstance() as UIFlowPage;
         }
 
         public override void _UnhandledInput(InputEvent @event)
         {
-            if (_navigator == null || _navigator.Stack.Count == 0)
+            if (_navigator == null || _navigator.Depth() == 0)
                 return;
             if (!@event.IsActionPressed("ui_cancel"))
                 return;
@@ -67,7 +67,7 @@ namespace UIFlow.Core
                 topPage.InvokeBack();
                 if (UIFlow.Instance?.Config?.ModalCloseOnBack ?? true)
                 {
-                    if (_navigator.Stack.Count > 1)
+                    if (_navigator.Depth() > 1)
                         _navigator.Pop();
                     else
                         EmitSignal(SignalName.BackPressed);
@@ -78,7 +78,7 @@ namespace UIFlow.Core
 
             // Non-modal: try page-specific back handler
             topPage.InvokeBack();
-            if (_navigator.Stack.Count > 1)
+            if (_navigator.Depth() > 1)
             {
                 _navigator.Pop();
                 GetViewport().SetInputAsHandled();

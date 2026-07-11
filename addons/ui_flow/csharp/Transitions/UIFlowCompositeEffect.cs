@@ -1,4 +1,5 @@
 using Godot;
+using System;
 using System.Threading;
 
 namespace UIFlow.Transitions;
@@ -6,7 +7,6 @@ namespace UIFlow.Transitions;
 /// <summary>
 /// Composite effect — plays multiple effects simultaneously.
 /// </summary>
-[GlobalClass]
 public partial class UIFlowCompositeEffect : UIFlowTransitionEffect
 {
     [Export] public UIFlowTransitionEffect[] Effects { get; set; } = System.Array.Empty<UIFlowTransitionEffect>();
@@ -19,7 +19,7 @@ public partial class UIFlowCompositeEffect : UIFlowTransitionEffect
         foreach (var effect in Effects)
         {
             if (effect == null) { remaining--; continue; }
-            Callable done = new Callable(new Action(() =>
+            Callable done = Callable.From(new Action(() =>
             {
                 remaining--;
                 if (remaining <= 0) OnFinished(callback);
@@ -35,7 +35,7 @@ public partial class UIFlowCompositeEffect : UIFlowTransitionEffect
         foreach (var effect in Effects)
         {
             if (effect == null) { remaining--; continue; }
-            Callable done = new Callable(new Action(() =>
+            Callable done = Callable.From(new Action(() =>
             {
                 remaining--;
                 if (remaining <= 0) OnFinished(callback);

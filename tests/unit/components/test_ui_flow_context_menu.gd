@@ -41,6 +41,7 @@ func test_close_signal() -> void:
 	menu.closed.connect(func(): fired[0] = true)
 	menu.close()
 	assert_that(fired[0]).is_true()
+	menu.queue_free()
 
 
 ## Test: item_selected signal

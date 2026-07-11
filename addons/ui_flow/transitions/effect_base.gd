@@ -1,3 +1,4 @@
+@tool
 ## UIFlowTransitionEffect — base Resource for transition effects.
 ##
 ## Each effect is a self-contained Resource that defines how a node
@@ -7,10 +8,17 @@
 ## - UIFlowFadeEffect: opacity animation
 ## - UIFlowSlideEffect: position animation
 ## - UIFlowScaleEffect: scale animation
+## - UIFlowFlipEffect: card-flip scale animation
+## - UIFlowElasticScaleEffect: bounce/elastic/back scale animation
 ## - UIFlowCompositeEffect: combines multiple effects
+## - UIFlowSequencedEffect: plays effects one after another
+## - UIFlowTimelineEffect: plays multi-step effects with per-step delays
+## - UIFlowTransitionAnimPlayer: plays a custom Godot Animation resource
+## - UIFlowSharedElementTransition: morphs a shared Control between two pages
 ##
 ## Custom effect example:
 ## [codeblock]
+## @tool
 ## class_name MyBounceEffect extends UIFlowTransitionEffect
 ##
 ## func play_enter(node: Control, callback: Callable) -> void:
@@ -21,6 +29,10 @@
 ## func play_exit(node: Control, callback: Callable) -> void:
 ##     # ... reverse animation ...
 ## [/codeblock]
+##
+## NOTE: Add @tool at the top of custom effects if you want them to be previewable
+## in the editor (e.g. from the UIFlow badge). Effects without @tool work at runtime
+## but will show a warning when previewed in the editor.
 class_name UIFlowTransitionEffect extends Resource
 
 ## If true, the node starts invisible and the effect controls visibility.

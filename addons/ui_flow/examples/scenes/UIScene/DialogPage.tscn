@@ -4,8 +4,13 @@
 [ext_resource type="Script" uid="uid://pxcdy2526t4" path="res://addons/ui_flow/core/ui_flow_input_action_node.gd" id="2"]
 [ext_resource type="Script" uid="uid://cspscwmv2yfg7" path="res://addons/ui_flow/transitions/effects/fade_effect.gd" id="3"]
 
+[sub_resource type="Resource" id="Resource_53j38"]
+script = ExtResource("3")
+duration = 0.15
+
 [sub_resource type="Resource" id="1"]
 script = ExtResource("3")
+from_current = true
 duration = 0.15
 ease_type = 1
 
@@ -18,7 +23,9 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1")
 is_modal = true
+enter_effect = SubResource("Resource_53j38")
 exit_effect = SubResource("1")
+default_focus_path = NodePath("ContinueAction")
 
 [node name="ContinueAction" type="Node" parent="." unique_id=1334809352]
 script = ExtResource("2")

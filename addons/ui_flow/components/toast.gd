@@ -121,15 +121,14 @@ func show_toast(message: String, type_name: String = "info", duration: float = -
 
 	# Fade in
 	item.modulate.a = 0.0
-	var tree: SceneTree = get_tree()
-	if tree:
-		var tween: Tween = tree.create_tween()
-		tween.tween_property(item, "modulate:a", 1.0, anim_duration)
+	var tween: Tween = item.create_tween()
+	tween.tween_property(item, "modulate:a", 1.0, anim_duration)
 
 	# Auto dismiss
 	var dismiss_duration: float = duration if duration > 0.0 else toast_type.default_duration
 	if dismiss_duration > 0.0:
-		tree.create_timer(dismiss_duration).timeout.connect(func():
+		var timer = get_tree().create_timer(dismiss_duration, true)
+		timer.timeout.connect(func():
 			_dismiss(item)
 		)
 
@@ -161,16 +160,12 @@ func _dismiss(item: Control) -> void:
 
 	_active_toasts.erase(item)
 
-	var tree: SceneTree = get_tree()
-	if tree:
-		var tween: Tween = tree.create_tween()
-		tween.tween_property(item, "modulate:a", 0.0, anim_duration)
-		tween.finished.connect(func():
-			if is_instance_valid(item):
-				item.queue_free()
-		)
-	else:
-		item.queue_free()
+	var tween: Tween = item.create_tween()
+	tween.tween_property(item, "modulate:a", 0.0, anim_duration)
+	tween.finished.connect(func():
+		if is_instance_valid(item):
+			item.queue_free()
+	)
 
 
 func _update_position() -> void:

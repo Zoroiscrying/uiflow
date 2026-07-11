@@ -19,5 +19,16 @@ class_name UIFlowConfig extends Resource
 ## If false, modal pages swallow the back input and stay open.
 @export var modal_close_on_back: bool = true
 
+## If true, frequently used pages are recycled instead of freed.
+## Reduces GC pressure for pages that are opened/closed often (backpack, shop, etc.).
+@export var enable_object_pooling: bool = false
+
+## Maximum number of pooled instances per page class.
+@export_range(1, 20, 1) var max_pool_size: int = 5
+
 ## Default theme name applied on startup ("dark", "light", or a custom registered name).
 @export var default_theme_name: String = "dark"
+
+## Optional page class shown while an async page is loading.
+## If empty, no loading page is shown.
+@export var loading_page_class: GDScript = null

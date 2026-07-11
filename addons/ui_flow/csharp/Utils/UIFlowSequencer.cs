@@ -31,7 +31,7 @@ public class UIFlowSequencer
     {
         if (index >= _steps.Count) { Finished?.Invoke(); return; }
         var step = _steps[index];
-        if (!IsInstanceValid(step.Node) || !step.Node.IsInsideTree())
+        if (!GodotObject.IsInstanceValid(step.Node) || !step.Node.IsInsideTree())
         {
             PlayNext(index + 1);
             return;
@@ -50,7 +50,7 @@ public class UIFlowSequencer
     {
         if (index >= _steps.Count) { Finished?.Invoke(); return; }
         var step = _steps[index];
-        if (!IsInstanceValid(step.Node) || !step.Node.IsInsideTree())
+        if (!GodotObject.IsInstanceValid(step.Node) || !step.Node.IsInsideTree())
         {
             PlayNext(index + 1);
             return;

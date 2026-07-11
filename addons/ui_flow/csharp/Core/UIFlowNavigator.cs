@@ -1,16 +1,20 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using UIFlow.Resources;
 
 namespace UIFlow.Core;
 
 /// <summary>
 /// Navigation stack manager for UIFlow pages.
 /// Manages push/pop/replace operations and page lifecycle.
+/// Navigation is protected by a lock to prevent race conditions during animations.
 /// </summary>
 public partial class UIFlowNavigator : Node
 {
-    public event Action<Script, Dictionary> PagePushed;
+    public event Action<Script, Godot.Collections.Dictionary> PagePushed;
     public event Action<Script> PagePopped;
     public event Action<Script> PageOpened;
     public event Action<Script> PageClosed;
@@ -23,6 +27,15 @@ public partial class UIFlowNavigator : Node
 
     private record StackEntry(Script Class, Control Instance, PackedScene Scene);
 
+    // ── Navigation lock ───────────────────────────────────────────────────────
+
+    private bool _isNavigating;
+    private readonly Queue<Action> _pendingNavigations = new();
+
+    // Temporary state for async enter animation completion callback
+    private Script _pendingOpenClass;
+    private UIFlowPage _pendingOpenPage;
+
     public void Setup(Control container, UIFlowSceneResolver resolver, UIFlowGuard guard)
     {
         _container = container;
@@ -30,28 +43,89 @@ public partial class UIFlowNavigator : Node
         _guard = guard;
     }
 
-    /// <summary>
-    /// Push a page onto the stack. If the page is already in the stack, moves it to the top.
-    /// Returns the page instance. Returns null if blocked by a guard or scene not found.
-    /// </summary>
-    public Control Push(Script pageClass, Dictionary data = null, UIFlowTheme pageTheme = null)
+    private bool StartNavigation()
     {
-        // If already in stack, move to top
+        if (_isNavigating) return false;
+        _isNavigating = true;
+        return true;
+    }
+
+    private void FinishNavigation()
+    {
+        _isNavigating = false;
+        ProcessPending();
+    }
+
+    private void ProcessPending()
+    {
+        if (_isNavigating || _pendingNavigations.Count == 0) return;
+        var next = _pendingNavigations.Dequeue();
+        next?.Invoke();
+    }
+
+    private void QueueNavigation(Action action) => _pendingNavigations.Enqueue(action);
+
+    // ── Push ─────────────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Push a page onto the stack. If already in stack, moves it to the top.
+    /// Returns the page instance. Returns null if blocked by a guard or busy.
+    /// </summary>
+    public Control Push(Script pageClass, Godot.Collections.Dictionary data = null, UIFlowTheme pageTheme = null)
+    {
+        if (!StartNavigation())
+        {
+            QueueNavigation(() => Push(pageClass, data, pageTheme));
+            return null;
+        }
+        return DoPush(pageClass, data, pageTheme);
+    }
+
+    /// <summary>
+    /// Push a page with asynchronous scene loading.
+    /// </summary>
+    public async Task<Control> PushAsync(Script pageClass, Godot.Collections.Dictionary data = null, UIFlowTheme pageTheme = null, CancellationToken ct = default)
+    {
+        if (!StartNavigation())
+        {
+            QueueNavigation(() => PushAsync(pageClass, data, pageTheme, ct));
+            return null;
+        }
+
+        var scene = await _sceneResolver.ResolveAsync(pageClass, ct);
+        if (scene == null)
+        {
+            FinishNavigation();
+            return null;
+        }
+
+        return DoPush(pageClass, data, pageTheme);
+    }
+
+    private Control DoPush(Script pageClass, Godot.Collections.Dictionary data, UIFlowTheme pageTheme)
+    {
+        // If already in stack, move to top (no animation needed)
         var existing = GetPage(pageClass);
         if (existing != null)
         {
             MoveToTop(pageClass);
+            FinishNavigation();
             return existing;
         }
 
         var scene = _sceneResolver.Resolve(pageClass);
-        if (scene == null) return null;
+        if (scene == null)
+        {
+            FinishNavigation();
+            return null;
+        }
 
         // Max stack depth check
         var maxDepth = UIFlow.Instance?.Config?.MaxStackDepth ?? 50;
         if (_stack.Count >= maxDepth)
         {
             GD.PushWarning($"UIFlow: Max stack depth ({maxDepth}) reached, cannot push new page.");
+            FinishNavigation();
             return null;
         }
 
@@ -59,53 +133,99 @@ public partial class UIFlowNavigator : Node
         if (_guard != null && !_guard.CanNavigate(
             _stack.Count > 0 ? _stack[^1].Class : null,
             pageClass, data))
+        {
+            FinishNavigation();
             return null;
+        }
 
-        data ??= new Dictionary();
+        data ??= new Godot.Collections.Dictionary();
 
         // Notify current top page
         if (_stack.Count > 0)
         {
             var current = _stack[^1];
             if (current.Instance is UIFlowPage currentPage)
+            {
                 currentPage.InvokeHidden();
+            }
         }
 
-        // Instantiate
-        var instance = (Control)scene.Instantiate();
+        // Try to acquire from pool, or instantiate new
+        var instance = _sceneResolver.AcquirePooled(pageClass);
+        var newPage = instance as UIFlowPage;
+        if (instance == null)
+        {
+            instance = (Control)scene.Instantiate();
+            newPage = instance as UIFlowPage;
+        }
+        else
+        {
+            newPage?.InvokeUnpooled();
+        }
 
-        // Check if page has enter animation that wants to start hidden
+        // Lifecycle: created (before add_child)
+        newPage?.InvokeCreated(data);
+
         bool startsHidden = false;
-        if (instance is UIFlowPage page && page.EnterEffect != null && page.EnterEffect.StartsHidden)
+        if (newPage?.EnterEffect != null && newPage.EnterEffect.StartsHidden)
             startsHidden = true;
 
         instance.Visible = !startsHidden;
-        _container.AddChild(instance);
+        if (!instance.IsInsideTree())
+            _container.AddChild(instance);
 
-        // Apply theme
         if (pageTheme != null)
             instance.Theme = pageTheme.BuildGodotTheme();
 
         _stack.Add(new StackEntry(pageClass, instance, scene));
 
-        // Lifecycle
-        if (instance is UIFlowPage newPage)
+        // Lifecycle: opened (after add_child, before animation)
+        newPage?.InvokeOpened(data);
+
+        // Play enter animation, then finish
+        if (newPage != null)
         {
-            newPage.InvokeCreated(data);
-            newPage.InvokeOpened(data);
-            newPage.PlayEnterAnimation();
-            newPage.ApplyDefaultFocus();
+            _pendingOpenClass = pageClass;
+            _pendingOpenPage = newPage;
+            newPage.PlayEnterAnimation(new Callable(this, nameof(OnEnterAnimationComplete)));
+        }
+        else
+        {
+            PageOpened?.Invoke(pageClass);
+            FinishNavigation();
         }
 
         PagePushed?.Invoke(pageClass, data);
-        PageOpened?.Invoke(pageClass);
         return instance;
+    }
+
+    // Helper: called when enter animation completes
+    private void OnEnterAnimationComplete()
+    {
+        if (IsInstanceValid(_pendingOpenPage))
+        {
+            _pendingOpenPage.InvokeAfterOpened();
+        }
+        PageOpened?.Invoke(_pendingOpenClass);
+        _pendingOpenClass = null;
+        _pendingOpenPage = null;
+        FinishNavigation();
     }
 
     /// <summary>
     /// Push a pre-instantiated page instance.
     /// </summary>
-    public Control PushInstance(Control instance, Dictionary data = null)
+    public Control PushInstance(Control instance, Godot.Collections.Dictionary data = null)
+    {
+        if (!StartNavigation())
+        {
+            QueueNavigation(() => PushInstance(instance, data));
+            return null;
+        }
+        return DoPushInstance(instance, data);
+    }
+
+    private Control DoPushInstance(Control instance, Godot.Collections.Dictionary data)
     {
         if (_stack.Count > 0)
         {
@@ -118,29 +238,44 @@ public partial class UIFlowNavigator : Node
         if (instance is UIFlowPage page && page.EnterEffect != null && page.EnterEffect.StartsHidden)
             startsHidden = true;
 
-        var pageClass = instance.GetScript();
+        var pageClass = instance.GetScript().AsGodotObject() as Script;
         if (_guard != null && !_guard.CanNavigate(
             _stack.Count > 0 ? _stack[^1].Class : null,
             pageClass, data))
+        {
+            FinishNavigation();
             return null;
+        }
+
+        var newPage = instance as UIFlowPage;
+
+        newPage?.InvokeCreated(data ?? new Godot.Collections.Dictionary());
 
         instance.Visible = !startsHidden;
+        instance.Modulate = new Color(1, 1, 1, 1);
         _container.AddChild(instance);
 
         _stack.Add(new StackEntry(pageClass, instance, null));
 
-        if (instance is UIFlowPage newPage)
+        newPage?.InvokeOpened(data ?? new Godot.Collections.Dictionary());
+
+        if (newPage != null)
         {
-            data ??= new Dictionary();
-            newPage.InvokeCreated(data);
-            newPage.InvokeOpened(data);
-            newPage.PlayEnterAnimation();
-            newPage.ApplyDefaultFocus();
+            _pendingOpenClass = pageClass;
+            _pendingOpenPage = newPage;
+            newPage.PlayEnterAnimation(new Callable(this, nameof(OnEnterAnimationComplete)));
+        }
+        else
+        {
+            PageOpened?.Invoke(pageClass);
+            FinishNavigation();
         }
 
-        PagePushed?.Invoke(instance.GetScript(), data);
+        PagePushed?.Invoke(instance.GetScript().AsGodotObject() as Script, data);
         return instance;
     }
+
+    // ── Pop / Close ──────────────────────────────────────────────────────────
 
     /// <summary>
     /// Pop the top page off the stack.
@@ -153,27 +288,62 @@ public partial class UIFlowNavigator : Node
             return;
         }
 
+        if (!StartNavigation())
+        {
+            QueueNavigation(Pop);
+            return;
+        }
+
         var top = _stack[^1];
         _stack.RemoveAt(_stack.Count - 1);
 
         if (top.Instance is UIFlowPage page)
-            page.PlayExitAnimation(() => CleanupAfterPop(top));
+            page.InvokeBeforeClosed();
+
+        if (top.Instance is UIFlowPage pageWithAnim)
+        {
+            pageWithAnim.PlayExitAnimation(Callable.From(() =>
+            {
+                CleanupAfterPop(top);
+                FinishNavigation();
+            }));
+        }
         else
+        {
             CleanupAfterPop(top);
+            FinishNavigation();
+        }
     }
 
     private void CleanupAfterPop(StackEntry top)
     {
         if (top.Instance is UIFlowPage page)
         {
+            page.UnbindAll();
             page.InvokeClosed();
             page.InvokeDestroyed();
         }
 
-        if (IsInstanceValid(top.Instance) && top.Instance.IsInsideTree())
+        var pooled = false;
+        if (top.Class is GDScript gdScript && _sceneResolver != null)
+            pooled = _sceneResolver.ReleaseToPool(gdScript, top.Instance);
+
+        if (!pooled)
         {
-            _container.RemoveChild(top.Instance);
-            top.Instance.QueueFree();
+            if (IsInstanceValid(top.Instance) && top.Instance.IsInsideTree())
+            {
+                _container.RemoveChild(top.Instance);
+                top.Instance.QueueFree();
+            }
+            if (top.Instance is UIFlowPage page2)
+                page2._currentState = UIFlowPage.State.Destroyed;
+        }
+        else
+        {
+            if (IsInstanceValid(top.Instance) && top.Instance.IsInsideTree())
+                _container.RemoveChild(top.Instance);
+            if (top.Instance is UIFlowPage page2)
+                page2._currentState = UIFlowPage.State.Idle;
         }
 
         if (_stack.Count > 0)
@@ -190,15 +360,27 @@ public partial class UIFlowNavigator : Node
     /// <summary>
     /// Replace the top page with a new one.
     /// </summary>
-    public Control Replace(Script pageClass, Dictionary data = null, UIFlowTheme theme = null)
+    public Control Replace(Script pageClass, Godot.Collections.Dictionary data = null, UIFlowTheme theme = null)
     {
-        if (_stack.Count == 0) return Push(pageClass, data, theme);
+        if (!StartNavigation())
+        {
+            QueueNavigation(() => Replace(pageClass, data, theme));
+            return null;
+        }
+
+        if (_stack.Count == 0)
+        {
+            var result = DoPush(pageClass, data, theme);
+            return result;
+        }
 
         var old = _stack[^1];
         _stack.RemoveAt(_stack.Count - 1);
 
         if (old.Instance is UIFlowPage oldPage)
         {
+            oldPage.InvokeBeforeClosed();
+            oldPage.UnbindAll();
             oldPage.InvokeClosed();
             oldPage.InvokeDestroyed();
         }
@@ -208,7 +390,7 @@ public partial class UIFlowNavigator : Node
             old.Instance.QueueFree();
         }
 
-        return Push(pageClass, data, theme);
+        return DoPush(pageClass, data, theme);
     }
 
     /// <summary>
@@ -216,14 +398,47 @@ public partial class UIFlowNavigator : Node
     /// </summary>
     public void PopToRoot()
     {
+        if (!StartNavigation())
+        {
+            QueueNavigation(PopToRoot);
+            return;
+        }
+
+        if (_stack.Count <= 1)
+        {
+            FinishNavigation();
+            return;
+        }
+
+        // Remove middle pages directly (no animation)
         while (_stack.Count > 1)
-            Pop();
+        {
+            var entry = _stack[0];
+            _stack.RemoveAt(0);
+
+            if (entry.Instance is UIFlowPage page)
+            {
+                page.UnbindAll();
+                page.InvokeClosed();
+                page.InvokeDestroyed();
+            }
+            if (IsInstanceValid(entry.Instance) && entry.Instance.IsInsideTree())
+            {
+                _container.RemoveChild(entry.Instance);
+                entry.Instance.QueueFree();
+            }
+        }
+
+        // Notify root
+        var root = _stack[^1];
+        if (root.Instance is UIFlowPage rootPage && IsInstanceValid(rootPage))
+            rootPage.InvokeShown();
+
+        FinishNavigation();
     }
 
     /// <summary>
     /// Close a specific page by class, anywhere in the stack.
-    /// If the page is the top page, plays exit animation first.
-    /// If the page is in the middle, removes it directly.
     /// </summary>
     public void Close(Script pageClass)
     {
@@ -245,19 +460,18 @@ public partial class UIFlowNavigator : Node
             return;
         }
 
-        // If it's the top page, use Pop() for proper exit animation
         if (targetIndex == _stack.Count - 1)
         {
             Pop();
             return;
         }
 
-        // Otherwise, remove directly
         var entry = _stack[targetIndex];
         _stack.RemoveAt(targetIndex);
 
         if (entry.Instance is UIFlowPage page)
         {
+            page.UnbindAll();
             page.InvokeClosed();
             page.InvokeDestroyed();
         }
@@ -271,9 +485,8 @@ public partial class UIFlowNavigator : Node
         PageClosed?.Invoke(entry.Class);
     }
 
-    /// <summary>
-    /// Move an existing page to the top of the stack.
-    /// </summary>
+    // ── Stack queries ───────────────────────────────────────────────────────
+
     public void MoveToTop(Script pageClass)
     {
         int targetIndex = -1;
@@ -287,23 +500,19 @@ public partial class UIFlowNavigator : Node
         }
 
         if (targetIndex == -1 || targetIndex == _stack.Count - 1)
-            return; // Not found or already on top
+            return;
 
-        // Notify current top it's being hidden
         var currentTop = _stack[^1];
         if (currentTop.Instance is UIFlowPage currentPage)
             currentPage.InvokeHidden();
 
-        // Move to top
         var entry = _stack[targetIndex];
         _stack.RemoveAt(targetIndex);
         _stack.Add(entry);
 
-        // Bring to front in the scene tree
         if (entry.Instance.IsInsideTree())
             _container.MoveChild(entry.Instance, _container.GetChildCount() - 1);
 
-        // Notify moved page it's now shown
         if (entry.Instance is UIFlowPage movedPage)
             movedPage.InvokeShown();
     }

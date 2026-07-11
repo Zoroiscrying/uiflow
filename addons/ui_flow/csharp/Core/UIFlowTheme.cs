@@ -1,11 +1,14 @@
 using Godot;
+using Godot.Collections;
 
-namespace UIFlow.Core
+namespace UIFlow.Resources
 {
     /// <summary>
     /// UIFlow Theme Resource — semantic color palette and style config with inheritance.
+    /// 
+    /// All properties are stored internally in a Dictionary for extensibility.
+    /// Standard properties are exposed as [Export] for editor UX.
     /// </summary>
-    [GlobalClass]
     public partial class UIFlowTheme : Resource
     {
         public enum ColorSlot
@@ -16,287 +19,314 @@ namespace UIFlow.Core
             OnPrimary, OnSecondary, OnSurface
         }
 
-        // Parent theme for inheritance
+        // ── Internal storage ─────────────────────────────────────────────────
+
+        /// <summary>All theme values stored in a Dictionary for extensibility.</summary>
+        private Dictionary _properties = new();
+
+        /// <summary>Tracks which properties were explicitly set on this theme.</summary>
+        private Dictionary _has = new();
+
+        // ── Parent ───────────────────────────────────────────────────────────
+
         [Export] public UIFlowTheme ParentTheme { get; set; }
 
-        // Has-flags for inheritance tracking
-        private bool _hasPrimary, _hasSecondary, _hasAccent;
-        private bool _hasError, _hasWarning, _hasSuccess, _hasInfo;
-        private bool _hasBackground, _hasSurface;
-        private bool _hasOnPrimary, _hasOnSecondary, _hasOnSurface;
-        private bool _hasFontRegular, _hasFontBold;
-        private bool _hasFontSizeTitle, _hasFontSizeHeading, _hasFontSizeBody, _hasFontSizeSmall;
-        private bool _hasSpacingXs, _hasSpacingSm, _hasSpacingMd, _hasSpacingLg, _hasSpacingXl;
-        private bool _hasRadiusSm, _hasRadiusMd, _hasRadiusLg;
+        // ── Theme Name ───────────────────────────────────────────────────────
 
-        // Backing fields
-        private Color _primary = new(0.3f, 0.5f, 0.9f);
-        private Color _secondary = new(0.5f, 0.5f, 0.5f);
-        private Color _accent = new(0.9f, 0.6f, 0.2f);
-        private Color _error = new(0.9f, 0.3f, 0.3f);
-        private Color _warning = new(0.9f, 0.7f, 0.2f);
-        private Color _success = new(0.3f, 0.8f, 0.4f);
-        private Color _info = new(0.4f, 0.7f, 0.9f);
-        private Color _background = new(0.1f, 0.1f, 0.12f);
-        private Color _surface = new(0.15f, 0.15f, 0.18f);
-        private Color _onPrimary = Colors.White;
-        private Color _onSecondary = Colors.White;
-        private Color _onSurface = new(0.9f, 0.9f, 0.9f);
-        private Font _fontRegular;
-        private Font _fontBold;
-        private int _fontSizeTitle = 28;
-        private int _fontSizeHeading = 18;
-        private int _fontSizeBody = 14;
-        private int _fontSizeSmall = 12;
-        private int _spacingXs = 4;
-        private int _spacingSm = 8;
-        private int _spacingMd = 12;
-        private int _spacingLg = 20;
-        private int _spacingXl = 32;
-        private int _radiusSm = 4;
-        private int _radiusMd = 8;
-        private int _radiusLg = 12;
+        [Export]
+        public string ThemeName
+        {
+            get => GetProperty("theme_name", "").AsString();
+            set => SetProperty("theme_name", value);
+        }
 
-        // Properties with has-flags
+        // ── Internal helpers ─────────────────────────────────────────────────
+
+        private Variant GetProp(string name, Variant defaultValue)
+        {
+            if (_properties.TryGetValue(name, out var value))
+                return value;
+            if (ParentTheme != null)
+                return ParentTheme.GetProperty(name, defaultValue);
+            return defaultValue;
+        }
+
+        private void SetProp(string name, Variant value)
+        {
+            _properties[name] = value;
+            _has[name] = true;
+            EmitChanged();
+        }
+
+        // ── @export properties (backed by _properties / _has) ─────────────
+
         [ExportGroup("Brand Colors")]
         [Export]
         public Color Primary
         {
-            get => _primary;
-            set { _primary = value; _hasPrimary = true; }
+            get => GetProp("primary", new Color(0.3f, 0.5f, 0.9f)).AsColor();
+            set => SetProp("primary", value);
         }
 
         [Export]
         public Color Secondary
         {
-            get => _secondary;
-            set { _secondary = value; _hasSecondary = true; }
+            get => GetProp("secondary", new Color(0.5f, 0.5f, 0.5f)).AsColor();
+            set => SetProp("secondary", value);
         }
 
         [Export]
         public Color Accent
         {
-            get => _accent;
-            set { _accent = value; _hasAccent = true; }
+            get => GetProp("accent", new Color(0.9f, 0.6f, 0.2f)).AsColor();
+            set => SetProp("accent", value);
         }
 
         [ExportGroup("Semantic Colors")]
         [Export]
         public Color Error
         {
-            get => _error;
-            set { _error = value; _hasError = true; }
+            get => GetProp("error", new Color(0.9f, 0.3f, 0.3f)).AsColor();
+            set => SetProp("error", value);
         }
 
         [Export]
         public Color Warning
         {
-            get => _warning;
-            set { _warning = value; _hasWarning = true; }
+            get => GetProp("warning", new Color(0.9f, 0.7f, 0.2f)).AsColor();
+            set => SetProp("warning", value);
         }
 
         [Export]
         public Color Success
         {
-            get => _success;
-            set { _success = value; _hasSuccess = true; }
+            get => GetProp("success", new Color(0.3f, 0.8f, 0.4f)).AsColor();
+            set => SetProp("success", value);
         }
 
         [Export]
         public Color Info
         {
-            get => _info;
-            set { _info = value; _hasInfo = true; }
+            get => GetProp("info", new Color(0.4f, 0.7f, 0.9f)).AsColor();
+            set => SetProp("info", value);
         }
 
         [ExportGroup("Surface")]
         [Export]
         public Color Background
         {
-            get => _background;
-            set { _background = value; _hasBackground = true; }
+            get => GetProp("background", new Color(0.1f, 0.1f, 0.12f)).AsColor();
+            set => SetProp("background", value);
         }
 
         [Export]
         public Color Surface
         {
-            get => _surface;
-            set { _surface = value; _hasSurface = true; }
+            get => GetProp("surface", new Color(0.15f, 0.15f, 0.18f)).AsColor();
+            set => SetProp("surface", value);
         }
 
         [ExportGroup("Text")]
         [Export]
         public Color OnPrimary
         {
-            get => _onPrimary;
-            set { _onPrimary = value; _hasOnPrimary = true; }
+            get => GetProp("on_primary", Colors.White).AsColor();
+            set => SetProp("on_primary", value);
         }
 
         [Export]
         public Color OnSecondary
         {
-            get => _onSecondary;
-            set { _onSecondary = value; _hasOnSecondary = true; }
+            get => GetProp("on_secondary", Colors.White).AsColor();
+            set => SetProp("on_secondary", value);
         }
 
         [Export]
         public Color OnSurface
         {
-            get => _onSurface;
-            set { _onSurface = value; _hasOnSurface = true; }
+            get => GetProp("on_surface", new Color(0.9f, 0.9f, 0.9f)).AsColor();
+            set => SetProp("on_surface", value);
         }
 
         [ExportGroup("Typography")]
         [Export]
         public Font FontRegular
         {
-            get => _fontRegular;
-            set { _fontRegular = value; _hasFontRegular = true; }
+            get => GetProp("font_regular", new Variant()).AsGodotObject() as Font;
+            set => SetProp("font_regular", value ?? new Variant());
         }
 
         [Export]
         public Font FontBold
         {
-            get => _fontBold;
-            set { _fontBold = value; _hasFontBold = true; }
+            get => GetProp("font_bold", new Variant()).AsGodotObject() as Font;
+            set => SetProp("font_bold", value ?? new Variant());
         }
 
         [Export]
         public int FontSizeTitle
         {
-            get => _fontSizeTitle;
-            set { _fontSizeTitle = value; _hasFontSizeTitle = true; }
+            get => GetProp("font_size_title", 28).AsInt32();
+            set => SetProp("font_size_title", value);
         }
 
         [Export]
         public int FontSizeHeading
         {
-            get => _fontSizeHeading;
-            set { _fontSizeHeading = value; _hasFontSizeHeading = true; }
+            get => GetProp("font_size_heading", 18).AsInt32();
+            set => SetProp("font_size_heading", value);
         }
 
         [Export]
         public int FontSizeBody
         {
-            get => _fontSizeBody;
-            set { _fontSizeBody = value; _hasFontSizeBody = true; }
+            get => GetProp("font_size_body", 14).AsInt32();
+            set => SetProp("font_size_body", value);
         }
 
         [Export]
         public int FontSizeSmall
         {
-            get => _fontSizeSmall;
-            set { _fontSizeSmall = value; _hasFontSizeSmall = true; }
+            get => GetProp("font_size_small", 12).AsInt32();
+            set => SetProp("font_size_small", value);
         }
 
         [ExportGroup("Spacing")]
         [Export]
         public int SpacingXs
         {
-            get => _spacingXs;
-            set { _spacingXs = value; _hasSpacingXs = true; }
+            get => GetProp("spacing_xs", 4).AsInt32();
+            set => SetProp("spacing_xs", value);
         }
 
         [Export]
         public int SpacingSm
         {
-            get => _spacingSm;
-            set { _spacingSm = value; _hasSpacingSm = true; }
+            get => GetProp("spacing_sm", 8).AsInt32();
+            set => SetProp("spacing_sm", value);
         }
 
         [Export]
         public int SpacingMd
         {
-            get => _spacingMd;
-            set { _spacingMd = value; _hasSpacingMd = true; }
+            get => GetProp("spacing_md", 12).AsInt32();
+            set => SetProp("spacing_md", value);
         }
 
         [Export]
         public int SpacingLg
         {
-            get => _spacingLg;
-            set { _spacingLg = value; _hasSpacingLg = true; }
+            get => GetProp("spacing_lg", 20).AsInt32();
+            set => SetProp("spacing_lg", value);
         }
 
         [Export]
         public int SpacingXl
         {
-            get => _spacingXl;
-            set { _spacingXl = value; _hasSpacingXl = true; }
+            get => GetProp("spacing_xl", 32).AsInt32();
+            set => SetProp("spacing_xl", value);
         }
 
         [ExportGroup("Border Radius")]
         [Export]
         public int RadiusSm
         {
-            get => _radiusSm;
-            set { _radiusSm = value; _hasRadiusSm = true; }
+            get => GetProp("radius_sm", 4).AsInt32();
+            set => SetProp("radius_sm", value);
         }
 
         [Export]
         public int RadiusMd
         {
-            get => _radiusMd;
-            set { _radiusMd = value; _hasRadiusMd = true; }
+            get => GetProp("radius_md", 8).AsInt32();
+            set => SetProp("radius_md", value);
         }
 
         [Export]
         public int RadiusLg
         {
-            get => _radiusLg;
-            set { _radiusLg = value; _hasRadiusLg = true; }
+            get => GetProp("radius_lg", 12).AsInt32();
+            set => SetProp("radius_lg", value);
         }
 
-        // Resolved getters with parent chain walking
-        public Color ResolvedPrimary => _hasPrimary ? _primary : ParentTheme?.ResolvedPrimary ?? _primary;
-        public Color ResolvedSecondary => _hasSecondary ? _secondary : ParentTheme?.ResolvedSecondary ?? _secondary;
-        public Color ResolvedAccent => _hasAccent ? _accent : ParentTheme?.ResolvedAccent ?? _accent;
-        public Color ResolvedError => _hasError ? _error : ParentTheme?.ResolvedError ?? _error;
-        public Color ResolvedWarning => _hasWarning ? _warning : ParentTheme?.ResolvedWarning ?? _warning;
-        public Color ResolvedSuccess => _hasSuccess ? _success : ParentTheme?.ResolvedSuccess ?? _success;
-        public Color ResolvedInfo => _hasInfo ? _info : ParentTheme?.ResolvedInfo ?? _info;
-        public Color ResolvedBackground => _hasBackground ? _background : ParentTheme?.ResolvedBackground ?? _background;
-        public Color ResolvedSurface => _hasSurface ? _surface : ParentTheme?.ResolvedSurface ?? _surface;
-        public Color ResolvedOnPrimary => _hasOnPrimary ? _onPrimary : ParentTheme?.ResolvedOnPrimary ?? _onPrimary;
-        public Color ResolvedOnSecondary => _hasOnSecondary ? _onSecondary : ParentTheme?.ResolvedOnSecondary ?? _onSecondary;
-        public Color ResolvedOnSurface => _hasOnSurface ? _onSurface : ParentTheme?.ResolvedOnSurface ?? _onSurface;
-        public Font ResolvedFontRegular => _hasFontRegular ? _fontRegular : ParentTheme?.ResolvedFontRegular ?? _fontRegular;
-        public Font ResolvedFontBold => _hasFontBold ? _fontBold : ParentTheme?.ResolvedFontBold ?? _fontBold;
-        public int ResolvedFontSizeTitle => _hasFontSizeTitle ? _fontSizeTitle : ParentTheme?.ResolvedFontSizeTitle ?? _fontSizeTitle;
-        public int ResolvedFontSizeHeading => _hasFontSizeHeading ? _fontSizeHeading : ParentTheme?.ResolvedFontSizeHeading ?? _fontSizeHeading;
-        public int ResolvedFontSizeBody => _hasFontSizeBody ? _fontSizeBody : ParentTheme?.ResolvedFontSizeBody ?? _fontSizeBody;
-        public int ResolvedFontSizeSmall => _hasFontSizeSmall ? _fontSizeSmall : ParentTheme?.ResolvedFontSizeSmall ?? _fontSizeSmall;
-        public int ResolvedSpacingXs => _hasSpacingXs ? _spacingXs : ParentTheme?.ResolvedSpacingXs ?? _spacingXs;
-        public int ResolvedSpacingSm => _hasSpacingSm ? _spacingSm : ParentTheme?.ResolvedSpacingSm ?? _spacingSm;
-        public int ResolvedSpacingMd => _hasSpacingMd ? _spacingMd : ParentTheme?.ResolvedSpacingMd ?? _spacingMd;
-        public int ResolvedSpacingLg => _hasSpacingLg ? _spacingLg : ParentTheme?.ResolvedSpacingLg ?? _spacingLg;
-        public int ResolvedSpacingXl => _hasSpacingXl ? _spacingXl : ParentTheme?.ResolvedSpacingXl ?? _spacingXl;
-        public int ResolvedRadiusSm => _hasRadiusSm ? _radiusSm : ParentTheme?.ResolvedRadiusSm ?? _radiusSm;
-        public int ResolvedRadiusMd => _hasRadiusMd ? _radiusMd : ParentTheme?.ResolvedRadiusMd ?? _radiusMd;
-        public int ResolvedRadiusLg => _hasRadiusLg ? _radiusLg : ParentTheme?.ResolvedRadiusLg ?? _radiusLg;
+        // ── Public API ───────────────────────────────────────────────────────
 
         /// <summary>
-        /// Check if a property has a local override (not inherited).
+        /// Get any property by name, walking the parent chain if not set locally.
+        /// </summary>
+        public Variant GetProperty(string propertyName, Variant defaultValue = new())
+        {
+            if (_properties.TryGetValue(propertyName, out var value))
+                return value;
+            if (ParentTheme != null)
+                return ParentTheme.GetProperty(propertyName, defaultValue);
+            return defaultValue;
+        }
+
+        /// <summary>
+        /// Set any property by name.
+        /// </summary>
+        public void SetProperty(string propertyName, Variant value)
+        {
+            _properties[propertyName] = value;
+            _has[propertyName] = true;
+            EmitChanged();
+        }
+
+        /// <summary>
+        /// Check if this theme has a local override for a given property.
         /// </summary>
         public bool HasOverride(string propertyName)
         {
-            return propertyName switch
-            {
-                "Primary" => _hasPrimary,
-                "Secondary" => _hasSecondary,
-                "Accent" => _hasAccent,
-                "Error" => _hasError,
-                "Warning" => _hasWarning,
-                "Success" => _hasSuccess,
-                "Info" => _hasInfo,
-                "Background" => _hasBackground,
-                "Surface" => _hasSurface,
-                "OnPrimary" => _hasOnPrimary,
-                "OnSecondary" => _hasOnSecondary,
-                "OnSurface" => _hasOnSurface,
-                _ => false
-            };
+            return _has.ContainsKey(propertyName);
         }
+
+        /// <summary>
+        /// Remove a local override, reverting to parent/inherited value.
+        /// </summary>
+        public void RemoveOverride(string propertyName)
+        {
+            _properties.Remove(propertyName);
+            _has.Remove(propertyName);
+            EmitChanged();
+        }
+
+        /// <summary>
+        /// Get all property names that have local overrides.
+        /// </summary>
+        public Array GetLocalKeys()
+        {
+            return new Array(_has.Keys);
+        }
+
+        // ── Resolved getters (backward compatible, delegate to GetProperty) ──
+
+        public Color ResolvedPrimary => GetProperty("primary", new Color(0.3f, 0.5f, 0.9f)).AsColor();
+        public Color ResolvedSecondary => GetProperty("secondary", new Color(0.5f, 0.5f, 0.5f)).AsColor();
+        public Color ResolvedAccent => GetProperty("accent", new Color(0.9f, 0.6f, 0.2f)).AsColor();
+        public Color ResolvedError => GetProperty("error", new Color(0.9f, 0.3f, 0.3f)).AsColor();
+        public Color ResolvedWarning => GetProperty("warning", new Color(0.9f, 0.7f, 0.2f)).AsColor();
+        public Color ResolvedSuccess => GetProperty("success", new Color(0.3f, 0.8f, 0.4f)).AsColor();
+        public Color ResolvedInfo => GetProperty("info", new Color(0.4f, 0.7f, 0.9f)).AsColor();
+        public Color ResolvedBackground => GetProperty("background", new Color(0.1f, 0.1f, 0.12f)).AsColor();
+        public Color ResolvedSurface => GetProperty("surface", new Color(0.15f, 0.15f, 0.18f)).AsColor();
+        public Color ResolvedOnPrimary => GetProperty("on_primary", Colors.White).AsColor();
+        public Color ResolvedOnSecondary => GetProperty("on_secondary", Colors.White).AsColor();
+        public Color ResolvedOnSurface => GetProperty("on_surface", new Color(0.9f, 0.9f, 0.9f)).AsColor();
+        public Font ResolvedFontRegular => GetProperty("font_regular", new Variant()).AsGodotObject() as Font;
+        public Font ResolvedFontBold => GetProperty("font_bold", new Variant()).AsGodotObject() as Font;
+        public int ResolvedFontSizeTitle => GetProperty("font_size_title", 28).AsInt32();
+        public int ResolvedFontSizeHeading => GetProperty("font_size_heading", 18).AsInt32();
+        public int ResolvedFontSizeBody => GetProperty("font_size_body", 14).AsInt32();
+        public int ResolvedFontSizeSmall => GetProperty("font_size_small", 12).AsInt32();
+        public int ResolvedSpacingXs => GetProperty("spacing_xs", 4).AsInt32();
+        public int ResolvedSpacingSm => GetProperty("spacing_sm", 8).AsInt32();
+        public int ResolvedSpacingMd => GetProperty("spacing_md", 12).AsInt32();
+        public int ResolvedSpacingLg => GetProperty("spacing_lg", 20).AsInt32();
+        public int ResolvedSpacingXl => GetProperty("spacing_xl", 32).AsInt32();
+        public int ResolvedRadiusSm => GetProperty("radius_sm", 4).AsInt32();
+        public int ResolvedRadiusMd => GetProperty("radius_md", 8).AsInt32();
+        public int ResolvedRadiusLg => GetProperty("radius_lg", 12).AsInt32();
 
         /// <summary>
         /// Get resolved color by slot, walking parent chain.

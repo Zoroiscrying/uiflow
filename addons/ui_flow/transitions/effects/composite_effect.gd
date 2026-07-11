@@ -1,3 +1,4 @@
+@tool
 ## Composite effect — plays multiple effects simultaneously.
 ##
 ## Effects run in parallel. Each effect manages its own tween.

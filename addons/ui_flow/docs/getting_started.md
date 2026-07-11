@@ -42,9 +42,11 @@ Create `res://ui_flow_config.tres` (UIFlowConfig resource) to customize:
 class_name MyPage extends UIFlowPage
 
 func _on_opened(_data: Variant = null) -> void:
+    super._on_opened(_data)
     print("Page opened")
 
 func _on_closed() -> void:
+    super._on_closed()
     print("Page closed")
 ```
 
@@ -79,19 +81,21 @@ class_name GameHUD extends UIFlowPage
 var _bindings: Array = []
 
 func _on_opened(_data: Variant = null) -> void:
+    super._on_opened(_data)
     _bindings.append(
         UIFlow.bind_signal($HealthBar, "value", player_stats.health_changed)
     )
 
 func _on_hidden() -> void:
+    super._on_hidden()
     # Timer paused — game still runs but HUD doesn't update
-    pass
 
 func _on_shown() -> void:
+    super._on_shown()
     # Timer resumed
-    pass
 
 func _on_closed() -> void:
+    super._on_closed()
     for b in _bindings:
         b.unbind()
     _bindings.clear()
@@ -145,9 +149,11 @@ func _ready() -> void:
     process_mode = Node.PROCESS_MODE_ALWAYS  # Works while game is paused
 
 func _on_opened(_data = null) -> void:
+    super._on_opened(_data)
     get_tree().paused = true
 
 func _on_closed() -> void:
+    super._on_closed()
     get_tree().paused = false
 ```
 
@@ -181,9 +187,11 @@ Always unbind in `_on_closed`:
 var _bindings: Array[UIFlowBindUtils.UIFlowBinding] = []
 
 func _on_opened(_data = null) -> void:
+    super._on_opened(_data)
     _bindings.append(UIFlow.bind_signal($Bar, "value", signal))
 
 func _on_closed() -> void:
+    super._on_closed()
     for b in _bindings:
         b.unbind()
     _bindings.clear()

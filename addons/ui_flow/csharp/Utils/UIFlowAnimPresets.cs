@@ -1,4 +1,5 @@
 using Godot;
+using System;
 
 namespace UIFlow.Utils
 {
@@ -98,7 +99,7 @@ namespace UIFlow.Utils
                 if (child is Control ctrl)
                 {
                     ctrl.Modulate = new Color(ctrl.Modulate.R, ctrl.Modulate.G, ctrl.Modulate.B, 0f);
-                    seq.Add(ctrl, UIFlowTweenProp.Prop.ModulateA, 0f, 1f, duration).Delay(delay);
+                    seq.Add(ctrl, UIFlowTweenProp.ModulateA, 0f, 1f, duration).Delay(delay);
                 }
             }
             return seq;
@@ -114,7 +115,7 @@ namespace UIFlow.Utils
             {
                 if (child is Control ctrl)
                 {
-                    seq.Add(ctrl, UIFlowTweenProp.Prop.PositionY, ctrl.Position.Y + distance, ctrl.Position.Y, duration).Delay(delay);
+                    seq.Add(ctrl, UIFlowTweenProp.PositionY, ctrl.Position.Y + distance, ctrl.Position.Y, duration).Delay(delay);
                 }
             }
             return seq;

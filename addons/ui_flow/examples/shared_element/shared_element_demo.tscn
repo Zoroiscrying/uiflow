@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://bal5kwnbl2wwl"]
+
+[ext_resource type="Script" uid="uid://bl1timua3dqvv" path="res://addons/ui_flow/examples/shared_element/shared_element_demo.gd" id="1_demo"]
+
+[node name="SharedElementDemo" type="Control" unique_id=2109870276]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_demo")

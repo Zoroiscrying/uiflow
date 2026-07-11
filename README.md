@@ -6,11 +6,12 @@ A complete UI workflow framework for Godot 4.x — navigation, data binding, tra
 
 - **Stack-based Navigation** — Push/pop/replace pages with lifecycle callbacks
 - **Class-based Routing** — Reference pages by `class_name`, no strings needed
-- **Transition System** — Built-in presets (fade, slide, scale) + custom transitions
+- **Transition System** — Built-in presets (fade, slide, scale) + custom transitions; preview enter/exit directly in the editor
 - **Data Binding** — Reactive Resource + Signal pattern for data-driven UI
 - **Event Bus** — Decoupled cross-system communication via native Signals
-- **Components** — Toast, Confirm Dialog, Alert Dialog
-- **Dual Language** — GDScript (Free) + C# (Pro)
+- **Components** — Toast, Confirm Dialog, Alert Dialog, Inventory Grid (Pro)
+- **Dual Language** — GDScript core with C# wrapper bridge
+- **Editor Tools (Pro)** — Pro Hub with Theme Editor, Page Viewer, Navigation Flow Graph, and UIFlowDebugger
 
 ## Quick Start
 
@@ -25,10 +26,11 @@ A complete UI workflow framework for Godot 4.x — navigation, data binding, tra
 # home_page.gd
 class_name HomePage extends UIFlowPage
 
-func _on_enter(data: Dictionary = {}) -> void:
-    print("Home page entered!")
+func _on_opened(data: Variant = null) -> void:
+    super._on_opened(data)
+    print("Home page opened!")
 
-func _on_back_pressed() -> void:
+func _on_back() -> void:
     UIFlow.push(SettingsPage)
 ```
 
@@ -43,6 +45,15 @@ Place `HomePage.tscn` in `res://UIScene/` (configurable in Project Settings).
 func _ready() -> void:
     UIFlow.push(HomePage)
 ```
+
+## Pro Editor Tools
+
+When `addons/ui_flow_pro/` is enabled, the **UIFlow Pro Hub** dock provides:
+
+- **Page Viewer** — thumbnails of every `UIFlowPage` scene; right-click to open scene/script or re-render
+- **Navigation Flow Graph** — auto-scan static `push` / `replace` / `push_instance` calls and visualize page connections
+- **Theme Editor** — visual color palette editor with presets, live preview, and undo/redo
+- **UIFlowDebugger** — runtime navigation stack, page pool, event bus, and binding/subscription leak diagnostics
 
 ## Documentation
 

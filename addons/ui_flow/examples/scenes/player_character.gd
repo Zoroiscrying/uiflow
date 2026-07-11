@@ -96,7 +96,7 @@ func _shoot_at(target: Node3D, weapon: WeaponData) -> void:
 	if target == null or not is_instance_valid(target):
 		return
 
-	var attack_power: int = weapon.damage + (stats.attack if stats else 0)
+	var attack_power: int = weapon.damage + (int(stats.get_total_attack()) if stats else 0)
 	var gun_pos: Vector3 = _gun_tip.global_position if _gun_tip else global_position + Vector3(0, 1, 0)
 	var target_pos: Vector3 = target.global_position + Vector3(0, 0.8, 0)
 	var shoot_dir: Vector3 = (target_pos - gun_pos).normalized()

@@ -1,0 +1,92 @@
+[gd_scene format=3 uid="uid://dttm6pgsn7kj"]
+
+[ext_resource type="Script" uid="uid://fr5pfpfug360" path="res://addons/ui_flow/examples/free_demo/timeline_async_target_page.gd" id="1"]
+[ext_resource type="Script" uid="uid://cgkovp1vgqd0h" path="res://addons/ui_flow/transitions/effects/scale_effect.gd" id="2"]
+[ext_resource type="Script" uid="uid://4yi1g7kl0bx0" path="res://addons/ui_flow/transitions/effect_base.gd" id="2_4m50w"]
+[ext_resource type="Script" uid="uid://cp6jaxaivi1bx" path="res://addons/ui_flow/transitions/effects/timeline_effect.gd" id="3"]
+
+[sub_resource type="Resource" id="1"]
+script = ExtResource("2")
+visible_scale = Vector2(0.5, 0.5)
+duration = 0.25
+trans_type = 7
+
+[sub_resource type="Resource" id="2"]
+script = ExtResource("2")
+hidden_scale = Vector2(0.5, 0.5)
+duration = 0.25
+trans_type = 7
+
+[sub_resource type="Resource" id="3"]
+script = ExtResource("3")
+effects = Array[ExtResource("2_4m50w")]([SubResource("1"), SubResource("2")])
+step_delays = Array[float]([0.0, 0.0])
+step_wait_for_completion = Array[bool]([true, true])
+
+[node name="TimelineAsyncTargetPage" type="Control" unique_id=1510412670]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1")
+enter_effect = SubResource("3")
+exit_reverses_enter = true
+
+[node name="BG" type="ColorRect" parent="." unique_id=2067828687]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.137, 0.098, 0.176, 1)
+
+[node name="FeatureTag" type="Label" parent="." unique_id=2049460227]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -186.0
+offset_right = 186.0
+offset_bottom = 48.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(0.5, 0.8, 1, 0.5)
+theme_override_font_sizes/font_size = 32
+text = "UIFlowTimelineEffect | enter_effect configured in scene"
+horizontal_alignment = 1
+
+[node name="Center" type="VBoxContainer" parent="." unique_id=1945794100]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -160.0
+offset_top = -70.0
+offset_right = 160.0
+offset_bottom = 70.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="NameLabel" type="Label" parent="Center" unique_id=2089330085]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Target"
+horizontal_alignment = 1
+
+[node name="Hint" type="Label" parent="Center" unique_id=898990274]
+modulate = Color(1, 1, 1, 0.5)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "This page was pushed with its scene-configured timeline effect."
+horizontal_alignment = 1
+
+[node name="BackButton" type="Button" parent="Center" unique_id=1578138461]
+custom_minimum_size = Vector2(200, 40)
+layout_mode = 2
+text = "Back"

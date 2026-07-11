@@ -28,7 +28,7 @@ static func animate(
 		return null
 
 	var tween: Tween = node.create_tween()
-	node.set(prop_path, from)
+	node.set_indexed(prop_path, from)
 	tween.tween_property(node, prop_path, to, duration).set_ease(ease_type).set_trans(trans_type)
 	return tween
 
@@ -52,7 +52,7 @@ static func animate_raw(
 		return null
 
 	var tween: Tween = node.create_tween()
-	node.set(prop_path, from)
+	node.set_indexed(prop_path, from)
 	tween.tween_property(node, prop_path, to, duration).set_ease(ease_type).set_trans(trans_type)
 	return tween
 

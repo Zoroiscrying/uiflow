@@ -1,8 +1,9 @@
-## ItemSlot — a single inventory/equipment slot with drag-and-drop support.
+## UIFlow ItemSlot — a single inventory/equipment slot with drag-and-drop support.
 class_name UIFlowItemSlot extends PanelContainer
 
 ## Emitted when an item is dropped into this slot.
-signal item_dropped(item: ItemData, from_index: int)
+## [param old_item] is the previous item in this slot (null if empty).
+signal item_dropped(item: ItemData, from_index: int, old_item: ItemData)
 
 ## Emitted when an item is dragged from this slot.
 signal item_dragged(item: ItemData, slot_index: int)
@@ -81,7 +82,7 @@ func _setup_drag_drop() -> void:
 		if data is ItemData:
 			if accept_type.is_empty():
 				return true
-			return data.type == accept_type or data.equip_slot == accept_type
+			return data.equip_slot == accept_type
 		return false
 	add_child(_drop_target)
 	_drop_target.on_drop.connect(_on_item_drop)
@@ -116,7 +117,13 @@ func _update_display() -> void:
 		_filled_style.border_color = ItemData.get_rarity_color(_item.rarity)
 		_filled_style.set_border_width_all(2)
 		add_theme_stylebox_override("panel", _filled_style)
-		_count_label.text = ""
+		if _item.icon == null:
+			# Show first letter as fallback when no icon
+			_count_label.text = _item.item_name.left(1)
+			_count_label.add_theme_color_override("font_color", ItemData.get_rarity_color(_item.rarity))
+		else:
+			_count_label.text = ""
+			_count_label.remove_theme_color_override("font_color")
 	else:
 		_icon.texture = null
 		_rarity_border.color = Color.TRANSPARENT
@@ -128,13 +135,22 @@ func _on_item_drop(data: Variant) -> void:
 	if data is ItemData:
 		var old_item := _item
 		set_item(data)
-		if old_item:
-			# Return old item to source
-			pass
-		item_dropped.emit(data, -1)
+		var from := UIFlowDragDrop.drag_source_index
+		UIFlowDragDrop.drag_source_index = -1
+		item_dropped.emit(data, from, old_item)
 
 
 func _on_drag_dropped(target) -> void:
+	# If dropped on self, don't clear _item (inventory_grid will handle via items_changed)
+	if target == _drop_target:
+		UIFlowDragDrop.drag_source_index = slot_index
+		item_dragged.emit(_item, slot_index)
+		return
 	var dragged_item := _item
-	set_item(null)
+	# Only clear the visual state, do NOT clear _drag_drop.data (drag system still needs it)
+	_item = null
+	_drag_drop.drag_icon = null
+	_drag_drop.visible = false
+	_update_display()
+	UIFlowDragDrop.drag_source_index = slot_index
 	item_dragged.emit(dragged_item, slot_index)

@@ -6,7 +6,6 @@ namespace UIFlow.Transitions;
 /// <summary>
 /// Sequenced effect — plays multiple effects one after another.
 /// </summary>
-[GlobalClass]
 public partial class UIFlowSequencedEffect : UIFlowTransitionEffect
 {
     [Export] public UIFlowTransitionEffect[] Effects { get; set; } = Array.Empty<UIFlowTransitionEffect>();
@@ -33,7 +32,7 @@ public partial class UIFlowSequencedEffect : UIFlowTransitionEffect
         var effect = Effects[index];
         if (effect == null) { Advance(node, callback, index, isEnter); return; }
 
-        Callable next = new Callable(new Action(() =>
+        Callable next = Callable.From(new Action(() =>
         {
             if (IsInstanceValid(node))
                 Advance(node, callback, index, isEnter);

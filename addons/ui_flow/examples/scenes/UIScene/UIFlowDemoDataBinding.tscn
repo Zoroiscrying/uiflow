@@ -1,8 +1,8 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene format=3 uid="uid://c3jg1ltnkgg1d"]
 
-[ext_resource type="Script" path="res://addons/ui_flow/examples/free_demo/demo_data_binding.gd" id="1"]
+[ext_resource type="Script" uid="uid://b0m7lclh7tbs5" path="res://addons/ui_flow/examples/free_demo/demo_data_binding.gd" id="1"]
 
-[node name="UIFlowDemoDataBinding" type="Control"]
+[node name="UIFlowDemoDataBinding" type="Control" unique_id=852624218]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -11,7 +11,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1")
 
-[node name="Panel" type="PanelContainer" parent="."]
+[node name="Panel" type="PanelContainer" parent="." unique_id=1187332683]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -25,94 +25,92 @@ offset_bottom = 250.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VBox" type="VBoxContainer" parent="Panel"]
+[node name="VBox" type="VBoxContainer" parent="Panel" unique_id=960269754]
 layout_mode = 2
 theme_override_constants/separation = 12
 alignment = 1
 
-[node name="Title" type="Label" parent="Panel/VBox"]
+[node name="Title" type="Label" parent="Panel/VBox" unique_id=777145124]
 layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "Data Binding Demo"
 horizontal_alignment = 1
 
-[node name="Desc" type="Label" parent="Panel/VBox"]
+[node name="Desc" type="Label" parent="Panel/VBox" unique_id=1237178242]
+modulate = Color(1, 1, 1, 0.5)
 layout_mode = 2
 theme_override_font_sizes/font_size = 13
 text = "Signals auto-update UI. Try the buttons!"
 horizontal_alignment = 1
-modulate = Color(1, 1, 1, 0.5)
 
-[node name="Sep" type="HSeparator" parent="Panel/VBox"]
+[node name="Sep" type="HSeparator" parent="Panel/VBox" unique_id=752167488]
 layout_mode = 2
 
-[node name="ScoreLabel" type="Label" parent="Panel/VBox"]
+[node name="ScoreLabel" type="Label" parent="Panel/VBox" unique_id=885429932]
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
 text = "Score: 0"
 horizontal_alignment = 1
 
-[node name="ScoreBar" type="ProgressBar" parent="Panel/VBox"]
-layout_mode = 2
+[node name="ScoreBar" type="ProgressBar" parent="Panel/VBox" unique_id=910682448]
 custom_minimum_size = Vector2(300, 20)
-max_value = 100.0
-value = 0.0
+layout_mode = 2
 
-[node name="LivesLabel" type="Label" parent="Panel/VBox"]
+[node name="LivesLabel" type="Label" parent="Panel/VBox" unique_id=1090338680]
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
 text = "Lives: 3"
 horizontal_alignment = 1
 
-[node name="ComboLabel" type="Label" parent="Panel/VBox"]
+[node name="ComboLabel" type="Label" parent="Panel/VBox" unique_id=742247842]
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
 text = "Combo: 0x"
 horizontal_alignment = 1
 
-[node name="BonusLabel" type="Label" parent="Panel/VBox"]
+[node name="BonusLabel" type="Label" parent="Panel/VBox" unique_id=1404724349]
 visible = false
+modulate = Color(1, 0.8, 0, 1)
 layout_mode = 2
 theme_override_font_sizes/font_size = 14
 text = "BONUS ACTIVE!"
 horizontal_alignment = 1
-modulate = Color(1, 0.8, 0, 1)
 
-[node name="DangerPanel" type="PanelContainer" parent="Panel/VBox"]
+[node name="DangerPanel" type="PanelContainer" parent="Panel/VBox" unique_id=687818204]
 visible = false
 layout_mode = 2
 
-[node name="DangerLabel" type="Label" parent="Panel/VBox/DangerPanel"]
+[node name="DangerLabel" type="Label" parent="Panel/VBox/DangerPanel" unique_id=1680184296]
+modulate = Color(1, 0.2, 0.2, 1)
 layout_mode = 2
 theme_override_font_sizes/font_size = 14
 text = "LOW LIVES!"
 horizontal_alignment = 1
-modulate = Color(1, 0.2, 0.2, 1)
 
-[node name="Sep2" type="HSeparator" parent="Panel/VBox"]
+[node name="Sep2" type="HSeparator" parent="Panel/VBox" unique_id=1877546263]
 layout_mode = 2
 
-[node name="Buttons" type="HBoxContainer" parent="Panel/VBox"]
+[node name="Buttons" type="HBoxContainer" parent="Panel/VBox" unique_id=491011255]
 layout_mode = 2
 theme_override_constants/separation = 12
 alignment = 1
 
-[node name="AddScore" type="Button" parent="Panel/VBox/Buttons"]
-layout_mode = 2
+[node name="AddScore" type="Button" parent="Panel/VBox/Buttons" unique_id=473351856]
 custom_minimum_size = Vector2(120, 40)
+layout_mode = 2
 text = "Score +10"
 
-[node name="LoseLife" type="Button" parent="Panel/VBox/Buttons"]
-layout_mode = 2
+[node name="LoseLife" type="Button" parent="Panel/VBox/Buttons" unique_id=623645651]
 custom_minimum_size = Vector2(120, 40)
+layout_mode = 2
 text = "Lose Life"
 
-[node name="AddCombo" type="Button" parent="Panel/VBox/Buttons"]
-layout_mode = 2
+[node name="AddCombo" type="Button" parent="Panel/VBox/Buttons" unique_id=1378063676]
 custom_minimum_size = Vector2(120, 40)
+layout_mode = 2
 text = "Combo +1"
 
-[node name="BackButton" type="Button" parent="Panel/VBox"]
-layout_mode = 2
+[node name="BackButton" type="Button" parent="Panel/VBox" unique_id=1759586266]
 custom_minimum_size = Vector2(200, 36)
+layout_mode = 2
 text = "Back"

@@ -1,22 +1,37 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using UIFlow.Data;
+using UIFlow.Resources;
 using UIFlow.Utils;
 
 namespace UIFlow.Core
 {
     /// <summary>
-    /// UIFlow autoload singleton — main API entry point.
+    /// UIFlow C# thin wrapper — delegates to the GDScript autoload when available.
+    /// 
+    /// If the GDScript UIFlow autoload is present (registered in ProjectSettings),
+    /// all calls are forwarded to it. Otherwise, falls back to creating its own
+    /// internal systems for C#-only projects.
     /// </summary>
     public partial class UIFlow : Node
     {
         public static UIFlow Instance { get; private set; }
+
+        /// <summary>Reference to the GDScript autoload (if available).</summary>
+        private Node _gdAutoload;
+
+        /// <summary>Whether we are delegating to the GDScript autoload.</summary>
+        private bool _isBridging => _gdAutoload != null && IsInstanceValid(_gdAutoload);
+
+        // ── Own systems (fallback when no GDScript autoload) ───────────────────────
 
         public UIFlowNavigator Router { get; private set; }
         public UIFlowSceneResolver Scenes { get; private set; }
         public UIFlowThemeHelper ThemeHelper { get; private set; }
         public UIFlowInputHandler FlowInput { get; private set; }
         public UIFlowConfig Config { get; private set; }
+        public UIFlowEventBus EventBus { get; private set; }
 
         public event Action<Script> PageOpened;
         public event Action<Script> PageClosed;
@@ -25,22 +40,49 @@ namespace UIFlow.Core
         private Control _customUiRoot;
         private UIFlowGuard _guard;
 
+        /// <summary>
+        /// Maps C# guard delegates to the Godot Callables forwarded to the GDScript autoload.
+        /// Needed so RemoveGuard / RemovePageGuard can unregister the exact callable.
+        /// </summary>
+        private static readonly Dictionary<object, Callable> _guardForwarders = new();
+
         private const string ConfigPath = "res://ui_flow_config.tres";
 
         public override void _Ready()
         {
             Instance = this;
+
+            // Try to find the GDScript autoload
+            _gdAutoload = Engine.GetSingleton("UIFlow") as Node;
+            if (_gdAutoload == this)
+                _gdAutoload = null; // We are the singleton — no GDScript autoload
+
+            if (_isBridging)
+            {
+                // Bridge mode: connect to GDScript autoload signals.
+                // Fallback systems are not needed because all public API calls
+                // are forwarded to the GDScript autoload.
+                _gdAutoload.Connect("page_opened", Callable.From((Script c) => PageOpened?.Invoke(c)));
+                _gdAutoload.Connect("page_closed", Callable.From((Script c) => PageClosed?.Invoke(c)));
+                return;
+            }
+
+            // Fallback: create own systems (C#-only project)
+            _CreateFallbackSystems();
+        }
+
+        private void _CreateFallbackSystems()
+        {
             _LoadConfig();
 
             Scenes = new UIFlowSceneResolver();
             ThemeHelper = new UIFlowThemeHelper();
+            EventBus = new UIFlowEventBus();
             _guard = new UIFlowGuard();
 
-            // Apply config to scene resolver
             if (Config != null && !string.IsNullOrEmpty(Config.SceneDirectory))
                 Scenes.AddSceneDir(Config.SceneDirectory);
 
-            // Apply default theme from config
             if (Config != null && !string.IsNullOrEmpty(Config.DefaultThemeName))
                 ThemeHelper.ApplyBuiltin(Config.DefaultThemeName);
 
@@ -75,7 +117,6 @@ namespace UIFlow.Core
                 Config = GD.Load<UIFlowConfig>(ConfigPath);
             Config ??= new UIFlowConfig();
 
-            // Override from ProjectSettings if present
             if (ProjectSettings.HasSetting("ui_flow/scene_directory"))
             {
                 var dir = (string)ProjectSettings.GetSetting("ui_flow/scene_directory");
@@ -90,83 +131,272 @@ namespace UIFlow.Core
                 Config.DefaultThemeName = (string)ProjectSettings.GetSetting("ui_flow/default_theme_name");
         }
 
-        // ── Router shortcuts ─────────────────────────────────────────────────────
+        // ── Bridge helpers ───────────────────────────────────────────────────────────
 
-        public static Control Push<T>(Dictionary data = null, UIFlowTheme theme = null) where T : UIFlowPage
-            => Instance?.Router.Push(typeof(T).GetGodotScript(), data, theme);
+        private Variant CallGD(string method, params Variant[] args)
+        {
+            if (_isBridging)
+                return _gdAutoload.Callv(method, new Godot.Collections.Array(args));
+            return default;
+        }
 
-        public static Control Push(Script pageClass, Dictionary data = null, UIFlowTheme theme = null)
-            => Instance?.Router.Push(pageClass, data, theme);
+        private T CallGD<T>(string method, params Variant[] args) where T : GodotObject
+        {
+            var result = CallGD(method, args);
+            if (result.VariantType == Variant.Type.Nil) return null;
+            return result.AsGodotObject() as T;
+        }
 
-        public static Control PushInstance(Control instance, Dictionary data = null)
-            => Instance?.Router.PushInstance(instance, data);
+        // ── Router shortcuts ───────────────────────────────────────────────────────
 
-        public static void Pop() => Instance?.Router.Pop();
+        /// <summary>
+        /// Push a GDScript page by its script reference.
+        /// </summary>
+        public static Control Push(Script pageClass, Godot.Collections.Dictionary data = null, UIFlowTheme theme = null)
+        {
+            if (Instance == null) return null;
+            if (Instance._isBridging && pageClass is GDScript)
+            {
+                var result = Instance.CallGD("push", pageClass, data ?? new Godot.Collections.Dictionary(), theme ?? new Variant());
+                return result.AsGodotObject() as Control;
+            }
+            return Instance?.Router?.Push(pageClass, data, theme);
+        }
 
-        public static Control Replace<T>(Dictionary data = null, UIFlowTheme theme = null) where T : UIFlowPage
-            => Instance?.Router.Replace(typeof(T).GetGodotScript(), data, theme);
+        /// <summary>
+        /// Push a pre-instantiated page instance (works for both GDScript and C# pages).
+        /// </summary>
+        public static Control PushInstance(Control instance, Godot.Collections.Dictionary data = null)
+        {
+            if (Instance == null) return null;
+            if (Instance._isBridging)
+            {
+                var result = Instance.CallGD("push_instance", instance, data ?? new Godot.Collections.Dictionary());
+                return result.AsGodotObject() as Control;
+            }
+            return Instance?.Router?.PushInstance(instance, data);
+        }
 
-        public static Control Replace(Script pageClass, Dictionary data = null, UIFlowTheme theme = null)
-            => Instance?.Router.Replace(pageClass, data, theme);
+        public static void Pop()
+        {
+            if (Instance == null) return;
+            if (Instance._isBridging)
+                Instance.CallGD("pop");
+            else
+                Instance?.Router?.Pop();
+        }
 
-        public static void PopToRoot() => Instance?.Router.PopToRoot();
+        /// <summary>
+        /// Replace the top page with a GDScript page by its script reference.
+        /// </summary>
+        public static Control Replace(Script pageClass, Godot.Collections.Dictionary data = null, UIFlowTheme theme = null)
+        {
+            if (Instance == null) return null;
+            if (Instance._isBridging && pageClass is GDScript)
+            {
+                var result = Instance.CallGD("replace", pageClass, data ?? new Godot.Collections.Dictionary(), theme ?? new Variant());
+                return result.AsGodotObject() as Control;
+            }
+            return Instance?.Router?.Replace(pageClass, data, theme);
+        }
 
-        public static void Close(Script pageClass) => Instance?.Router.Close(pageClass);
+        public static void PopToRoot()
+        {
+            if (Instance == null) return;
+            if (Instance._isBridging)
+                Instance.CallGD("pop_to_root");
+            else
+                Instance?.Router?.PopToRoot();
+        }
 
-        public static bool IsOnTop(Script pageClass) => Instance?.Router.IsOnTop(pageClass) ?? false;
+        public static void Close(Script pageClass)
+        {
+            if (Instance == null) return;
+            if (Instance._isBridging)
+                Instance.CallGD("close", pageClass);
+            else
+                Instance?.Router?.Close(pageClass);
+        }
+
+        public static bool IsOnTop(Script pageClass)
+        {
+            if (Instance == null) return false;
+            if (Instance._isBridging)
+                return Instance.CallGD("is_on_top", pageClass).AsBool();
+            return Instance?.Router?.IsOnTop(pageClass) ?? false;
+        }
 
         public static T CurrentPage<T>() where T : UIFlowPage
-            => Instance?.Router.CurrentPageInstance() as T;
+            => Instance?.Router?.CurrentPageInstance() as T;
 
-        public static T GetPage<T>() where T : UIFlowPage
-            => Instance?.Router.GetPage(typeof(T).GetGodotScript()) as T;
-
-        public static bool HasPage<T>() where T : UIFlowPage
-            => Instance?.Router.HasPage(typeof(T).GetGodotScript()) ?? false;
-
-        public static int StackDepth() => Instance?.Router.Depth() ?? 0;
-
-        public static StringName[] NavigationPath() => Instance?.Router.NavigationPath();
-
-        // ── Async ────────────────────────────────────────────────────────────────
-
-        public static async System.Threading.Tasks.Task<Control> PushAsync<T>(Dictionary data = null, UIFlowTheme theme = null) where T : UIFlowPage
+        public static Control GetPage(Script pageClass)
         {
-            var instance = Push<T>(data, theme);
+            if (Instance == null) return null;
+            if (Instance._isBridging)
+                return Instance.CallGD("get_page", pageClass).AsGodotObject() as Control;
+            return Instance?.Router?.GetPage(pageClass);
+        }
+
+        public static bool HasPage(Script pageClass)
+        {
+            if (Instance == null) return false;
+            if (Instance._isBridging)
+                return Instance.CallGD("has_page", pageClass).AsBool();
+            return Instance?.Router?.HasPage(pageClass) ?? false;
+        }
+
+        public static int StackDepth()
+        {
+            if (Instance == null) return 0;
+            if (Instance._isBridging)
+                return Instance.CallGD("stack_depth").AsInt32();
+            return Instance?.Router?.Depth() ?? 0;
+        }
+
+        public static StringName[] NavigationPath()
+        {
+            if (Instance == null) return System.Array.Empty<StringName>();
+            if (Instance._isBridging)
+            {
+                var result = Instance.CallGD("navigation_path");
+                if (result.VariantType == Variant.Type.Array)
+                {
+                    var arr = result.AsGodotArray();
+                    var path = new StringName[arr.Count];
+                    for (int i = 0; i < arr.Count; i++)
+                        path[i] = arr[i].AsStringName();
+                    return path;
+                }
+                return System.Array.Empty<StringName>();
+            }
+            return Instance?.Router?.NavigationPath() ?? System.Array.Empty<StringName>();
+        }
+
+        // ── Async ──────────────────────────────────────────────────────────────────
+
+        public static async System.Threading.Tasks.Task<Control> PushAsync(Script pageClass, Godot.Collections.Dictionary data = null, UIFlowTheme theme = null)
+        {
+            var tcs = new System.Threading.Tasks.TaskCompletionSource<object>();
+            Action<Script> handler = _ => tcs.TrySetResult(null);
             if (Instance != null)
-                await Instance.ToSignal(Instance, SignalName.PageOpened);
+                Instance.PageOpened += handler;
+
+            Control instance;
+            if (Instance?._isBridging == true && pageClass is GDScript)
+            {
+                instance = Push(pageClass, data, theme);
+            }
+            else
+            {
+                instance = await (Instance?.Router?.PushAsync(pageClass, data, theme) ?? System.Threading.Tasks.Task.FromResult<Control>(null));
+            }
+
+            if (Instance != null)
+            {
+                await tcs.Task;
+                Instance.PageOpened -= handler;
+            }
             return instance;
         }
 
         public static async System.Threading.Tasks.Task PopAsync()
         {
+            var tcs = new System.Threading.Tasks.TaskCompletionSource<object>();
+            Action<Script> handler = _ => tcs.TrySetResult(null);
+            if (Instance != null)
+                Instance.PageClosed += handler;
             Pop();
             if (Instance != null)
-                await Instance.ToSignal(Instance, SignalName.PageClosed);
+            {
+                await tcs.Task;
+                Instance.PageClosed -= handler;
+            }
         }
 
-        // ── Guard shortcuts ──────────────────────────────────────────────────────
+        // ── Guard shortcuts ────────────────────────────────────────────────────────
 
         public static void AddGuard(Func<Script, Script, object, bool> guard)
-            => Instance?._guard.AddGuard(guard);
+        {
+            if (Instance == null) return;
+            if (Instance._isBridging)
+            {
+                var callable = Callable.From((Variant fromPage, Variant toPage, Variant data) =>
+                    guard(fromPage.AsGodotObject() as Script, toPage.AsGodotObject() as Script, data.Obj));
+                _guardForwarders[guard] = callable;
+                Instance.CallGD("add_guard", callable);
+                return;
+            }
+            Instance._guard?.AddGuard(guard);
+        }
 
         public static void RemoveGuard(Func<Script, Script, object, bool> guard)
-            => Instance?._guard.RemoveGuard(guard);
+        {
+            if (Instance == null) return;
+            if (Instance._isBridging)
+            {
+                if (_guardForwarders.TryGetValue(guard, out var callable))
+                {
+                    Instance.CallGD("remove_guard", callable);
+                    _guardForwarders.Remove(guard);
+                }
+                return;
+            }
+            Instance._guard?.RemoveGuard(guard);
+        }
 
         public static void AddPageGuard(Script pageClass, Func<Script, object, bool> guard)
-            => Instance?._guard.AddPageGuard(pageClass, guard);
+        {
+            if (Instance == null) return;
+            if (Instance._isBridging)
+            {
+                var callable = Callable.From((Variant fromPage, Variant data) =>
+                    guard(fromPage.AsGodotObject() as Script, data.Obj));
+                _guardForwarders[guard] = callable;
+                Instance.CallGD("add_page_guard", pageClass, callable);
+                return;
+            }
+            Instance._guard?.AddPageGuard(pageClass, guard);
+        }
 
         public static void RemovePageGuard(Script pageClass, Func<Script, object, bool> guard)
-            => Instance?._guard.RemovePageGuard(pageClass, guard);
+        {
+            if (Instance == null) return;
+            if (Instance._isBridging)
+            {
+                if (_guardForwarders.TryGetValue(guard, out var callable))
+                {
+                    Instance.CallGD("remove_page_guard", pageClass, callable);
+                    _guardForwarders.Remove(guard);
+                }
+                return;
+            }
+            Instance._guard?.RemovePageGuard(pageClass, guard);
+        }
 
-        public static void ClearGuards() => Instance?._guard.Clear();
+        public static void ClearGuards()
+        {
+            if (Instance == null) return;
+            if (Instance._isBridging)
+            {
+                Instance.CallGD("clear_guards");
+                _guardForwarders.Clear();
+                return;
+            }
+            Instance._guard?.Clear();
+        }
 
-        // ── Scene registration ───────────────────────────────────────────────────
+        // ── Scene registration ─────────────────────────────────────────────────────
 
         public static void RegisterScene(Script pageClass, PackedScene scene)
-            => Instance?.Scenes.RegisterScene(pageClass, scene);
+        {
+            if (Instance == null) return;
+            if (Instance._isBridging)
+                Instance.CallGD("register_scene", pageClass, scene);
+            else
+                Instance?.Scenes?.RegisterScene(pageClass, scene);
+        }
 
-        // ── Animation ────────────────────────────────────────────────────────────
+        // ── Animation ──────────────────────────────────────────────────────────────
 
         public static Tween Animate(Node node, UIFlowTweenProp prop, Variant from, Variant to,
             float duration = 0.3f, Tween.EaseType ease = Tween.EaseType.InOut,
@@ -180,7 +410,6 @@ namespace UIFlow.Core
 
         public static UIFlowSequencer Sequencer() => new();
 
-        // Animation presets
         public static Tween AnimHoverEnter(Control node) => UIFlowAnimPresets.HoverScale(node);
         public static Tween AnimHoverExit(Control node) => UIFlowAnimPresets.HoverReset(node);
         public static Tween AnimPressDown(Control node) => UIFlowAnimPresets.PressDown(node);
@@ -191,7 +420,7 @@ namespace UIFlow.Core
         public static Tween AnimFadeOut(Control node, float duration = 0.2f) => UIFlowAnimPresets.FadeOut(node, duration);
         public static UIFlowSequencer AnimStaggerFade(Node parent) => UIFlowAnimPresets.StaggerFadeIn(parent);
 
-        // ── Binding ──────────────────────────────────────────────────────────────
+        // ── Binding ────────────────────────────────────────────────────────────────
 
         public static UIFlowBindUtils.UIFlowBinding BindSignal(Node node, StringName prop, Signal signal)
             => UIFlowBindUtils.BindSignal(node, prop, signal);
@@ -205,61 +434,107 @@ namespace UIFlow.Core
         public static UIFlowBindUtils.UIFlowBinding BindFormat(Node node, StringName prop, Signal signal, string format)
             => UIFlowBindUtils.BindFormat(node, prop, signal, format);
 
-        public static UIFlowBindUtils.UIFlowBinding BindSlider(Range slider, Signal signal, Action<float> setter)
+        public static UIFlowBindUtils.UIFlowBinding BindSlider(Godot.Range slider, Signal signal, Action<float> setter)
             => UIFlowBindUtils.BindSlider(slider, signal, setter);
 
-        /// <summary>
-        /// Bind an array signal to a UI template list. Optionally provide a key function for stable item identity.
-        /// </summary>
         public static UIFlowListBinder BindList(Node container, Signal signal, PackedScene template, Action<Control, object, int> binder, Func<object, int, object> keyFunc = null)
             => new UIFlowListBinder(container, signal, template, binder, keyFunc);
 
-        // ── Theme ────────────────────────────────────────────────────────────────
+        // ── Theme ──────────────────────────────────────────────────────────────────
 
-        public static UIFlowTheme GetTheme() => Instance?.ThemeHelper.GetCurrent();
+        public static UIFlowTheme GetTheme()
+        {
+            if (Instance == null) return null;
+            if (Instance._isBridging)
+            {
+                var result = Instance.CallGD("get_theme");
+                return result.AsGodotObject() as UIFlowTheme;
+            }
+            return Instance?.ThemeHelper?.GetCurrent();
+        }
 
         public static void ApplyTheme(UIFlowTheme theme)
         {
-            Instance?.ThemeHelper.ApplyTheme(theme);
-            Instance?.ApplyThemeToContainer();
+            if (Instance == null) return;
+            if (Instance._isBridging)
+                Instance.CallGD("apply_theme", theme);
+            else
+            {
+                Instance?.ThemeHelper?.ApplyTheme(theme);
+                Instance?.ApplyThemeToContainer();
+            }
         }
 
         public static void ApplyBuiltinTheme(string name)
         {
-            Instance?.ThemeHelper.ApplyBuiltin(name);
-            Instance?.ApplyThemeToContainer();
+            if (Instance == null) return;
+            if (Instance._isBridging)
+                Instance.CallGD("apply_builtin_theme", name);
+            else
+            {
+                Instance?.ThemeHelper?.ApplyBuiltin(name);
+                Instance?.ApplyThemeToContainer();
+            }
         }
 
         public static Color GetColor(UIFlowTheme.ColorSlot slot)
-            => Instance?.ThemeHelper.GetColor(slot) ?? Colors.White;
-
-        public static void SetColor(UIFlowTheme.ColorSlot slot, Color color)
-            => Instance?.ThemeHelper.SetColor(slot, color);
-
-        public static int GetFontSize(string sizeName)
-            => Instance?.ThemeHelper.GetFontSize(sizeName) ?? 14;
-
-        public static int GetSpacing(string sizeName)
-            => Instance?.ThemeHelper.GetSpacing(sizeName) ?? 8;
-
-        public static int GetRadius(string sizeName)
-            => Instance?.ThemeHelper.GetRadius(sizeName) ?? 4;
-
-        // ── Input ────────────────────────────────────────────────────────────────
-
-        public static void SetDefaultFocus(Control node)
         {
-            node?.GrabFocus();
+            if (Instance == null) return Colors.White;
+            if (Instance._isBridging)
+                return Instance.CallGD("get_color", (int)slot).AsColor();
+            return Instance?.ThemeHelper?.GetColor(slot) ?? Colors.White;
         }
 
-        // ── UI Root ──────────────────────────────────────────────────────────────
+        public static void SetColor(UIFlowTheme.ColorSlot slot, Color color)
+        {
+            if (Instance == null) return;
+            if (Instance._isBridging)
+                Instance.CallGD("set_color", (int)slot, color);
+            else
+                Instance?.ThemeHelper?.SetColor(slot, color);
+        }
+
+        public static int GetFontSize(string sizeName)
+        {
+            if (Instance == null) return 14;
+            if (Instance._isBridging)
+                return Instance.CallGD("get_font_size", sizeName).AsInt32();
+            return Instance?.ThemeHelper?.GetFontSize(sizeName) ?? 14;
+        }
+
+        public static int GetSpacing(string sizeName)
+        {
+            if (Instance == null) return 8;
+            if (Instance._isBridging)
+                return Instance.CallGD("get_spacing", sizeName).AsInt32();
+            return Instance?.ThemeHelper?.GetSpacing(sizeName) ?? 8;
+        }
+
+        public static int GetRadius(string sizeName)
+        {
+            if (Instance == null) return 4;
+            if (Instance._isBridging)
+                return Instance.CallGD("get_radius", sizeName).AsInt32();
+            return Instance?.ThemeHelper?.GetRadius(sizeName) ?? 4;
+        }
+
+        // ── Input ────────────────────────────────────────────────────────────────────
+
+        public static void SetDefaultFocus(Control node) => node?.GrabFocus();
+
+        // ── UI Root ──────────────────────────────────────────────────────────────────
 
         public static void SetUiRoot(Control root)
         {
             if (Instance == null) return;
+            if (Instance._isBridging)
+            {
+                Instance.CallGD("set_ui_root", root);
+                return;
+            }
             Instance._customUiRoot = root;
             Instance._pageContainer = root;
-            Instance.Router.Setup(Instance._pageContainer, Instance.Scenes);
+            Instance.Router?.Setup(Instance._pageContainer, Instance.Scenes, Instance._guard);
             Instance.ApplyThemeToContainer();
         }
 
@@ -269,6 +544,59 @@ namespace UIFlow.Core
             var theme = ThemeHelper?.GetCurrent();
             if (theme == null) return;
             _pageContainer.Theme = theme.BuildGodotTheme();
+        }
+
+        // ── Event Bus ──────────────────────────────────────────────────────────────
+
+        public static void Publish(string topic, Variant data = new())
+            => Instance?.EventBus?.Publish(topic, data);
+
+        public static void PublishSticky(string topic, Variant data = new())
+            => Instance?.EventBus?.PublishSticky(topic, data);
+
+        public static int Subscribe(string topic, Callable callback, GodotObject subscriber = null, bool once = false)
+            => Instance?.EventBus?.Subscribe(topic, callback, subscriber, once) ?? -1;
+
+        public static int SubscribeOnce(string topic, Callable callback, GodotObject subscriber = null)
+            => Instance?.EventBus?.SubscribeOnce(topic, callback, subscriber) ?? -1;
+
+        public static void Unsubscribe(int token)
+            => Instance?.EventBus?.Unsubscribe(token);
+
+        public static Variant GetSticky(string topic)
+            => Instance?.EventBus?.GetSticky(topic) ?? new Variant();
+
+        // ── Object Pool ──────────────────────────────────────────────────────────
+
+        public static void WarmUp(params Script[] pageClasses)
+        {
+            if (Instance == null) return;
+            if (Instance._isBridging)
+                Instance.CallGD("warm_up", new Godot.Collections.Array(pageClasses));
+            else
+                Instance?.Scenes?.WarmUp(pageClasses);
+        }
+
+        public static async System.Threading.Tasks.Task WarmUpAsync(params Script[] pageClasses)
+        {
+            if (Instance == null) return;
+            if (Instance._isBridging)
+            {
+                // GDScript warm_up_async is a coroutine; call it to start async loading.
+                Instance.CallGD("warm_up_async", new Godot.Collections.Array(pageClasses));
+                return;
+            }
+            if (Instance?.Scenes != null)
+                await Instance.Scenes.WarmUpAsync(pageClasses);
+        }
+
+        public static void ClearPool()
+        {
+            if (Instance == null) return;
+            if (Instance._isBridging)
+                Instance.CallGD("clear_pool");
+            else
+                Instance?.Scenes?.ClearPool();
         }
     }
 }

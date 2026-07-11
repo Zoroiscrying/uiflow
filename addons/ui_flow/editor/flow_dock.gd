@@ -4,7 +4,6 @@ extends Control
 
 var _tree: Tree
 var _info_label: Label
-var _preview_container: Control
 var _scene_dirs: Array[String] = []
 
 
@@ -67,36 +66,6 @@ func _ready() -> void:
 	_tree.item_activated.connect(_on_item_activated)
 
 	vbox.add_child(HSeparator.new())
-
-	# Transition preview section
-	var preview_label := Label.new()
-	preview_label.text = "Transition Preview"
-	preview_label.add_theme_font_size_override("font_size", 13)
-	vbox.add_child(preview_label)
-
-	var preview_hbox := HBoxContainer.new()
-	preview_hbox.add_theme_constant_override("separation", 8)
-	vbox.add_child(preview_hbox)
-
-	var preview_btn_fade := Button.new()
-	preview_btn_fade.text = "Fade"
-	preview_btn_fade.pressed.connect(func(): _preview_transition("fade"))
-	preview_hbox.add_child(preview_btn_fade)
-
-	var preview_btn_slide := Button.new()
-	preview_btn_slide.text = "Slide"
-	preview_btn_slide.pressed.connect(func(): _preview_transition("slide"))
-	preview_hbox.add_child(preview_btn_slide)
-
-	var preview_btn_scale := Button.new()
-	preview_btn_scale.text = "Scale"
-	preview_btn_scale.pressed.connect(func(): _preview_transition("scale"))
-	preview_hbox.add_child(preview_btn_scale)
-
-	# Preview area
-	_preview_container = Control.new()
-	_preview_container.custom_minimum_size = Vector2(0, 100)
-	vbox.add_child(_preview_container)
 
 	# Load scene dirs from settings
 	_scene_dirs.clear()
@@ -257,40 +226,3 @@ func _get_scene_dir_setting() -> String:
 	return "res://UIScene/"
 
 
-func _preview_transition(type: String) -> void:
-	# Clear previous preview
-	for child in _preview_container.get_children():
-		child.queue_free()
-
-	# Create preview panel
-	var panel := PanelContainer.new()
-	panel.set_anchors_preset(Control.PRESET_FULL_RECT)
-	_preview_container.add_child(panel)
-
-	var label := Label.new()
-	label.text = "Preview: %s" % type
-	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	label.set_anchors_preset(Control.PRESET_FULL_RECT)
-	panel.add_child(label)
-
-	# Apply transition effect
-	match type:
-		"fade":
-			panel.modulate.a = 0.0
-			var tween := create_tween()
-			tween.tween_property(panel, "modulate:a", 1.0, 0.3)
-			tween.tween_property(panel, "modulate:a", 0.0, 0.3).set_delay(0.5)
-			tween.finished.connect(func(): panel.queue_free())
-		"slide":
-			panel.position.x = -200
-			var tween := create_tween()
-			tween.tween_property(panel, "position:x", 0, 0.3).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
-			tween.tween_property(panel, "position:x", -200, 0.3).set_delay(0.5)
-			tween.finished.connect(func(): panel.queue_free())
-		"scale":
-			panel.scale = Vector2.ZERO
-			var tween := create_tween()
-			tween.tween_property(panel, "scale", Vector2.ONE, 0.3).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
-			tween.tween_property(panel, "scale", Vector2.ZERO, 0.3).set_delay(0.5)
-			tween.finished.connect(func(): panel.queue_free())

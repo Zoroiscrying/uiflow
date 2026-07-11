@@ -1,11 +1,11 @@
 using Godot;
+using UIFlow.Utils;
 
 namespace UIFlow.Transitions;
 
 /// <summary>
 /// Base Resource for transition effects. Extend to create custom effects.
 /// </summary>
-[GlobalClass]
 public partial class UIFlowTransitionEffect : Resource
 {
     [Export] public bool StartsHidden { get; set; } = true;
@@ -27,11 +27,13 @@ public partial class UIFlowTransitionEffect : Resource
 
     protected void OnFinished(Callable callback)
     {
-        if (!callback.IsValid) return;
+        if (!callback.IsValid()) return;
         if (Delay > 0)
         {
             var tree = (SceneTree)Engine.GetMainLoop();
-            tree?.CreateTimer(Delay).Timeout += () => callback.Call();
+            var timer = tree?.CreateTimer(Delay);
+            if (timer != null)
+                timer.Timeout += () => callback.Call();
         }
         else
         {

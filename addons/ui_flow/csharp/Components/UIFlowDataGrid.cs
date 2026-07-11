@@ -7,7 +7,6 @@ namespace UIFlow.Components;
 /// <summary>
 /// Sortable, scrollable data grid component.
 /// </summary>
-[GlobalClass]
 public partial class UIFlowDataGrid : PanelContainer
 {
     public record Column(string Title, float Width = 120f, bool Sortable = true);
@@ -80,11 +79,11 @@ public partial class UIFlowDataGrid : PanelContainer
 
         list.Sort((a, b) =>
         {
-            var va = columnIndex < a.Count ? a[columnIndex] : null;
-            var vb = columnIndex < b.Count ? b[columnIndex] : null;
-            if (va == null) return 1;
-            if (vb == null) return -1;
-            int cmp = Comparer<object>.Default.Compare(va, vb);
+            var va = columnIndex < a.Count ? a[columnIndex] : new Variant();
+            var vb = columnIndex < b.Count ? b[columnIndex] : new Variant();
+            if (va.VariantType == Variant.Type.Nil) return 1;
+            if (vb.VariantType == Variant.Type.Nil) return -1;
+            int cmp = Comparer<object>.Default.Compare(va.Obj, vb.Obj);
             return ascending ? cmp : -cmp;
         });
 
@@ -124,7 +123,7 @@ public partial class UIFlowDataGrid : PanelContainer
             {
                 var col = _columns[colIdx];
                 var cell = new Label();
-                cell.Text = colIdx < rowData.Count ? rowData[colIdx]?.ToString() ?? "" : "";
+                cell.Text = colIdx < rowData.Count && rowData[colIdx].VariantType != Variant.Type.Nil ? rowData[colIdx].ToString() : "";
                 cell.CustomMinimumSize = new Vector2(col.Width, 28);
                 cell.SizeFlagsHorizontal = SizeFlags.ExpandFill;
                 cell.ClipText = true;

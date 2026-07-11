@@ -29,27 +29,28 @@ namespace UIFlow.Utils
 
         public static UIFlowBinding BindSignal(Node node, StringName prop, Signal signal)
         {
-            Callable cb = new Callable(new Action<Variant>(value =>
+            Callable cb = Callable.From(new Action<Variant>(value =>
             {
-                if (IsInstanceValid(node)) node.Set(prop, value);
+                if (GodotObject.IsInstanceValid(node)) node.Set(prop, value);
             }));
             return new UIFlowBinding(signal, cb);
         }
 
         public static UIFlowBinding BindSignalT<T>(Node node, StringName prop, Signal signal, Func<T, Variant> transform)
         {
-            Callable cb = new Callable(new Action<T>(value =>
+            Callable cb = Callable.From(new Action<T>(value =>
             {
-                if (IsInstanceValid(node)) node.Set(prop, transform(value));
+                if (GodotObject.IsInstanceValid(node)) node.Set(prop, transform(value));
             }));
             return new UIFlowBinding(signal, cb);
         }
 
         public static UIFlowBinding BindVisible(Node node, Signal signal, Func<float, bool> predicate)
         {
-            Callable cb = new Callable(new Action<float>(value =>
+            Callable cb = Callable.From(new Action<float>(value =>
             {
-                if (IsInstanceValid(node)) node.Visible = predicate(value);
+                if (GodotObject.IsInstanceValid(node) && node is CanvasItem ci)
+                    ci.Visible = predicate(value);
             }));
             return new UIFlowBinding(signal, cb);
         }
@@ -60,9 +61,9 @@ namespace UIFlow.Utils
         /// </summary>
         public static UIFlowBinding BindFormat(Node node, StringName prop, Signal signal, string format)
         {
-            Callable cb = new Callable(new Action<Variant>(value =>
+            Callable cb = Callable.From(new Action<Variant>(value =>
             {
-                if (IsInstanceValid(node)) node.Set(prop, string.Format(format, value));
+                if (GodotObject.IsInstanceValid(node)) node.Set(prop, string.Format(format, value));
             }));
             return new UIFlowBinding(signal, cb);
         }
@@ -70,12 +71,12 @@ namespace UIFlow.Utils
         /// <summary>
         /// Two-way slider binding. Signal updates slider, slider changes call setter.
         /// </summary>
-        public static UIFlowBinding BindSlider(Range slider, Signal signal, Action<float> setter)
+        public static UIFlowBinding BindSlider(Godot.Range slider, Signal signal, Action<float> setter)
         {
             // Signal → slider
-            Callable cb = new Callable(new Action<float>(value =>
+            Callable cb = Callable.From(new Action<float>(value =>
             {
-                if (IsInstanceValid(slider)) slider.Value = value;
+                if (GodotObject.IsInstanceValid(slider)) slider.Value = value;
             }));
             var binding = new UIFlowBinding(signal, cb);
 
@@ -83,11 +84,6 @@ namespace UIFlow.Utils
             slider.ValueChanged += (value) => setter((float)value);
 
             return binding;
-        }
-
-        private static bool IsInstanceValid(GodotObject obj)
-        {
-            return obj != null && GodotObject.IsInstanceValid(obj);
         }
     }
 }

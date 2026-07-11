@@ -1,6 +1,6 @@
 ## Theme manager — loads and manages UIFlowTheme resources.
 ##
-## Built-in themes: dark.tres, light.tres (in themes/ directory).
+## Built-in themes: dark, light, ocean, forest, high_contrast, warm.
 ## Users can create custom .tres themes and apply them at runtime.
 class_name UIFlowThemeHelper extends RefCounted
 
@@ -9,6 +9,10 @@ const THEMES_DIR := "res://addons/ui_flow/themes/"
 const BUILTIN_THEMES: Dictionary = {
 	"dark": "dark.tres",
 	"light": "light.tres",
+	"ocean": "ocean.tres",
+	"forest": "forest.tres",
+	"high_contrast": "high_contrast.tres",
+	"warm": "warm.tres",
 }
 
 var _current_theme: UIFlowTheme = null
@@ -37,7 +41,7 @@ func apply_theme(theme: UIFlowTheme) -> void:
 		_current_theme = theme
 
 
-## Apply a built-in theme by name ("dark" or "light").
+## Apply a built-in theme by name ("dark", "light", "ocean", "forest", "high_contrast", "warm").
 func apply_builtin(name: String) -> void:
 	if _loaded_themes.has(name):
 		_current_theme = _loaded_themes[name]

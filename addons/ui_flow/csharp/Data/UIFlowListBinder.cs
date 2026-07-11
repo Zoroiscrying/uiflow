@@ -1,6 +1,8 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using UIFlow.Utils;
+using GodotArray = Godot.Collections.Array;
 
 namespace UIFlow.Data;
 
@@ -15,6 +17,7 @@ public class UIFlowListBinder : IDisposable
     private readonly Action<Control, object, int> _binder;
     private readonly Func<object, int, object> _keyFunc;
     private readonly Signal _signal;
+    private readonly Callable _callback;
     private readonly List<Control> _instances = new();
     private readonly List<object> _itemKeys = new();
 
@@ -25,12 +28,13 @@ public class UIFlowListBinder : IDisposable
         _binder = binder;
         _keyFunc = keyFunc;
         _signal = signal;
-        _signal.Connect(new Callable(this, MethodName.OnDataChanged));
+        _callback = Callable.From<GodotArray>(OnDataChanged);
+        _signal.Connect(_callback);
     }
 
-    private void OnDataChanged(Array data) => UpdateList(data);
+    private void OnDataChanged(GodotArray data) => UpdateList(data);
 
-    private void UpdateList(Array data)
+    private void UpdateList(GodotArray data)
     {
         var newKeys = ComputeKeys(data);
 
@@ -74,7 +78,7 @@ public class UIFlowListBinder : IDisposable
         _itemKeys.AddRange(newKeys);
     }
 
-    private List<object> ComputeKeys(Array data)
+    private List<object> ComputeKeys(GodotArray data)
     {
         var keys = new List<object>();
         if (_keyFunc != null)
@@ -92,8 +96,8 @@ public class UIFlowListBinder : IDisposable
 
     public void Unbind()
     {
-        if (_signal.IsConnected(new Callable(this, MethodName.OnDataChanged)))
-            _signal.Disconnect(new Callable(this, MethodName.OnDataChanged));
+        if (_signal.IsConnected(_callback))
+            _signal.Disconnect(_callback);
         foreach (var inst in _instances)
             if (GodotObject.IsInstanceValid(inst)) inst.QueueFree();
         _instances.Clear();

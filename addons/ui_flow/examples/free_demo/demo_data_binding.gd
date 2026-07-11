@@ -23,8 +23,6 @@ var _combo: int = 0:
 @onready var _add_combo_btn: Button = $Panel/VBox/Buttons/AddCombo
 @onready var _back_button: Button = $Panel/VBox/BackButton
 
-var _bindings: Array = []
-
 
 func _ready() -> void:
 	_add_score_btn.pressed.connect(func(): _score += 10)

@@ -1,9 +1,9 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene format=3 uid="uid://bekuqmi6lj1hq"]
 
-[ext_resource type="Script" path="res://addons/ui_flow/examples/free_demo/demo_components.gd" id="1"]
-[ext_resource type="Script" path="res://addons/ui_flow/components/data_grid.gd" id="2"]
+[ext_resource type="Script" uid="uid://c548p5itfkvth" path="res://addons/ui_flow/examples/free_demo/demo_components.gd" id="1"]
+[ext_resource type="Script" uid="uid://jnvmiwevpli3" path="res://addons/ui_flow/components/data_grid.gd" id="2"]
 
-[node name="UIFlowDemoComponents" type="Control"]
+[node name="UIFlowDemoComponents" type="Control" unique_id=1840183818]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -12,7 +12,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1")
 
-[node name="Panel" type="PanelContainer" parent="."]
+[node name="Panel" type="PanelContainer" parent="." unique_id=1334203988]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -26,152 +26,152 @@ offset_bottom = 350.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VBox" type="VBoxContainer" parent="Panel"]
+[node name="VBox" type="VBoxContainer" parent="Panel" unique_id=672515453]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 12
 
-[node name="Title" type="Label" parent="Panel/VBox"]
+[node name="Title" type="Label" parent="Panel/VBox" unique_id=1631361654]
 layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "Components Demo"
 horizontal_alignment = 1
 
-[node name="Sep" type="HSeparator" parent="Panel/VBox"]
+[node name="Sep" type="HSeparator" parent="Panel/VBox" unique_id=1932055312]
 layout_mode = 2
 
-[node name="ToastSection" type="VBoxContainer" parent="Panel/VBox"]
+[node name="ToastSection" type="VBoxContainer" parent="Panel/VBox" unique_id=1176480777]
 layout_mode = 2
 theme_override_constants/separation = 6
 
-[node name="SectionTitle" type="Label" parent="Panel/VBox/ToastSection"]
+[node name="SectionTitle" type="Label" parent="Panel/VBox/ToastSection" unique_id=524662343]
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
 text = "Toast Notifications"
 
-[node name="Buttons" type="HBoxContainer" parent="Panel/VBox/ToastSection"]
+[node name="Buttons" type="HBoxContainer" parent="Panel/VBox/ToastSection" unique_id=399129465]
 layout_mode = 2
 theme_override_constants/separation = 8
 alignment = 1
 
-[node name="InfoBtn" type="Button" parent="Panel/VBox/ToastSection/Buttons"]
-layout_mode = 2
+[node name="InfoBtn" type="Button" parent="Panel/VBox/ToastSection/Buttons" unique_id=1766598150]
 custom_minimum_size = Vector2(80, 32)
+layout_mode = 2
 text = "Info"
 
-[node name="SuccessBtn" type="Button" parent="Panel/VBox/ToastSection/Buttons"]
-layout_mode = 2
+[node name="SuccessBtn" type="Button" parent="Panel/VBox/ToastSection/Buttons" unique_id=1506334151]
 custom_minimum_size = Vector2(80, 32)
+layout_mode = 2
 text = "Success"
 
-[node name="WarningBtn" type="Button" parent="Panel/VBox/ToastSection/Buttons"]
-layout_mode = 2
+[node name="WarningBtn" type="Button" parent="Panel/VBox/ToastSection/Buttons" unique_id=1994382502]
 custom_minimum_size = Vector2(80, 32)
+layout_mode = 2
 text = "Warning"
 
-[node name="ErrorBtn" type="Button" parent="Panel/VBox/ToastSection/Buttons"]
-layout_mode = 2
+[node name="ErrorBtn" type="Button" parent="Panel/VBox/ToastSection/Buttons" unique_id=764357528]
 custom_minimum_size = Vector2(80, 32)
+layout_mode = 2
 text = "Error"
 
-[node name="Sep2" type="HSeparator" parent="Panel/VBox"]
+[node name="Sep2" type="HSeparator" parent="Panel/VBox" unique_id=2026515395]
 layout_mode = 2
 
-[node name="DialogSection" type="VBoxContainer" parent="Panel/VBox"]
+[node name="DialogSection" type="VBoxContainer" parent="Panel/VBox" unique_id=865692763]
 layout_mode = 2
 theme_override_constants/separation = 6
 
-[node name="SectionTitle" type="Label" parent="Panel/VBox/DialogSection"]
+[node name="SectionTitle" type="Label" parent="Panel/VBox/DialogSection" unique_id=1249816734]
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
 text = "Dialogs"
 
-[node name="Buttons" type="HBoxContainer" parent="Panel/VBox/DialogSection"]
+[node name="Buttons" type="HBoxContainer" parent="Panel/VBox/DialogSection" unique_id=1922989767]
 layout_mode = 2
 theme_override_constants/separation = 8
 alignment = 1
 
-[node name="ConfirmBtn" type="Button" parent="Panel/VBox/DialogSection/Buttons"]
-layout_mode = 2
+[node name="ConfirmBtn" type="Button" parent="Panel/VBox/DialogSection/Buttons" unique_id=130267468]
 custom_minimum_size = Vector2(120, 32)
+layout_mode = 2
 text = "Confirm"
 
-[node name="AlertBtn" type="Button" parent="Panel/VBox/DialogSection/Buttons"]
-layout_mode = 2
+[node name="AlertBtn" type="Button" parent="Panel/VBox/DialogSection/Buttons" unique_id=1897356200]
 custom_minimum_size = Vector2(120, 32)
+layout_mode = 2
 text = "Alert"
 
-[node name="Sep3" type="HSeparator" parent="Panel/VBox"]
+[node name="Sep3" type="HSeparator" parent="Panel/VBox" unique_id=1973832436]
 layout_mode = 2
 
-[node name="TooltipSection" type="VBoxContainer" parent="Panel/VBox"]
+[node name="TooltipSection" type="VBoxContainer" parent="Panel/VBox" unique_id=824700387]
 layout_mode = 2
 theme_override_constants/separation = 6
 
-[node name="SectionTitle" type="Label" parent="Panel/VBox/TooltipSection"]
+[node name="SectionTitle" type="Label" parent="Panel/VBox/TooltipSection" unique_id=140398385]
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
 text = "Tooltip"
 
-[node name="DemoBtn" type="Button" parent="Panel/VBox/TooltipSection"]
-layout_mode = 2
+[node name="DemoBtn" type="Button" parent="Panel/VBox/TooltipSection" unique_id=799678840]
 custom_minimum_size = Vector2(200, 32)
+layout_mode = 2
 text = "Hover me (Tooltip)"
 
-[node name="Sep4" type="HSeparator" parent="Panel/VBox"]
+[node name="Sep4" type="HSeparator" parent="Panel/VBox" unique_id=746445281]
 layout_mode = 2
 
-[node name="HoverHintSection" type="VBoxContainer" parent="Panel/VBox"]
+[node name="HoverHintSection" type="VBoxContainer" parent="Panel/VBox" unique_id=1814329500]
 layout_mode = 2
 theme_override_constants/separation = 6
 
-[node name="SectionTitle" type="Label" parent="Panel/VBox/HoverHintSection"]
+[node name="SectionTitle" type="Label" parent="Panel/VBox/HoverHintSection" unique_id=1555705514]
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
 text = "Hover Hint (BBCode)"
 
-[node name="DemoBtn" type="Button" parent="Panel/VBox/HoverHintSection"]
-layout_mode = 2
+[node name="DemoBtn" type="Button" parent="Panel/VBox/HoverHintSection" unique_id=1369459927]
 custom_minimum_size = Vector2(200, 32)
+layout_mode = 2
 text = "Hover me (BBCode Hint)"
 
-[node name="Sep5" type="HSeparator" parent="Panel/VBox"]
+[node name="Sep5" type="HSeparator" parent="Panel/VBox" unique_id=1522254210]
 layout_mode = 2
 
-[node name="ContextMenuSection" type="VBoxContainer" parent="Panel/VBox"]
+[node name="ContextMenuSection" type="VBoxContainer" parent="Panel/VBox" unique_id=311789356]
 layout_mode = 2
 theme_override_constants/separation = 6
 
-[node name="SectionTitle" type="Label" parent="Panel/VBox/ContextMenuSection"]
+[node name="SectionTitle" type="Label" parent="Panel/VBox/ContextMenuSection" unique_id=1605595795]
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
 text = "Context Menu"
 
-[node name="DemoBtn" type="Button" parent="Panel/VBox/ContextMenuSection"]
-layout_mode = 2
+[node name="DemoBtn" type="Button" parent="Panel/VBox/ContextMenuSection" unique_id=49631650]
 custom_minimum_size = Vector2(200, 32)
+layout_mode = 2
 text = "Click me (Context Menu)"
 
-[node name="Sep6" type="HSeparator" parent="Panel/VBox"]
+[node name="Sep6" type="HSeparator" parent="Panel/VBox" unique_id=542060644]
 layout_mode = 2
 
-[node name="DataGridSection" type="VBoxContainer" parent="Panel/VBox"]
+[node name="DataGridSection" type="VBoxContainer" parent="Panel/VBox" unique_id=272263111]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 6
 
-[node name="SectionTitle" type="Label" parent="Panel/VBox/DataGridSection"]
+[node name="SectionTitle" type="Label" parent="Panel/VBox/DataGridSection" unique_id=1445837865]
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
 text = "Data Grid"
 
-[node name="Grid" type="PanelContainer" parent="Panel/VBox/DataGridSection"]
+[node name="Grid" type="PanelContainer" parent="Panel/VBox/DataGridSection" unique_id=898746888]
+custom_minimum_size = Vector2(0, 120)
 layout_mode = 2
 size_flags_vertical = 3
-custom_minimum_size = Vector2(0, 120)
 script = ExtResource("2")
 
-[node name="BackButton" type="Button" parent="Panel/VBox"]
-layout_mode = 2
+[node name="BackButton" type="Button" parent="Panel/VBox" unique_id=85776400]
 custom_minimum_size = Vector2(200, 36)
+layout_mode = 2
 text = "Back"

@@ -53,8 +53,8 @@ func _make_scale(from: Vector2, to: Vector2, duration: float,
 	ease: Tween.EaseType = Tween.EASE_IN_OUT,
 	trans: Tween.TransitionType = Tween.TRANS_LINEAR) -> UIFlowScaleEffect:
 	var e := UIFlowScaleEffect.new()
-	e.from_scale = from
-	e.to_scale = to
+	e.hidden_scale = from
+	e.visible_scale = to
 	e.duration = duration
 	e.ease_type = ease
 	e.trans_type = trans
