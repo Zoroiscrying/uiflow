@@ -1,0 +1,76 @@
+site_name: UIFlow 文档
+site_url: https://zoroiscrying.github.io/uiflow/
+site_author: UIFlow
+site_description: UIFlow - Godot 4 UI 工作流框架文档
+
+theme:
+  name: material
+  language: zh
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: 切换到暗色模式
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: 切换到亮色模式
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.code.annotate
+
+plugins:
+  - search:
+      lang: zh
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - admonition
+  - pymdownx.details
+  - pymdownx.tabbed:
+      alternate_style: true
+  - tables
+  - attr_list
+  - md_in_html
+  - toc:
+      permalink: true
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/zoroiscrying/uiflow
+  version:
+    provider: mike
+
+nav:
+  - 首页: index.md
+  - 快速开始:
+      - 安装与配置: getting-started/installation.md
+      - 第一个页面: getting-started/first-page.md
+      - 导航与传参: getting-started/navigation.md
+  - 核心功能:
+      - 页面过渡: features/transitions.md
+      - 数据绑定: features/data-binding.md
+      - 事件总线: features/event-bus.md
+      - 内置组件: features/components.md
+      - Timeline 与 Async: features/timeline-async.md
+  - 示例:
+      - Demo Hub: examples/demo-hub.md
+      - 3D 世界示例: examples/3d-world-demo.md
+  - API 参考: api/index.md
