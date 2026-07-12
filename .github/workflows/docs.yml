@@ -1,5 +1,5 @@
 name: Deploy Docs to GitHub Pages
-
+# Trigger rebuild manually or on docsite changes.
 on:
   push:
     branches:
