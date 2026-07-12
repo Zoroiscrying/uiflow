@@ -1,27 +1,27 @@
 # Demo Hub
 
-Demo Hub 是 UIFlow Free 的主入口示例，展示核心导航与页面过渡效果。
+The Demo Hub is the main entry example for UIFlow Free. It demonstrates core navigation and page transitions.
 
-## 如何运行
+## How to Run
 
 ```bash
 godot --path . --scene res://addons/ui_flow/examples/main.tscn
 ```
 
-项目默认主场景也是该场景。
+This scene is also the project's default main scene.
 
-## 包含内容
+## Contents
 
-- 主菜单页面
-- 设置页面（演示返回拦截与配置保存）
-- 数据绑定示例页面
-- 事件总线示例页面
-- Timeline / Async 动画示例页面
+- Main menu page
+- Settings page (demonstrates back interception and saving config)
+- Data binding example page
+- Event bus example page
+- Timeline / Async animation example page
 
-![Demo Hub 主界面](../assets/screenshots/demo_hub_main.png)
+![Demo Hub main screen](/assets/screenshots/demo_hub_main.png)
 
-## 学习重点
+## Learning Points
 
-- 每个页面都是 `UIFlowPage` 子类，场景放在 `res://UIScene/` 或插件内部示例目录。
-- 返回按钮和 ESC 都会触发 `_on_back()`。
-- 页面切换使用了默认 transition 配置。
+- Every page is a `UIFlowPage` subclass, with scenes in `res://UIScene/` or the plugin's internal examples folder.
+- Back buttons and ESC both trigger `_on_back()`.
+- Page transitions use the default transition configuration.

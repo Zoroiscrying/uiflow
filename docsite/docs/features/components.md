@@ -1,41 +1,41 @@
-# 内置组件
+# Built-in Components
 
-UIFlow Free 提供一组常用 UI 组件，可通过 `UIFlowUI` 便捷访问或作为场景节点直接使用。
+UIFlow Free provides a set of common UI components, accessible through `UIFlowUI` or as scene nodes.
 
 ## Toast
 
-右下角（可配置）弹出轻量提示：
+Lightweight popup notifications:
 
 ```gdscript
-UIFlowUI.Toast.show("保存成功", UIFlowToastType.SUCCESS)
-UIFlowUI.Toast.show("网络断开", UIFlowToastType.ERROR, 3.0)
+UIFlowUI.Toast.show("Saved successfully", UIFlowToastType.SUCCESS)
+UIFlowUI.Toast.show("Network disconnected", UIFlowToastType.ERROR, 3.0)
 ```
 
-![Toast 示例](../assets/screenshots/toast_example.png)
+![Toast example](/assets/screenshots/toast_example.png)
 
-## Confirm / Alert 对话框
+## Confirm / Alert Dialogs
 
 ```gdscript
-UIFlowUI.Confirm.show("确定删除存档？", _on_confirm, _on_cancel)
-UIFlowUI.Alert.show("操作完成")
+UIFlowUI.Confirm.show("Delete save file?", _on_confirm, _on_cancel)
+UIFlowUI.Alert.show("Operation complete")
 ```
 
 ## DataGrid
 
-用于表格化展示数据，支持列定义、排序、选中回调：
+Display tabular data with column definitions, sorting, and selection callbacks:
 
 ```gdscript
 var grid := $DataGrid
 grid.set_columns([
-    {"name": "name", "title": "名称", "width": 200},
-    {"name": "score", "title": "分数", "width": 100}
+    {"name": "name", "title": "Name", "width": 200},
+    {"name": "score", "title": "Score", "width": 100}
 ])
 grid.set_data(player_list)
 ```
 
 ## VirtualList
 
-大数据量列表，只渲染可视区域：
+Large lists that only render the visible area:
 
 ```gdscript
 virtual_list.bind(data_array, item_template, _setup_item)
@@ -43,12 +43,12 @@ virtual_list.bind(data_array, item_template, _setup_item)
 
 ## Tooltip / HoverHint
 
-鼠标悬停显示提示：
+Show hints on hover:
 
 ```gdscript
-$HoverHint.hint_text = "攻击力 +10"
+$HoverHint.hint_text = "Attack +10"
 ```
 
-## 自定义组件
+## Custom Components
 
-可以继承 `UIFlowComponentBase` 实现项目专属组件，保持与 UIFlow 生命周期一致。
+Extend `UIFlowComponentBase` to implement project-specific components that follow the UIFlow lifecycle.

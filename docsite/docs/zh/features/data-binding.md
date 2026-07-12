@@ -1,10 +1,10 @@
-# Data Binding
+# 数据绑定
 
-UIFlow provides two binding tools: `UIFlowBindUtils` and convenience methods on `UIFlowPage`. Bindings are automatically cleaned up when a page closes.
+UIFlow 提供两类绑定工具：`UIFlowBindUtils` 与 `UIFlowPage` 上的便捷方法。页面关闭时会自动解绑。
 
-## Property Binding
+## 属性绑定
 
-Sync a property from a data object to a UI control:
+把数据对象的属性同步到 UI 控件的属性：
 
 ```gdscript
 func _on_opened(_data: Dictionary) -> void:
@@ -12,17 +12,17 @@ func _on_opened(_data: Dictionary) -> void:
     bind_property(player_data, "name", name_label, "text")
 ```
 
-## Signal Binding
+## 信号绑定
 
-Call a method when a signal fires:
+当信号触发时，调用指定方法：
 
 ```gdscript
 bind_signal(player_data.health_changed, _on_health_changed)
 ```
 
-## List Binding
+## 列表绑定
 
-Bind an array signal to a template node. Items are created, updated, and destroyed automatically:
+把数组信号绑定到模板节点，自动增删列表项：
 
 ```gdscript
 var list_binder := UIFlowListBinder.new()
@@ -38,13 +38,13 @@ func _setup_item(item: ItemData, node: Control) -> void:
     node.get_node("Name").text = item.name
 ```
 
-## Automatic Cleanup
+## 自动解绑
 
-`UIFlowPage._unbind_all()` is called automatically when a page closes, so you do not need to manage it manually.
+`UIFlowPage._unbind_all()` 会在页面关闭时被调用，无需手动管理。
 
-## Data Store
+## 数据存储
 
-`UIFlowDataStore` provides a global key-value store for lightweight cross-page state:
+`UIFlowDataStore` 提供全局键值存储，适合跨页面共享轻量状态：
 
 ```gdscript
 UIFlow.DataStore.set_value("player_name", "Alice")

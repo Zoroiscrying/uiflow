@@ -1,8 +1,8 @@
-# API Reference
+# API 参考
 
-This page lists the most commonly used classes and functions in UIFlow Free. For full implementations, see the source code in `addons/ui_flow/`.
+本页面列出 UIFlow Free 中最常用的类与函数。详细实现请直接查看 `addons/ui_flow/` 源码。
 
-## UIFlow (autoload)
+## UIFlow（autoload）
 
 ```gdscript
 UIFlow.push(page_class: GDScript, data := {})
@@ -13,7 +13,7 @@ UIFlow.pop_to(page_class: GDScript)
 UIFlow.clear_and_push(page_class: GDScript, data := {})
 UIFlow.pop_result(result: Variant)
 
-# Subsystems
+# 子系统
 UIFlow.Navigator
 UIFlow.SceneResolver
 UIFlow.Animator
@@ -35,13 +35,13 @@ _on_before_closed()
 _on_closed()
 _on_destroyed()
 
-_on_back() -> bool          # return true to intercept
+_on_back() -> bool          # 返回 true 表示已拦截
 
 bind_property(source, src_prop, target, tgt_prop)
 bind_signal(sig: Signal, callback: Callable)
 ```
 
-## UIFlowUI (autoload)
+## UIFlowUI（autoload）
 
 ```gdscript
 UIFlowUI.Toast.show(message, type, duration)
@@ -49,12 +49,12 @@ UIFlowUI.Confirm.show(message, on_ok, on_cancel)
 UIFlowUI.Alert.show(message, on_close)
 ```
 
-## Configuration Resources
+## 配置资源
 
-- `UIFlowConfig`: global configuration.
-- `UIFlowTheme`: theme resource.
-- `UIFlowRoute`: route mapping resource.
+- `UIFlowConfig`：全局配置。
+- `UIFlowTheme`：主题资源。
+- `UIFlowRoute`：路由映射资源。
 
-## Full Source
+## 完整源码
 
-Complete signatures and implementations are in `addons/ui_flow/core/`, `addons/ui_flow/components/`, and `addons/ui_flow/resources/`.
+所有 API 的完整签名与实现位于 `addons/ui_flow/core/`、`addons/ui_flow/components/` 和 `addons/ui_flow/resources/`。

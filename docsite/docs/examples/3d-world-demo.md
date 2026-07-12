@@ -1,36 +1,36 @@
-# 3D 世界示例
+# 3D World Demo
 
-3D World Demo 展示如何在 Godot 3D 游戏中集成 UIFlow 页面系统：对话、商店、主 HUD。
+The 3D World Demo shows how to integrate UIFlow pages into a Godot 3D game: dialogs, shops, and the main HUD.
 
-## 如何运行
+## How to Run
 
-在 Demo Hub 中点击 **3D World Demo** 按钮，或直接运行：
+Click the **3D World Demo** button in the Demo Hub, or run directly:
 
 ```bash
 godot --path . --scene res://addons/ui_flow/examples/3d_world/game_world.tscn
 ```
 
-## 场景结构
+## Scene Structure
 
 ```
 addons/ui_flow/examples/3d_world/
-├── game_world.tscn        # 3D 场景根
-├── game_world.gd          # 游戏入口，负责 push HUD
-├── interactive_object.gd  # 可交互对象，触发对话/商店
-├── main_hud.tscn / .gd    # 主 HUD 页面
-├── dialog_page.tscn / .gd # 对话页面
-└── shop_page.tscn / .gd   # 商店页面
+├── game_world.tscn        # 3D scene root
+├── game_world.gd          # Game entry, pushes HUD
+├── interactive_object.gd  # Interactable object, triggers dialog / shop
+├── main_hud.tscn / .gd    # Main HUD page
+├── dialog_page.tscn / .gd # Dialog page
+└── shop_page.tscn / .gd   # Shop page
 ```
 
-## 交互逻辑
+## Interaction Flow
 
-1. 玩家靠近可交互对象并按交互键。
-2. `interactive_object.gd` 调用 `UIFlow.push(DialogPage, {"npc": ...})` 或 `UIFlow.push(ShopPage, ...)`。
-3. 页面使用模态或半模态方式覆盖在 3D 场景之上。
+1. The player approaches an interactable object and presses the interact key.
+2. `interactive_object.gd` calls `UIFlow.push(DialogPage, {"npc": ...})` or `UIFlow.push(ShopPage, ...)`.
+3. Pages overlay the 3D scene using modal or semi-modal mode.
 
-![3D 世界示例](../assets/screenshots/3d_world_demo.png)
+![3D World Demo](/assets/screenshots/3d_world_demo.png)
 
-## 注意事项
+## Notes
 
-- HUD 页面通常不需要进入/退出动画，可在资源中关闭 Enter / Exit Effect。
-- 对话页面建议启用模态，防止玩家移动。
+- HUD pages usually do not need enter / exit effects; disable them in the resource.
+- Dialog pages should usually be modal to prevent player movement.

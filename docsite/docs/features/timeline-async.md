@@ -1,30 +1,30 @@
-# Timeline 与 Async
+# Timeline and Async
 
-UIFlow 支持把多个动画/等待组合成一段 **Timeline**，并通过 `await` 与异步逻辑结合。
+UIFlow supports combining multiple animations / waits into a **Timeline**, and integrating them with `await`.
 
-## Timeline 效果
+## Timeline Effect
 
-`UIFlowTimelineEffect` 由多个 `UIFlowEffect` 步骤组成，可配置：
+`UIFlowTimelineEffect` consists of multiple `UIFlowEffect` steps. You can configure:
 
-- **Effects**：每段效果数组。
-- **Step Delays**：每段开始前的延迟。
-- **Step Wait for Completion**：是否等待该段完成才进入下一段。
+- **Effects**: the effect array for each step.
+- **Step Delays**: delay before each step starts.
+- **Step Wait for Completion**: whether to wait for the step to finish before the next one.
 
-## 两段式 Scale Punch 示例
+## Two-stage Scale Punch Example
 
-![Timeline 配置](../assets/screenshots/timeline_scale_config.png)
+![Timeline configuration](/assets/screenshots/timeline_scale_config.png)
 
 ```gdscript
-# 配置内容：
-# Step 0: UIFlowScaleEffect，duration 0.15，from 0.0 to 0.5，curve punch out
-# Step 1: UIFlowScaleEffect，duration 0.15，from 0.5 to 1.0，curve punch out
+# Configuration:
+# Step 0: UIFlowScaleEffect, duration 0.15, from 0.0 to 0.5, punch-out curve
+# Step 1: UIFlowScaleEffect, duration 0.15, from 0.5 to 1.0, punch-out curve
 ```
 
-这样页面进入时会先快速放大到 0.5，再弹到正常尺寸，形成 punch 弹性效果。
+This makes the page scale quickly to 0.5, then bounce to full size for a punch-elastic feel.
 
-## Async 流程
+## Async Flow
 
-在页面中可以直接 `await` UIFlow 动画：
+You can `await` UIFlow animations directly inside a page:
 
 ```gdscript
 func _play_open_sequence() -> void:
@@ -33,7 +33,7 @@ func _play_open_sequence() -> void:
     _enable_input()
 ```
 
-## 与导航结合
+## Combining with Navigation
 
 ```gdscript
 func _on_start() -> void:
@@ -41,7 +41,7 @@ func _on_start() -> void:
     UIFlow.push(GamePage)
 ```
 
-## 建议
+## Recommendations
 
-- 复杂 enter / exit 优先使用 `UIFlowTimelineEffect` 资源，而不是在代码里手写。
-- 简单一次性动画可在代码中用 `await` 快速实现。
+- Prefer `UIFlowTimelineEffect` resources for complex enter / exit animations.
+- Use inline `await` for quick one-off animations.

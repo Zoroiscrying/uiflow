@@ -1,31 +1,31 @@
-# 导航与传参
+# Navigation and Data Passing
 
-## 基础 API
+## Basic API
 
 ```gdscript
-# 压入新页面
+# Push a new page
 UIFlow.push(PageClass, {"level": 3})
 
-# 压入已实例化的 Control（注意：不要传入 PageClass.new()）
+# Push an already instantiated Control (do not pass PageClass.new())
 var instance := preload("res://UIScene/SomePage.tscn").instantiate()
 UIFlow.push_instance(instance, {"score": 100})
 
-# 返回上一页
+# Go back
 UIFlow.pop()
 
-# 替换当前页
+# Replace the current page
 UIFlow.replace(PageClass, {"chapter": 2})
 
-# 清空栈并压入
+# Clear the stack and push a new page
 UIFlow.clear_and_push(PageClass)
 
-# 返回指定页面（关闭其上的所有页面）
+# Pop to a specific page (closes all pages above it)
 UIFlow.pop_to(PageClass)
 ```
 
-## 数据传递
+## Passing Data
 
-数据通过 `Dictionary` 传递，在 `_on_created` / `_on_opened` 中读取：
+Data is passed as a `Dictionary` and read in `_on_created` / `_on_opened`:
 
 ```gdscript
 func _on_opened(data: Dictionary) -> void:
@@ -33,9 +33,9 @@ func _on_opened(data: Dictionary) -> void:
     _setup_level(level)
 ```
 
-## 返回值
+## Returning Results
 
-被关闭的页面可以通过 `UIFlow.pop_result(result)` 向上一页返回数据：
+A closed page can return data to the previous page using `UIFlow.pop_result(result)`:
 
 ```gdscript
 # SettingsPage.gd
@@ -43,30 +43,30 @@ func _on_apply() -> void:
     UIFlow.pop_result({"fullscreen": fullscreen_check.button_pressed})
 ```
 
-接收页通过 `_on_shown` 重新获取焦点，或通过事件总线订阅结果。
+The receiving page regains focus through `_on_shown`, or you can subscribe to a result event on the event bus.
 
-## 模态页面
+## Modal Pages
 
-在页面检查器勾选 **Is Modal**，该页面会阻止下方页面接收输入，并自动添加透明输入拦截层。
+Enable **Is Modal** in the page inspector to block input to pages below and automatically add a transparent input blocker.
 
 ```gdscript
 func _on_opened(_data: Dictionary) -> void:
-    # 模态页默认点击返回/ESC 会关闭，可在配置中关闭该行为
+    # Modal pages close on back/ESC by default; disable in config if needed
     pass
 ```
 
-## 防止重复导航
+## Preventing Duplicate Navigation
 
-`UIFlowNavigator` 在动画期间会上锁，连续调用会进入队列按顺序执行，避免重叠。
+`UIFlowNavigator` locks during animations. Consecutive calls are queued and executed in order to avoid overlap.
 
-## 返回拦截
+## Intercepting Back
 
-重写 `_on_back()` 可拦截返回：
+Override `_on_back()` to intercept the back action:
 
 ```gdscript
 func _on_back() -> bool:
     if _has_unsaved_changes:
-        UIFlowUI.Confirm.show("有未保存的更改，确定退出？", _confirm_exit)
-        return true  # 已处理，不再 pop
+        UIFlowUI.Confirm.show("Unsaved changes. Exit anyway?", _confirm_exit)
+        return true  # handled, do not pop
     return false
 ```

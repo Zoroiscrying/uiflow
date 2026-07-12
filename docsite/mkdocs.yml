@@ -1,11 +1,11 @@
-site_name: UIFlow 文档
+site_name: UIFlow Docs
 site_url: https://zoroiscrying.github.io/uiflow/
 site_author: UIFlow
-site_description: UIFlow - Godot 4 UI 工作流框架文档
+site_description: UIFlow - Godot 4 UI workflow framework documentation
 
 theme:
   name: material
-  language: zh
+  language: en
   palette:
     - media: "(prefers-color-scheme: light)"
       scheme: default
@@ -13,14 +13,14 @@ theme:
       accent: indigo
       toggle:
         icon: material/brightness-7
-        name: 切换到暗色模式
+        name: Switch to dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
       primary: indigo
       accent: indigo
       toggle:
         icon: material/brightness-4
-        name: 切换到亮色模式
+        name: Switch to light mode
   features:
     - navigation.tabs
     - navigation.sections
@@ -33,7 +33,16 @@ theme:
 
 plugins:
   - search:
-      lang: zh
+      lang: en
+  - i18n:
+      default_language: en
+      languages:
+        en:
+          name: English
+          build: true
+        zh:
+          name: 中文
+          build: true
 
 markdown_extensions:
   - pymdownx.highlight:
@@ -59,18 +68,18 @@ extra:
     provider: mike
 
 nav:
-  - 首页: index.md
-  - 快速开始:
-      - 安装与配置: getting-started/installation.md
-      - 第一个页面: getting-started/first-page.md
-      - 导航与传参: getting-started/navigation.md
-  - 核心功能:
-      - 页面过渡: features/transitions.md
-      - 数据绑定: features/data-binding.md
-      - 事件总线: features/event-bus.md
-      - 内置组件: features/components.md
-      - Timeline 与 Async: features/timeline-async.md
-  - 示例:
+  - Home: index.md
+  - Getting Started:
+      - Installation: getting-started/installation.md
+      - First Page: getting-started/first-page.md
+      - Navigation: getting-started/navigation.md
+  - Features:
+      - Transitions: features/transitions.md
+      - Data Binding: features/data-binding.md
+      - Event Bus: features/event-bus.md
+      - Components: features/components.md
+      - Timeline & Async: features/timeline-async.md
+  - Examples:
       - Demo Hub: examples/demo-hub.md
-      - 3D 世界示例: examples/3d-world-demo.md
-  - API 参考: api/index.md
+      - 3D World Demo: examples/3d-world-demo.md
+  - API Reference: api/index.md

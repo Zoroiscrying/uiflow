@@ -1,45 +1,45 @@
-# 安装与配置
+# Installation
 
-## 获取插件
+## Get the Plugin
 
-UIFlow Free 以文件夹形式分发，路径为 `addons/ui_flow/`。
+UIFlow Free is distributed as a folder: `addons/ui_flow/`.
 
-1. 从发布包或源码复制 `addons/ui_flow/` 到你的 Godot 项目 `addons/` 目录。
-2. 打开 **项目设置 → 插件**，启用 **UI Flow**。
-3. 启用后会自动注册两个 autoload：
-   - `UIFlow`：核心导航、绑定、主题、事件总线 API。
-   - `UIFlowUI`：Toast、Confirm、Alert 等便捷组件。
+1. Copy `addons/ui_flow/` from the release package or source into your Godot project's `addons/` folder.
+2. Open **Project Settings → Plugins** and enable **UI Flow**.
+3. Enabling the plugin registers two autoloads automatically:
+   - `UIFlow`: core navigation, binding, theme, and event bus API.
+   - `UIFlowUI`: convenience components such as Toast, Confirm, and Alert.
 
-## 项目设置
+## Project Settings
 
-可在 **项目设置 → UI Flow** 中修改以下配置：
+You can change the following options under **Project Settings → UI Flow**:
 
-| 配置项 | 说明 | 默认值 |
+| Setting | Description | Default |
 |---|---|---|
-| `ui_flow/scene_directory` | 页面场景默认搜索目录 | `res://UIScene/` |
-| `ui_flow/max_stack_depth` | 导航栈最大深度 | `32` |
-| `ui_flow/modal_close_on_back` | 点击返回时是否关闭模态页 | `true` |
-| `ui_flow/default_theme_name` | 默认主题名称 | `dark` |
+| `ui_flow/scene_directory` | Default search directory for page scenes | `res://UIScene/` |
+| `ui_flow/max_stack_depth` | Maximum navigation stack depth | `32` |
+| `ui_flow/modal_close_on_back` | Whether back/cancel closes modal pages | `true` |
+| `ui_flow/default_theme_name` | Default theme name | `dark` |
 
-也可以创建 `res://ui_flow_config.tres` 作为自定义 `UIFlowConfig` 资源覆盖更多选项。
+You can also create a `UIFlowConfig` resource at `res://ui_flow_config.tres` to override more options.
 
-## 推荐的目录结构
+## Recommended Folder Structure
 
 ```
 res://
-├── addons/ui_flow/          # 插件本体
-├── UIScene/                 # 你的页面场景
+├── addons/ui_flow/          # Plugin files
+├── UIScene/                 # Your page scenes
 │   ├── MainMenuPage.tscn
 │   └── SettingsPage.tscn
 └── project.godot
 ```
 
-## 验证安装
+## Verify Installation
 
-运行示例场景：
+Run the example scene:
 
 ```bash
 godot --path . --scene res://addons/ui_flow/examples/main.tscn
 ```
 
-若 Demo Hub 正常出现，说明安装成功。
+If the Demo Hub appears, the plugin is installed correctly.

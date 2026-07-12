@@ -1,8 +1,8 @@
-# 第一个页面
+# Your First Page
 
-UIFlow 的页面继承自 `UIFlowPage`，并关联一个 `.tscn` 场景文件。
+UIFlow pages extend `UIFlowPage` and are associated with a `.tscn` scene file.
 
-## 创建页面脚本
+## Create the Page Script
 
 ```gdscript
 # main_menu_page.gd
@@ -27,35 +27,35 @@ func _on_settings() -> void:
     UIFlow.push(SettingsPage)
 ```
 
-## 创建场景
+## Create the Scene
 
-1. 新建 `Control` 节点，命名为 `MainMenuPage`。
-2. 把脚本拖给该节点。
-3. 保存为 `res://UIScene/MainMenuPage.tscn`。
-4. 确保场景根节点的 `class_name` 与文件名一致：`MainMenuPage`。
+1. Create a `Control` node named `MainMenuPage`.
+2. Attach the script to it.
+3. Save it as `res://UIScene/MainMenuPage.tscn`.
+4. Make sure the root node's `class_name` matches the file name: `MainMenuPage`.
 
-## 启动页面
+## Launch the Page
 
-在任意入口脚本中：
+From any entry script:
 
 ```gdscript
 func _ready() -> void:
     UIFlow.push(MainMenuPage)
 ```
 
-UIFlow 会通过 `UIFlowSceneResolver` 自动查找 `MainMenuPage.tscn` 并实例化。
+UIFlow uses `UIFlowSceneResolver` to automatically find `MainMenuPage.tscn` and instantiate it.
 
-## 生命周期钩子
+## Lifecycle Hooks
 
-页面从创建到销毁会依次触发：
+A page triggers the following hooks from creation to destruction:
 
-1. `_on_created(data)` — 实例已创建，尚未加入树。
-2. `_on_opened(data)` — 已加入树，进入动画之前。
-3. `_on_after_opened()` — 进入动画完成，焦点已应用。
-4. `_on_hidden()` — 被新页面覆盖。
-5. `_on_shown()` — 上层页面被关闭，重新可见。
-6. `_on_before_closed()` — 退出动画之前。
-7. `_on_closed()` — 已移出栈，退出动画之后。
-8. `_on_destroyed()` — 节点即将被释放。
+1. `_on_created(data)` — instance created, not yet added to the tree.
+2. `_on_opened(data)` — added to the tree, before enter animation.
+3. `_on_after_opened()` — enter animation finished, focus applied.
+4. `_on_hidden()` — covered by a new page.
+5. `_on_shown()` — the page above was closed, this page is visible again.
+6. `_on_before_closed()` — before exit animation.
+7. `_on_closed()` — removed from the stack, after exit animation.
+8. `_on_destroyed()` — node about to be freed.
 
-在 `_on_opened` / `_on_closed` 中连接 / 断开信号是常见做法。
+Connecting and disconnecting signals inside `_on_opened` / `_on_closed` is a common pattern.
