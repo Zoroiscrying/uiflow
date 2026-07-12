@@ -7,10 +7,6 @@ var _nearby_interactive: Node = null
 @onready var _prompt_container: PanelContainer = $PromptBar
 
 
-func _on_created(_data: Variant = null) -> void:
-	_prompt_container.visible = false
-
-
 func _on_opened(_data: Variant = null) -> void:
 	_update_prompts()
 
