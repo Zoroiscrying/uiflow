@@ -37,12 +37,11 @@ plugins:
   - i18n:
       default_language: en
       languages:
-        en:
+        - locale: en
           name: English
-          build: true
-        zh:
+          default: true
+        - locale: zh
           name: 中文
-          build: true
 
 markdown_extensions:
   - pymdownx.highlight:
