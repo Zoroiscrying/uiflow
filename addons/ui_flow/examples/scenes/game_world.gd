@@ -1,10 +1,24 @@
 ## Game World — enhances the 3D scene with trees, rocks, and atmosphere.
 extends Node3D
 
+@onready var _player: CharacterBody3D = $Player
+
 func _ready() -> void:
 	_add_trees()
 	_add_rocks()
 	_add_ground_details()
+	_setup_player()
+	_push_main_hud()
+
+
+func _setup_player() -> void:
+	if _player and _player.has_method("set_top_down_camera"):
+		_player.set_top_down_camera()
+
+
+func _push_main_hud() -> void:
+	await get_tree().process_frame
+	UIFlow.push(MainHUD)
 
 
 func _add_trees() -> void:
