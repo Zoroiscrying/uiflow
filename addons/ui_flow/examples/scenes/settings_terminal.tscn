@@ -15,7 +15,7 @@ roughness = 0.3
 
 [node name="SettingsTerminal" type="Area3D"]
 script = ExtResource("1")
-page_scene_path = "res://UIScene/SettingsPageExample.tscn"
+page_scene_path = "res://addons/ui_flow/examples/scenes/UIScene/SettingsPageExample.tscn"
 display_name = "Settings"
 key_prompt = "[E] Open Settings"
 

@@ -30,7 +30,7 @@ emission_energy_multiplier = 0.4
 
 [node name="ShopStall" type="Area3D"]
 script = ExtResource("1")
-page_scene_path = "res://UIScene/ShopPage.tscn"
+page_scene_path = "res://addons/ui_flow/examples/scenes/UIScene/ShopPage.tscn"
 display_name = "Shop"
 key_prompt = "[E] Open"
 

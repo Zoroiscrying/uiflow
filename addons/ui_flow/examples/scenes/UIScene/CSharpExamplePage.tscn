@@ -1,6 +1,6 @@
-[gd_scene format=3 uid="uid://bgkdc4xbq0efj"]
+[gd_scene load_steps=2 format=3 uid="uid://csharp_example"]
 
-[ext_resource type="Script" uid="uid://dlxk28u0a18c7" path="res://addons/ui_flow/examples/csharp_example_page.cs" id="1"]
+[ext_resource type="Script" path="res://addons/ui_flow/examples/csharp_example_page.cs" id="1"]
 
-[node name="CSharpExample" type="Node" unique_id=568806918]
+[node name="CSharpExample" type="Node"]
 script = ExtResource("1")

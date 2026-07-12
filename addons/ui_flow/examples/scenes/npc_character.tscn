@@ -15,7 +15,7 @@ albedo_color = Color(0.8, 0.6, 0.3, 1)
 
 [node name="NPC" type="Area3D"]
 script = ExtResource("1")
-page_scene_path = "res://UIScene/DialogPage.tscn"
+page_scene_path = "res://addons/ui_flow/examples/scenes/UIScene/DialogPage.tscn"
 display_name = "Talk"
 key_prompt = "[E] Talk"
 

@@ -13,7 +13,7 @@ albedo_color = Color(0.5, 0.35, 0.2, 1)
 
 [node name="BulletinBoard" type="Area3D"]
 script = ExtResource("1")
-page_scene_path = "res://UIScene/GalleryPage.tscn"
+page_scene_path = "res://addons/ui_flow/examples/scenes/UIScene/GalleryPage.tscn"
 display_name = "Gallery"
 key_prompt = "[E] View Gallery"
 
