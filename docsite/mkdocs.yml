@@ -41,6 +41,28 @@ plugins:
           default: true
         - locale: zh
           name: 中文
+          nav_translations:
+            Home: 首页
+            Getting Started: 快速开始
+            Installation: 安装与配置
+            First Page: 第一个页面
+            Navigation: 导航与传参
+            Features: 核心功能
+            Transitions: 页面过渡
+            Data Binding: 数据绑定
+            Event Bus: 事件总线
+            Components: 内置组件
+            Timeline & Async: Timeline 与 Async
+            Examples: 示例
+            Demo Hub: Demo Hub
+            3D World Demo: 3D 世界示例
+            API Reference: API 参考
+            Pro (Paid): Pro（付费）
+            Pro Overview: Pro 概览
+            Pro Components: Pro 组件
+            Editor Tools: 编辑器工具
+            Runtime Debugger: 运行时调试器
+            Survivors Demo: Survivors 演示
 
 markdown_extensions:
   - pymdownx.highlight:
@@ -81,3 +103,10 @@ nav:
       - Demo Hub: examples/demo-hub.md
       - 3D World Demo: examples/3d-world-demo.md
   - API Reference: api/index.md
+  - Pro (Paid):
+      - Pro Overview: pro/index.md
+      - Pro Components: pro/components.md
+      - Editor Tools: pro/editor-tools.md
+      - Runtime Debugger: pro/debugger.md
+      - Examples:
+          - Survivors Demo: pro/examples/survivors.md
