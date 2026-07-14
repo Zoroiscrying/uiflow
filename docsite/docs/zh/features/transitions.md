@@ -10,7 +10,7 @@ UIFlow 支持在页面资源上配置 **Enter Effect** 和 **Exit Effect**，也
 - **Exit Effect**：页面离开栈时播放。
 - 勾选 **Exit Reverse Play Enter** 时，exit 会使用 enter effect 的反向时间线。
 
-![页面检查器中的过渡配置](/assets/screenshots/page_transition_config.png)
+![页面检查器中的过渡配置](../assets/screenshots/page_transition_config.png)
 
 ## 内置效果
 

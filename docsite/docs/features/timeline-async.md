@@ -12,7 +12,7 @@ UIFlow supports combining multiple animations / waits into a **Timeline**, and i
 
 ## Two-stage Scale Punch Example
 
-![Timeline configuration](/assets/screenshots/timeline_scale_config.png)
+![Timeline configuration](../assets/screenshots/timeline_scale_config.png)
 
 ```gdscript
 # Configuration:

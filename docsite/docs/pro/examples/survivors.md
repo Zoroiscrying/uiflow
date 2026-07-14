@@ -35,4 +35,4 @@ godot --path . --scene res://addons/ui_flow_pro/examples/survivors/main.tscn
 - Modal pages (shop, level up, pause) block input to the game world.
 - The event bus coordinates wave state, player stats, and UI updates.
 
-![Survivors demo screenshot](../assets/screenshots/survivors_demo.png)
+![Survivors demo screenshot](../../assets/screenshots/survivors_demo.png)

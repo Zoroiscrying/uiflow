@@ -12,7 +12,7 @@ UIFlow 支持把多个动画/等待组合成一段 **Timeline**，并通过 `awa
 
 ## 两段式 Scale Punch 示例
 
-![Timeline 配置](/assets/screenshots/timeline_scale_config.png)
+![Timeline 配置](../assets/screenshots/timeline_scale_config.png)
 
 ```gdscript
 # 配置内容：

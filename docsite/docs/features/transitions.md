@@ -10,7 +10,7 @@ In the `UIFlowPage` resource inspector of the page scene root:
 - **Exit Effect**: played when the page leaves the stack.
 - Enable **Exit Reverse Play Enter** to reverse the enter timeline for exit.
 
-![Transition configuration in page inspector](/assets/screenshots/page_transition_config.png)
+![Transition configuration in page inspector](../assets/screenshots/page_transition_config.png)
 
 ## Built-in Effects
 

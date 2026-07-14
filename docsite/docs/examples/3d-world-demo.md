@@ -28,7 +28,7 @@ addons/ui_flow/examples/3d_world/
 2. `interactive_object.gd` calls `UIFlow.push(DialogPage, {"npc": ...})` or `UIFlow.push(ShopPage, ...)`.
 3. Pages overlay the 3D scene using modal or semi-modal mode.
 
-![3D World Demo](/assets/screenshots/3d_world_demo.png)
+![3D World Demo](../assets/screenshots/3d_world_demo.png)
 
 ## Notes
 

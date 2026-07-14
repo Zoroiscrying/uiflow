@@ -28,7 +28,7 @@ addons/ui_flow/examples/3d_world/
 2. `interactive_object.gd` 调用 `UIFlow.push(DialogPage, {"npc": ...})` 或 `UIFlow.push(ShopPage, ...)`。
 3. 页面使用模态或半模态方式覆盖在 3D 场景之上。
 
-![3D 世界示例](/assets/screenshots/3d_world_demo.png)
+![3D 世界示例](../assets/screenshots/3d_world_demo.png)
 
 ## 注意事项
 

@@ -35,4 +35,4 @@ godot --path . --scene res://addons/ui_flow_pro/examples/survivors/main.tscn
 - 模态页面（商店、升级、暂停）会拦截游戏世界输入。
 - 事件总线协调波次状态、玩家属性和 UI 更新。
 
-![Survivors 演示截图](../assets/screenshots/survivors_demo.png)
+![Survivors 演示截图](../../assets/screenshots/survivors_demo.png)

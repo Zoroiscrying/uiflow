@@ -18,7 +18,7 @@ This scene is also the project's default main scene.
 - Event bus example page
 - Timeline / Async animation example page
 
-![Demo Hub main screen](/assets/screenshots/demo_hub_main.png)
+![Demo Hub main screen](../assets/screenshots/demo_hub_main.png)
 
 ## Learning Points
 

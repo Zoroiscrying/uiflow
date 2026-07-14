@@ -11,7 +11,7 @@ UIFlowUI.Toast.show_toast("Saved successfully", "success")
 UIFlowUI.Toast.show_toast("Network disconnected", "error", 3.0)
 ```
 
-![Toast example](/assets/screenshots/toast_example.png)
+![Toast example](../assets/screenshots/toast_example.png)
 
 ### Customizing Toast
 
@@ -41,8 +41,8 @@ UIFlowUI.Confirm.show_confirm("Delete save file?", "Are you sure?", _on_confirm,
 UIFlowUI.Alert.show_alert("Operation complete", "Your data has been saved.")
 ```
 
-![Confirm dialog](/assets/screenshots/confirm_dialog.png)
-![Alert dialog](/assets/screenshots/alert_dialog.png)
+![Confirm dialog](../assets/screenshots/confirm_dialog.png)
+![Alert dialog](../assets/screenshots/alert_dialog.png)
 
 ### Customizing Confirm / Alert
 
@@ -89,7 +89,7 @@ grid.set_columns([
 grid.set_data(player_list)
 ```
 
-![DataGrid example](/assets/screenshots/data_grid_example.png)
+![DataGrid example](../assets/screenshots/data_grid_example.png)
 
 ## InventoryGrid / ItemSlot
 
@@ -106,7 +106,7 @@ inventory.add_item(potion)
 $InventoryGrid.setup(inventory)
 ```
 
-![InventoryGrid in the Survivors demo](/assets/screenshots/inventory_grid.png)
+![InventoryGrid in the Survivors demo](../assets/screenshots/inventory_grid.png)
 
 The grid emits `item_dropped` per slot so you can wire equipment slots, context menus (`UIFlowContextMenu`), and tooltips (`UIFlowTooltip`) — see the Survivors demo for a full example.
 
