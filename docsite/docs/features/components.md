@@ -126,6 +126,17 @@ Show hints on hover:
 $HoverHint.hint_text = "Attack +10"
 ```
 
+## Input Action Bar
+
+`UIFlowActionBar` renders the current top page's declared `UIInputActionNode` entries as a hint bar (key/icon + label), similar to Unreal CommonUI's bound action bar. Drop it into a HUD scene — it auto-follows the navigation stack:
+
+```gdscript
+var bar := UIFlowActionBar.new()
+add_child(bar)  # auto-binds to the top page
+```
+
+Actions show their `icon` when set, otherwise the key bound to `godot_action` (e.g. `[I]`). Disabled actions are hidden by default; set `show_disabled = true` to keep them visible but dimmed. See the Survivors demo HUD for a live example.
+
 ## Custom Components
 
 Extend `UIFlowComponentBase` to implement project-specific components that follow the UIFlow lifecycle.

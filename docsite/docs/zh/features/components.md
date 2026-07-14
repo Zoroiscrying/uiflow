@@ -126,6 +126,17 @@ virtual_list.bind(data_array, item_template, _setup_item)
 $HoverHint.hint_text = "攻击力 +10"
 ```
 
+## 输入动作条
+
+`UIFlowActionBar` 把当前栈顶页面声明的 `UIInputActionNode` 渲染成提示条（按键/图标 + 文案），类似 Unreal CommonUI 的 BoundActionBar。把它放进 HUD 场景即可——会自动跟随导航栈切换：
+
+```gdscript
+var bar := UIFlowActionBar.new()
+add_child(bar)  # 自动绑定栈顶页面
+```
+
+动作设置了 `icon` 时显示图标，否则显示 `godot_action` 绑定的按键（如 `[I]`）。禁用的动作默认隐藏，设 `show_disabled = true` 可改为置灰显示。实际效果见 Survivors 演示的 HUD。
+
 ## 自定义组件
 
 可以继承 `UIFlowComponentBase` 实现项目专属组件，保持与 UIFlow 生命周期一致。
