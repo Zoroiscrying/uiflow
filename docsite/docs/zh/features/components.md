@@ -41,6 +41,9 @@ UIFlowUI.Confirm.show_confirm("删除存档？", "确定删除吗？", _on_confi
 UIFlowUI.Alert.show_alert("操作完成", "数据已保存。")
 ```
 
+![Confirm 对话框](/assets/screenshots/confirm_dialog.png)
+![Alert 对话框](/assets/screenshots/alert_dialog.png)
+
 ### 自定义 Confirm / Alert
 
 两个对话框都通过导出属性支持按钮文案、图标和自定义按钮场景：
@@ -85,6 +88,27 @@ grid.set_columns([
 ])
 grid.set_data(player_list)
 ```
+
+![DataGrid 示例](/assets/screenshots/data_grid_example.png)
+
+## InventoryGrid / ItemSlot
+
+基于槽位的背包网格，绑定 `InventoryData` 资源，支持拖拽。槽位显示物品图标；未设置图标时显示物品名首字母和稀有度颜色边框：
+
+```gdscript
+var inventory := InventoryData.new(20)
+
+var potion := ItemData.new()
+potion.item_name = "Health Potion"
+potion.rarity = ItemData.Rarity.COMMON
+inventory.add_item(potion)
+
+$InventoryGrid.setup(inventory)
+```
+
+![Survivors 演示中的 InventoryGrid](/assets/screenshots/inventory_grid.png)
+
+每个槽位都会发出 `item_dropped` 信号，可据此接入装备槽、右键菜单（`UIFlowContextMenu`）和悬浮提示（`UIFlowTooltip`）——完整示例见 Survivors 演示。
 
 ## VirtualList
 

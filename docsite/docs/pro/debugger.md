@@ -5,6 +5,8 @@
 
 UIFlow Pro ships with a runtime debugger panel that attaches to the running game and streams UI state to the Godot editor.
 
+![UIFlow Debugger panel](/assets/screenshots/debugger_panel.png)
+
 ## Captured Data
 
 The debugger captures the following channels:

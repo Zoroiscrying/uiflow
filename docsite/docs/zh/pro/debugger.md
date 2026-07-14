@@ -5,6 +5,8 @@
 
 UIFlow Pro 附带运行时调试器面板，可附加到运行中的游戏，将 UI 状态实时流式传输到 Godot 编辑器。
 
+![UIFlow Debugger 面板](/assets/screenshots/debugger_panel.png)
+
 ## 捕获的数据
 
 调试器捕获以下通道：

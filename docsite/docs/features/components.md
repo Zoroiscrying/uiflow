@@ -41,6 +41,9 @@ UIFlowUI.Confirm.show_confirm("Delete save file?", "Are you sure?", _on_confirm,
 UIFlowUI.Alert.show_alert("Operation complete", "Your data has been saved.")
 ```
 
+![Confirm dialog](/assets/screenshots/confirm_dialog.png)
+![Alert dialog](/assets/screenshots/alert_dialog.png)
+
 ### Customizing Confirm / Alert
 
 Both dialogs expose exported properties for button text, icons, and custom button scenes:
@@ -85,6 +88,27 @@ grid.set_columns([
 ])
 grid.set_data(player_list)
 ```
+
+![DataGrid example](/assets/screenshots/data_grid_example.png)
+
+## InventoryGrid / ItemSlot
+
+Slot-based inventory grid with drag-and-drop, bound to an `InventoryData` resource. Slots show the item icon, or the first letter of the item name with a rarity-colored border when no icon is set:
+
+```gdscript
+var inventory := InventoryData.new(20)
+
+var potion := ItemData.new()
+potion.item_name = "Health Potion"
+potion.rarity = ItemData.Rarity.COMMON
+inventory.add_item(potion)
+
+$InventoryGrid.setup(inventory)
+```
+
+![InventoryGrid in the Survivors demo](/assets/screenshots/inventory_grid.png)
+
+The grid emits `item_dropped` per slot so you can wire equipment slots, context menus (`UIFlowContextMenu`), and tooltips (`UIFlowTooltip`) — see the Survivors demo for a full example.
 
 ## VirtualList
 

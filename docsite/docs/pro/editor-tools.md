@@ -15,6 +15,8 @@ Edit `UIFlowTheme` resources visually without hand-writing property dictionaries
 
 Open it from **Project → Tools → UIFlow Pro → Theme Editor** when the plugin is enabled.
 
+![Theme Editor](/assets/screenshots/theme_editor.png)
+
 ## Flow Dock / Flow Graph
 
 A visual graph of your page navigation flow.
@@ -24,6 +26,8 @@ A visual graph of your page navigation flow.
 - Jump to a page scene or script from the graph.
 
 This is useful for reviewing whether a complex UI flow has unreachable pages or circular navigation.
+
+![Flow Graph](/assets/screenshots/flow_graph.png)
 
 ## Page Viewer
 
