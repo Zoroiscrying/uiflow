@@ -6,3 +6,24 @@
 /tests/**         export-ignore
 /addons/gdUnit4   export-ignore
 /addons/gdUnit4/** export-ignore
+/reports          export-ignore
+/reports/**       export-ignore
+/docsite          export-ignore
+/docsite/**       export-ignore
+/scripts          export-ignore
+/scripts/**       export-ignore
+/.mirror-free     export-ignore
+/.mirror-free/**  export-ignore
+/.worktrees       export-ignore
+/.worktrees/**    export-ignore
+/.idea            export-ignore
+/.idea/**         export-ignore
+/.vscode          export-ignore
+/.vscode/**       export-ignore
+/gdscript_audit_report.md export-ignore
+/godot_compile7.log export-ignore
+"/NVIDIA Corporation" export-ignore
+"/NVIDIA Corporation/**" export-ignore
+/FREE_PRO_BOUNDARY.md export-ignore
+/MIRROR_STRATEGY.md export-ignore
+/Godot-Plugin-UI-Flow.csproj export-ignore

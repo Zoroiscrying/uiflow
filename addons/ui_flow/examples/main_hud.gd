@@ -40,6 +40,15 @@ func _add_prompt(text: String) -> void:
 	_prompt_bar.add_child(label)
 
 
-## When MainHUD is topmost and Esc is pressed, open Pause menu.
+## When MainHUD is topmost and Esc is pressed, show a pause/return prompt.
 func _on_back() -> void:
-	pass
+	UIFlowUI.Confirm.show_confirm(
+		"Paused",
+		"Return to Demo Hub?",
+		func():
+			var tree := get_tree()
+			UIFlow.pop()
+			tree.change_scene_to_file("res://addons/ui_flow/examples/main.tscn")
+		,
+		Callable()
+	)
