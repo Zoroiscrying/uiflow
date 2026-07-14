@@ -71,6 +71,7 @@ func _setup_layout() -> void:
 	_scroll_container.name = "Body"
 	_scroll_container.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_scroll_container.follow_focus = true
+	_scroll_container.custom_minimum_size = Vector2(0, 240)
 	vbox.add_child(_scroll_container)
 
 	_rows_container = VBoxContainer.new()
@@ -138,6 +139,11 @@ func _rebuild() -> void:
 		btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		btn.flat = true
+		# Match cell padding so columns line up with row labels
+		btn.add_theme_constant_override("content_margin_left", 8)
+		btn.add_theme_constant_override("content_margin_right", 8)
+		btn.add_theme_constant_override("content_margin_top", 4)
+		btn.add_theme_constant_override("content_margin_bottom", 4)
 
 		if col.sortable:
 			btn.pressed.connect(func(): _on_header_clicked(i))
@@ -157,6 +163,11 @@ func _rebuild() -> void:
 			cell.custom_minimum_size = Vector2(col.width, 28)
 			cell.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			cell.clip_text = true
+			# Match header button padding so columns align
+			cell.add_theme_constant_override("margin_left", 8)
+			cell.add_theme_constant_override("margin_right", 8)
+			cell.add_theme_constant_override("margin_top", 4)
+			cell.add_theme_constant_override("margin_bottom", 4)
 			row.add_child(cell)
 
 		# Row click
@@ -166,7 +177,6 @@ func _rebuild() -> void:
 		click_rect.color = Color.TRANSPARENT
 		click_rect.mouse_filter = Control.MOUSE_FILTER_STOP
 		click_rect.set_anchors_preset(Control.PRESET_FULL_RECT)
-		click_rect.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 		click_rect.gui_input.connect(func(event: InputEvent):
 			if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 				_select_row(idx)
