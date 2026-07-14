@@ -38,13 +38,21 @@ func _ready() -> void:
 	style.set_border_width_all(1)
 	add_theme_stylebox_override("panel", style)
 
-	_vbox = VBoxContainer.new()
-	_vbox.add_theme_constant_override("separation", 2)
-	add_child(_vbox)
+	_ensure_vbox()
+
+
+## Lazily create the item container so add_item()/add_separator()/add_submenu()
+## also work before the menu enters the tree (e.g. UIFlowContextMenu.new()).
+func _ensure_vbox() -> void:
+	if _vbox == null:
+		_vbox = VBoxContainer.new()
+		_vbox.add_theme_constant_override("separation", 2)
+		add_child(_vbox)
 
 
 ## Add a clickable item.
 func add_item(label: String, callback: Callable = Callable()) -> UIFlowContextMenu:
+	_ensure_vbox()
 	var btn := Button.new()
 	btn.text = label
 	btn.flat = true
@@ -70,6 +78,7 @@ func add_item(label: String, callback: Callable = Callable()) -> UIFlowContextMe
 
 ## Add a separator line.
 func add_separator() -> UIFlowContextMenu:
+	_ensure_vbox()
 	var sep := HSeparator.new()
 	_vbox.add_child(sep)
 	_items.append({"type": "separator"})
@@ -78,6 +87,7 @@ func add_separator() -> UIFlowContextMenu:
 
 ## Add a submenu item. Returns the submenu for chaining.
 func add_submenu(label: String) -> UIFlowContextMenu:
+	_ensure_vbox()
 	var btn := Button.new()
 	btn.text = label + "  ▸"
 	btn.flat = true

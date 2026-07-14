@@ -47,6 +47,9 @@ func can_drop(data: Variant) -> bool:
 ## Show highlight when valid drag hovers.
 func show_highlight() -> void:
 	if _highlight:
+		# Always restore the valid color first; UIFlowDragDrop may have
+		# tinted the highlight red on an earlier invalid hover.
+		_highlight.color = highlight_color
 		_highlight.visible = true
 
 
