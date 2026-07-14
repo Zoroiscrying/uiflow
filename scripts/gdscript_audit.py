@@ -159,17 +159,14 @@ def scan_project(project_dir):
             })
         
         # 2. Detect undeclared variables in assignments
-        issues.extend(check_undeclared_vars(gd_path, rel, text))
+        issues.extend(check_undeclared_vars(gd_path, rel, text, project_dir))
     
     return issues
 
 
-def check_undeclared_vars(filepath, rel_path, text):
-    """Check for variables used in assignments that are not declared."""
-    issues = []
+def _collect_class_declarations(text):
+    """Parse a GDScript file and return its declared identifiers."""
     lines = text.split('\n')
-    
-    # Parse class-level declarations
     class_vars = set()
     class_consts = set()
     class_enum_values = set()
@@ -178,11 +175,13 @@ def check_undeclared_vars(filepath, rel_path, text):
     
     for line in lines:
         stripped = line.strip()
-        # class_name
-        m = re.match(r'^class_name\s+(\w+)', stripped)
+        # class_name (may be followed by extends on the same line)
+        m = re.match(r'^class_name\s+(\w+)(?:\s+extends\s+(.+))?', stripped)
         if m:
             class_name_alias = m.group(1)
-        # extends
+            if m.group(2):
+                base_class = m.group(2).strip()
+        # extends on its own line
         m = re.match(r'^extends\s+(.+)', stripped)
         if m:
             base_class = m.group(1).strip()
@@ -210,6 +209,48 @@ def check_undeclared_vars(filepath, rel_path, text):
                 if item:
                     enum_name = item.split('=')[0].strip().split()[0]
                     class_enum_values.add(enum_name)
+    
+    return class_vars, class_consts, class_enum_values, class_name_alias, base_class
+
+
+def _find_base_class_file(base_class, project_dir):
+    """Locate the .gd file that defines the given base class name."""
+    if not base_class:
+        return None
+    base_name = base_class.split('.')[0].strip().strip('"')
+    if not base_name:
+        return None
+    
+    for gd_path in project_dir.rglob('*.gd'):
+        rel = gd_path.relative_to(project_dir)
+        if any(part.startswith('.') for part in rel.parts):
+            continue
+        if 'gdUnit4' in rel.parts:
+            continue
+        text = gd_path.read_text(encoding='utf-8')
+        for line in text.split('\n'):
+            m = re.match(r'^class_name\s+(\w+)', line.strip())
+            if m and m.group(1) == base_name:
+                return gd_path
+    return None
+
+
+def check_undeclared_vars(filepath, rel_path, text, project_dir):
+    """Check for variables used in assignments that are not declared."""
+    issues = []
+    lines = text.split('\n')
+    
+    class_vars, class_consts, class_enum_values, class_name_alias, base_class = _collect_class_declarations(text)
+    
+    # Inherit identifiers from base class (one level)
+    if base_class:
+        base_file = _find_base_class_file(base_class, project_dir)
+        if base_file:
+            base_text = base_file.read_text(encoding='utf-8')
+            base_vars, base_consts, base_enums, _, _ = _collect_class_declarations(base_text)
+            class_vars.update(base_vars)
+            class_consts.update(base_consts)
+            class_enum_values.update(base_enums)
     
     # Add class_name and base_class to known identifiers
     if class_name_alias:
