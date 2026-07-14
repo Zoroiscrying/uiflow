@@ -1,7 +1,28 @@
 ## Confirmation dialog component — modal with Confirm/Cancel buttons.
 ##
-## Access via [code]UIFlow.Confirm.show("Title", "Message", on_confirm, on_cancel)[/code].
+## Access via [code]UIFlowUI.Confirm.show_confirm("Title", "Message", on_confirm, on_cancel)[/code].
+##
+## You can customize button text, order, and appearance through exported properties,
+## or subclass this component and override [code]_create_buttons()[/code] for full control.
 class_name UIFlowConfirmDialog extends UIFlowComponent
+
+## Default text for the confirm button.
+@export var confirm_text: String = "Confirm"
+
+## Default text for the cancel button.
+@export var cancel_text: String = "Cancel"
+
+## If true, the cancel button is placed before the confirm button.
+@export var cancel_first: bool = true
+
+## Optional custom button scene. Must be a Button or extend Button.
+@export var custom_button_scene: PackedScene = null
+
+## Optional icon for the confirm button.
+@export var confirm_icon: Texture2D = null
+
+## Optional icon for the cancel button.
+@export var cancel_icon: Texture2D = null
 
 var _overlay: ColorRect
 var _panel: PanelContainer
@@ -81,7 +102,14 @@ func _component_ready() -> void:
 ## [param message] is the dialog message.
 ## [param on_confirm] is called when the user clicks Confirm.
 ## [param on_cancel] is called when the user clicks Cancel (optional).
-func show_confirm(title: String, message: String, on_confirm: Callable, on_cancel: Callable = Callable()) -> void:
+## [param options] can override [member confirm_text], [member cancel_text], and [member cancel_first] for this call only.
+func show_confirm(
+	title: String,
+	message: String,
+	on_confirm: Callable = Callable(),
+	on_cancel: Callable = Callable(),
+	options: Dictionary = {}
+) -> void:
 	if _active:
 		return
 
@@ -89,29 +117,11 @@ func show_confirm(title: String, message: String, on_confirm: Callable, on_cance
 	_title_label.text = title
 	_message_label.text = message
 
-	# Clear old buttons
-	for child in _button_container.get_children():
-		child.queue_free()
+	var call_confirm_text: String = options.get("confirm_text", confirm_text)
+	var call_cancel_text: String = options.get("cancel_text", cancel_text)
+	var call_cancel_first: bool = options.get("cancel_first", cancel_first)
 
-	# Cancel button
-	var cancel_btn := Button.new()
-	cancel_btn.text = "Cancel"
-	cancel_btn.pressed.connect(func():
-		_hide_dialog()
-		if on_cancel.is_valid():
-			on_cancel.call()
-	)
-	_button_container.add_child(cancel_btn)
-
-	# Confirm button
-	var confirm_btn := Button.new()
-	confirm_btn.text = "Confirm"
-	confirm_btn.pressed.connect(func():
-		_hide_dialog()
-		if on_confirm.is_valid():
-			on_confirm.call()
-	)
-	_button_container.add_child(confirm_btn)
+	_setup_buttons(call_confirm_text, call_cancel_text, call_cancel_first, on_confirm, on_cancel)
 
 	# Show with animation
 	visible = true
@@ -124,14 +134,61 @@ func show_confirm(title: String, message: String, on_confirm: Callable, on_cance
 	tween.tween_property(_panel, "modulate:a", 1.0, 0.15)
 	tween.tween_property(_panel, "scale", Vector2.ONE, 0.2).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
 
-	# Focus confirm button
-	confirm_btn.grab_focus()
+
+## Override this to build the button row from scratch.
+func _setup_buttons(
+	p_confirm_text: String,
+	p_cancel_text: String,
+	p_cancel_first: bool,
+	on_confirm: Callable,
+	on_cancel: Callable
+) -> void:
+	# Clear old buttons
+	for child in _button_container.get_children():
+		child.queue_free()
+
+	var confirm_btn := _create_button(p_confirm_text, confirm_icon)
+	confirm_btn.pressed.connect(func():
+		_hide_dialog()
+		if on_confirm.is_valid():
+			on_confirm.call()
+	)
+
+	var cancel_btn := _create_button(p_cancel_text, cancel_icon)
+	cancel_btn.pressed.connect(func():
+		_hide_dialog()
+		if on_cancel.is_valid():
+			on_cancel.call()
+	)
+
+	if p_cancel_first:
+		_button_container.add_child(cancel_btn)
+		_button_container.add_child(confirm_btn)
+		confirm_btn.grab_focus()
+	else:
+		_button_container.add_child(confirm_btn)
+		_button_container.add_child(cancel_btn)
+		confirm_btn.grab_focus()
+
+
+## Create a single button. Subclasses can override this to return custom Button types.
+func _create_button(text: String, icon: Texture2D = null) -> Button:
+	var btn: Button
+	if custom_button_scene:
+		btn = custom_button_scene.instantiate() as Button
+	else:
+		btn = Button.new()
+	btn.text = text
+	if icon:
+		btn.icon = icon
+	return btn
 
 
 func _hide_dialog() -> void:
-	visible = false
-	_active = false
-	# Reset opacity for next show
-	_overlay.modulate.a = 1.0
-	_panel.modulate.a = 1.0
-	_panel.scale = Vector2.ONE
+	var tween: Tween = create_tween().set_parallel(true)
+	tween.tween_property(_overlay, "modulate:a", 0.0, 0.1)
+	tween.tween_property(_panel, "modulate:a", 0.0, 0.1)
+	tween.finished.connect(func():
+		visible = false
+		_active = false
+	)

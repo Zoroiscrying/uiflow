@@ -44,9 +44,14 @@ bind_signal(sig: Signal, callback: Callable)
 ## UIFlowUI (autoload)
 
 ```gdscript
-UIFlowUI.Toast.show(message, type, duration)
-UIFlowUI.Confirm.show(message, on_ok, on_cancel)
-UIFlowUI.Alert.show(message, on_close)
+UIFlowUI.Toast.show_toast(message, type_name, duration)
+UIFlowUI.Confirm.show_confirm(title, message, on_confirm, on_cancel, options)
+UIFlowUI.Alert.show_alert(title, message, on_close, options)
+
+# Replace default implementations
+UIFlowUI.set_custom_toast(custom_toast)
+UIFlowUI.set_custom_confirm(custom_confirm)
+UIFlowUI.set_custom_alert(custom_alert)
 ```
 
 ## Configuration Resources

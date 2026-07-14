@@ -13,10 +13,12 @@ extends Node
 ## Toast notification system. Replace with your own implementation.
 var Toast: UIFlowToast
 
-## Confirmation dialog. Replace with your own implementation.
+## Confirmation dialog. Access via [code]UIFlowUI.Confirm.show_confirm(...)[/code].
+## Replace with your own implementation.
 var Confirm: UIFlowConfirmDialog
 
-## Alert dialog. Replace with your own implementation.
+## Alert dialog. Access via [code]UIFlowUI.Alert.show_alert(...)[/code].
+## Replace with your own implementation.
 var Alert: UIFlowAlertDialog
 
 var _component_layer: CanvasLayer
