@@ -28,3 +28,6 @@ __pycache__/
 # Non-plugin files
 /.reasonix/
 /docs/superpowers/
+
+# GPU driver crash logs
+/NVIDIA Corporation/
