@@ -31,3 +31,6 @@ __pycache__/
 
 # GPU driver crash logs
 /NVIDIA Corporation/
+
+# Logs
+*.log

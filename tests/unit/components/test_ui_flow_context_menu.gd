@@ -66,3 +66,20 @@ func test_chaining() -> void:
 	assert_that(result).is_same(menu)
 	assert_that(menu._items).has_size(2)
 	menu.queue_free()
+
+
+## Regression: add_item/add_separator/add_submenu must also work before the
+## menu enters the tree (right-click in the survivors demo crashed on _vbox
+## being null because it was only created in _ready).
+func test_add_item_before_tree() -> void:
+	var menu := UIFlowContextMenu.new()
+	menu.add_item("A", func(): pass)
+	menu.add_separator()
+	menu.add_submenu("More")
+	assert_that(menu._items).has_size(3)
+
+	add_child(menu)
+	await get_tree().process_frame
+	# The lazily created container holds the entries; _ready must not duplicate it.
+	assert_that(menu._vbox.get_child_count()).is_equal(3)
+	menu.queue_free()
