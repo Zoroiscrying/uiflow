@@ -36,9 +36,8 @@ var _data: Array = []
 var _sort_column: int = -1
 var _sort_ascending: bool = true
 
-var _header_container: HBoxContainer
 var _scroll_container: ScrollContainer
-var _rows_container: VBoxContainer
+var _grid: GridContainer
 
 var _selected_index: int = -1
 
@@ -56,28 +55,18 @@ func _setup_layout() -> void:
 	margin.add_theme_constant_override("margin_bottom", 4)
 	add_child(margin)
 
-	var vbox := VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", 0)
-	margin.add_child(vbox)
-
-	# Header
-	_header_container = HBoxContainer.new()
-	_header_container.name = "Header"
-	_header_container.add_theme_constant_override("separation", 1)
-	vbox.add_child(_header_container)
-
 	# Scroll body
 	_scroll_container = ScrollContainer.new()
 	_scroll_container.name = "Body"
 	_scroll_container.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_scroll_container.follow_focus = true
 	_scroll_container.custom_minimum_size = Vector2(0, 240)
-	vbox.add_child(_scroll_container)
+	margin.add_child(_scroll_container)
 
-	_rows_container = VBoxContainer.new()
-	_rows_container.name = "Rows"
-	_rows_container.add_theme_constant_override("separation", 1)
-	_scroll_container.add_child(_rows_container)
+	_grid = GridContainer.new()
+	_grid.name = "Grid"
+	_grid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_scroll_container.add_child(_grid)
 
 
 ## Define columns. Call before set_data.
@@ -125,12 +114,12 @@ func get_selected() -> Array:
 
 func _rebuild() -> void:
 	# Clear old immediately to avoid deferred-delete leaks in tests
-	for child in _header_container.get_children():
-		child.free()
-	for child in _rows_container.get_children():
+	for child in _grid.get_children():
 		child.free()
 
-	# Build header
+	_grid.columns = _columns.size()
+
+	# Header row
 	for i in range(_columns.size()):
 		var col: Column = _columns[i]
 		var btn := Button.new()
@@ -139,23 +128,13 @@ func _rebuild() -> void:
 		btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		btn.flat = true
-		# Match cell padding so columns line up with row labels
-		btn.add_theme_constant_override("content_margin_left", 8)
-		btn.add_theme_constant_override("content_margin_right", 8)
-		btn.add_theme_constant_override("content_margin_top", 4)
-		btn.add_theme_constant_override("content_margin_bottom", 4)
-
 		if col.sortable:
 			btn.pressed.connect(func(): _on_header_clicked(i))
+		_grid.add_child(btn)
 
-		_header_container.add_child(btn)
-
-	# Build rows
+	# Data rows
 	for row_idx in range(_data.size()):
 		var row_data: Array = _data[row_idx]
-		var row := HBoxContainer.new()
-		row.add_theme_constant_override("separation", 1)
-
 		for col_idx in range(_columns.size()):
 			var col: Column = _columns[col_idx]
 			var cell := Label.new()
@@ -163,31 +142,19 @@ func _rebuild() -> void:
 			cell.custom_minimum_size = Vector2(col.width, 28)
 			cell.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			cell.clip_text = true
-			# Match header button padding so columns align
-			cell.add_theme_constant_override("margin_left", 8)
-			cell.add_theme_constant_override("margin_right", 8)
-			cell.add_theme_constant_override("margin_top", 4)
-			cell.add_theme_constant_override("margin_bottom", 4)
-			row.add_child(cell)
-
-		# Row click
-		var idx := row_idx
-		var click_rect := ColorRect.new()
-		click_rect.name = "ClickRect"
-		click_rect.color = Color.TRANSPARENT
-		click_rect.mouse_filter = Control.MOUSE_FILTER_STOP
-		click_rect.set_anchors_preset(Control.PRESET_FULL_RECT)
-		click_rect.gui_input.connect(func(event: InputEvent):
-			if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-				_select_row(idx)
-		)
-		row.add_child(click_rect)
-
-		_rows_container.add_child(row)
+			cell.mouse_filter = Control.MOUSE_FILTER_STOP
+			cell.gui_input.connect(_make_cell_input_handler(row_idx))
+			_grid.add_child(cell)
 
 	# Apply current sort indicator
 	if _sort_column >= 0:
 		_update_sort_indicator()
+
+
+func _make_cell_input_handler(row_idx: int) -> Callable:
+	return func(event: InputEvent):
+		if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+			_select_row(row_idx)
 
 
 func _on_header_clicked(column_index: int) -> void:
@@ -208,9 +175,9 @@ func _select_row(index: int) -> void:
 func _update_sort_indicator() -> void:
 	# Update header button text with sort arrow
 	for i in range(_columns.size()):
-		if i >= _header_container.get_child_count():
+		if i >= _grid.get_child_count():
 			break
-		var btn: Button = _header_container.get_child(i) as Button
+		var btn: Button = _grid.get_child(i) as Button
 		if btn == null:
 			continue
 		var col: Column = _columns[i]
