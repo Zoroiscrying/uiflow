@@ -22,6 +22,8 @@ GODOT_PROPERTIES = {
     'clip_children', 'light_mask', 'visibility_layer', 'z_index', 'z_as_relative',
     'y_sort_enabled', 'texture_filter', 'texture_repeat', 'material',
     'use_parent_material', 'canvas_item',
+    # CanvasLayer
+    'layer', 'offset', 'rotation', 'scale', 'follow_viewport_enabled', 'follow_viewport_scale',
     # Control
     'anchor_left', 'anchor_top', 'anchor_right', 'anchor_bottom',
     'offset_left', 'offset_top', 'offset_right', 'offset_bottom',

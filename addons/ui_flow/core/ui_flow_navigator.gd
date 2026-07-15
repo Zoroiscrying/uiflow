@@ -277,6 +277,8 @@ func _do_push(page_class: GDScript, data: Variant, page_theme: UIFlowTheme, p_fi
 		var current: Dictionary = _stack.back()
 		var current_page: UIFlowPage = current["instance"] as UIFlowPage
 		if current_page and is_instance_valid(current_page) and current_page.has_method("_on_hidden"):
+			if UIFlow.Focus != null:
+				UIFlow.Focus.remember_focus(current_page)
 			current_page._on_hidden()
 			current_page._state = UIFlowPage.State.HIDDEN
 			current_page.set_process_input(false)
@@ -399,6 +401,8 @@ func _do_push_instance(instance: Control, data: Variant) -> Control:
 		var current: Dictionary = _stack.back()
 		var current_page: UIFlowPage = current["instance"] as UIFlowPage
 		if current_page and is_instance_valid(current_page) and current_page.has_method("_on_hidden"):
+			if UIFlow.Focus != null:
+				UIFlow.Focus.remember_focus(current_page)
 			current_page._on_hidden()
 			current_page._state = UIFlowPage.State.HIDDEN
 			current_page.set_process_input(false)
@@ -513,6 +517,8 @@ func _cleanup_after_pop(top_instance: Control, top_class: GDScript) -> void:
 		if page.has_method("_on_destroyed"):
 			page._on_destroyed()
 		page._state = UIFlowPage.State.DESTROYED
+		if UIFlow.Focus != null:
+			UIFlow.Focus.forget_focus(page)
 
 	# Try to pool the instance instead of freeing
 	var pooled := false
@@ -543,6 +549,8 @@ func _cleanup_after_pop(top_instance: Control, top_class: GDScript) -> void:
 				below_page._state = UIFlowPage.State.OPENED
 				below_page.set_process_input(true)
 				below_page.set_process_unhandled_input(true)
+			if UIFlow.Focus != null:
+				UIFlow.Focus.restore_focus(below_page)
 
 	page_popped.emit(top_class)
 	page_closed.emit(top_class)
@@ -574,6 +582,8 @@ func replace(page_class: GDScript, data: Variant = null, page_theme: UIFlowTheme
 		if old_page.has_method("_on_destroyed"):
 			old_page._on_destroyed()
 		old_page._state = UIFlowPage.State.DESTROYED
+		if UIFlow.Focus != null:
+			UIFlow.Focus.forget_focus(old_page)
 	_container.remove_child(old_instance)
 	old_instance.queue_free()
 
@@ -610,6 +620,8 @@ func pop_to_root() -> void:
 			if page.has_method("_on_destroyed"):
 				page._on_destroyed()
 			page._state = UIFlowPage.State.DESTROYED
+			if UIFlow.Focus != null:
+				UIFlow.Focus.forget_focus(page)
 		if is_instance_valid(instance) and instance.is_inside_tree():
 			_container.remove_child(instance)
 			instance.queue_free()
@@ -624,6 +636,8 @@ func pop_to_root() -> void:
 			root_page._state = UIFlowPage.State.OPENED
 			root_page.set_process_input(true)
 			root_page.set_process_unhandled_input(true)
+		if UIFlow.Focus != null:
+			UIFlow.Focus.restore_focus(root_page)
 
 	_finish_navigation()
 
@@ -667,6 +681,8 @@ func close(page_class: GDScript) -> void:
 		if page.has_method("_on_destroyed"):
 			page._on_destroyed()
 		page._state = UIFlowPage.State.DESTROYED
+		if UIFlow.Focus != null:
+			UIFlow.Focus.forget_focus(page)
 
 	if is_instance_valid(instance) and instance.is_inside_tree():
 		_container.remove_child(instance)
@@ -716,6 +732,8 @@ func _move_to_top(page_class: GDScript) -> void:
 	var current_top: Dictionary = _stack.back()
 	var current_page: UIFlowPage = current_top["instance"] as UIFlowPage
 	if current_page and is_instance_valid(current_page) and current_page.has_method("_on_hidden"):
+		if UIFlow.Focus != null:
+			UIFlow.Focus.remember_focus(current_page)
 		current_page._on_hidden()
 		current_page._state = UIFlowPage.State.HIDDEN
 		current_page.set_process_input(false)
@@ -740,6 +758,8 @@ func _move_to_top(page_class: GDScript) -> void:
 			moved_page._state = UIFlowPage.State.OPENED
 			moved_page.set_process_input(true)
 			moved_page.set_process_unhandled_input(true)
+		if UIFlow.Focus != null:
+			UIFlow.Focus.restore_focus(moved_page)
 
 
 ## Get current top page class.

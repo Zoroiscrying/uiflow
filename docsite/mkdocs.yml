@@ -99,6 +99,7 @@ nav:
       - Event Bus: features/event-bus.md
       - Components: features/components.md
       - Timeline & Async: features/timeline-async.md
+      - Gamepad UI: features/gamepad-ui.md
   - Examples:
       - Demo Hub: examples/demo-hub.md
       - 3D World Demo: examples/3d-world-demo.md

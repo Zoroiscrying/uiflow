@@ -9,6 +9,10 @@ var Router: UIFlowNavigator
 var Scenes: UIFlowSceneResolver
 ## Input handling and focus management.
 var FlowInput: UIFlowInputHandler
+## Directional (gamepad d-pad / arrow keys) focus navigation.
+var Focus: UIFlowFocusNavigator
+## Analog-stick driven virtual cursor.
+var Cursor: UIFlowVirtualCursor
 ## Theme utilities and named color palette.
 var ThemeHelper: UIFlowThemeHelper
 ## Global configuration.
@@ -58,6 +62,15 @@ func _ready() -> void:
 	add_child(FlowInput)
 	FlowInput.setup(Router)
 	FlowInput.back_pressed.connect(_on_back_pressed)
+
+	Focus = UIFlowFocusNavigator.new()
+	Focus.name = "UIFlowFocusNavigator"
+	add_child(Focus)
+	Focus.setup(Router)
+
+	Cursor = UIFlowVirtualCursor.new()
+	Cursor.name = "UIFlowVirtualCursor"
+	add_child(Cursor)
 
 
 func _load_config() -> void:

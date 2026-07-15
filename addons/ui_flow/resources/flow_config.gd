@@ -11,6 +11,15 @@ class_name UIFlowConfig extends Resource
 @export var auto_focus_on_push: bool = true
 @export var restore_focus_on_pop: bool = true
 
+## If true, ui_left/right/up/down (arrow keys, d-pad, left stick) move focus
+## between focusable controls on the top page. Explicit focus_neighbor_*
+## assignments win over automatic geometry-based search.
+@export var enable_directional_focus: bool = true
+
+## If true, directional focus wraps around to the opposite edge when no
+## candidate exists in the pressed direction; if false, focus is trapped.
+@export var focus_wrap_enabled: bool = false
+
 ## Maximum navigation stack depth before pushing new pages is blocked.
 ## Prevents accidental memory leaks from unbounded push loops.
 @export_range(1, 200, 1) var max_stack_depth: int = 50

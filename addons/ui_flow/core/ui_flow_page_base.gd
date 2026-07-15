@@ -208,6 +208,7 @@ func _on_unpooled() -> void:
 # ── Framework hooks (called by Navigator, not by user) ──────────────────────
 
 ## Called by Navigator after _on_created. Applies default focus.
+## Does nothing when [member UIFlowConfig.auto_focus_on_push] is false.
 func _apply_default_focus() -> void:
 	if default_focus_path.is_empty():
 		return
@@ -219,7 +220,12 @@ func _apply_default_focus() -> void:
 		uiflow = Engine.get_singleton("UIFlow")
 	else:
 		uiflow = get_node_or_null("/root/UIFlow")
-	if uiflow and uiflow.has_method("set_default_focus"):
+	if uiflow == null:
+		return
+	var cfg: UIFlowConfig = uiflow.get("Config")
+	if cfg != null and not cfg.auto_focus_on_push:
+		return
+	if uiflow.has_method("set_default_focus"):
 		uiflow.set_default_focus(focus_node)
 
 
