@@ -24,7 +24,21 @@ func setup(navigator: UIFlowNavigator) -> void:
 ## Set the default focus node for the current page.
 func set_default_focus(node: Control) -> void:
 	_default_focus_node = weakref(node)
-	if node and is_instance_valid(node) and node.is_inside_tree():
+	if node == null or not is_instance_valid(node) or not node.is_inside_tree():
+		return
+	if node.is_visible_in_tree():
+		node.grab_focus()
+	else:
+		# Pages opened with a "starts_hidden" transition are invisible during
+		# _on_opened; grabbing focus then is unreliable across Godot versions.
+		# Defer the grab until the control becomes visible.
+		node.visibility_changed.connect(_on_default_focus_visible.bind(node), CONNECT_ONE_SHOT)
+
+
+func _on_default_focus_visible(node: Control) -> void:
+	# Only grab if this node is still the current default focus target.
+	var current: Control = _default_focus_node.get_ref() as Control if _default_focus_node != null else null
+	if current == node and is_instance_valid(node) and node.is_visible_in_tree():
 		node.grab_focus()
 
 
