@@ -33,7 +33,9 @@ func _unhandled_input(event: InputEvent) -> void:
 	if not _is_enabled():
 		return
 	for entry: Array in _DIRECTIONS:
-		if not event.is_action_pressed(entry[0]):
+		# allow_echo: holding a direction repeats the move (OS key repeat),
+		# matching standard game menu behavior.
+		if not event.is_action_pressed(entry[0], true):
 			continue
 		# While the virtual cursor is active it owns the analog stick;
 		# d-pad buttons and arrow keys still drive focus.

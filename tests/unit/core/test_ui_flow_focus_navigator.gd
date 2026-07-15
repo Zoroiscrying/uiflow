@@ -108,6 +108,28 @@ func test_unhandled_input_event_moves_focus() -> void:
 	assert_that(_owner()).is_equal(_buttons[1])
 
 
+func test_echo_event_moves_focus_for_hold_repeat() -> void:
+	_buttons[0].grab_focus()
+	var ev := InputEventKey.new()
+	ev.keycode = KEY_RIGHT
+	ev.pressed = true
+	ev.echo = true
+	UIFlow.Focus._unhandled_input(ev)
+	assert_that(_owner()).is_equal(_buttons[1])
+
+
+func test_real_key_event_moves_focus_via_pipeline() -> void:
+	_buttons[0].grab_focus()
+	var ev := InputEventKey.new()
+	ev.keycode = KEY_RIGHT
+	ev.pressed = true
+	Input.parse_input_event(ev)
+	Input.flush_buffered_events()
+	await get_tree().process_frame
+	await get_tree().process_frame
+	assert_that(_owner()).is_equal(_buttons[1])
+
+
 func test_unhandled_input_ignored_when_disabled() -> void:
 	UIFlow.Config.enable_directional_focus = false
 	_buttons[0].grab_focus()
