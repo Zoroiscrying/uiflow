@@ -54,7 +54,7 @@ func _press_direction(action: StringName) -> void:
 	var ev := InputEventAction.new()
 	ev.action = action
 	ev.pressed = true
-	UIFlow.Focus._unhandled_input(ev)
+	UIFlow.Focus._input(ev)
 
 
 func test_move_right_selects_next_button() -> void:
@@ -102,7 +102,7 @@ func test_no_focus_owner_grabs_first_focusable() -> void:
 	assert_that(_owner()).is_equal(_buttons[0])
 
 
-func test_unhandled_input_event_moves_focus() -> void:
+func test_input_event_moves_focus() -> void:
 	_buttons[0].grab_focus()
 	_press_direction(&"ui_right")
 	assert_that(_owner()).is_equal(_buttons[1])
@@ -114,8 +114,53 @@ func test_echo_event_moves_focus_for_hold_repeat() -> void:
 	ev.keycode = KEY_RIGHT
 	ev.pressed = true
 	ev.echo = true
-	UIFlow.Focus._unhandled_input(ev)
+	UIFlow.Focus._input(ev)
 	assert_that(_owner()).is_equal(_buttons[1])
+
+
+func test_directional_input_does_not_leak_to_page_below() -> void:
+	# Page below has a button exactly to the right of the top page's button.
+	# Without interception the engine's viewport-wide guess jumps into the
+	# covered page; the navigator must scope candidates to the top page.
+	var page2 := UIFlowPage.new()
+	page2.set_anchors_preset(Control.PRESET_FULL_RECT)
+	var top_btn := Button.new()
+	top_btn.text = "TOP"
+	top_btn.focus_mode = Control.FOCUS_ALL
+	top_btn.position = Vector2(500, 500)
+	top_btn.size = Vector2(80, 40)
+	page2.add_child(top_btn)
+	UIFlow.push_instance(page2)
+	top_btn.grab_focus()
+
+	_press_direction(&"ui_right")
+	# Trapped at the edge of the top page: focus must not move to _buttons
+	# on the page below.
+	assert_that(_owner()).is_equal(top_btn)
+
+
+func test_directional_input_ignored_for_line_edit() -> void:
+	var edit := LineEdit.new()
+	edit.position = Vector2(0, 400)
+	edit.size = Vector2(200, 30)
+	_page.add_child(edit)
+	edit.grab_focus()
+
+	_press_direction(&"ui_right")
+	# LineEdit keeps arrow keys for caret movement.
+	assert_that(_owner()).is_equal(edit)
+
+
+func test_directional_input_ignored_when_focus_outside_page() -> void:
+	var outside := Button.new()
+	outside.text = "OUTSIDE"
+	add_child(outside)
+	outside.grab_focus()
+
+	_press_direction(&"ui_right")
+	# Focus lives outside the top page (e.g. overlay dialog): engine's job.
+	assert_that(_owner()).is_equal(outside)
+	outside.queue_free()
 
 
 func test_real_key_event_moves_focus_via_pipeline() -> void:
@@ -130,7 +175,7 @@ func test_real_key_event_moves_focus_via_pipeline() -> void:
 	assert_that(_owner()).is_equal(_buttons[1])
 
 
-func test_unhandled_input_ignored_when_disabled() -> void:
+func test_input_ignored_when_disabled() -> void:
 	UIFlow.Config.enable_directional_focus = false
 	_buttons[0].grab_focus()
 	_press_direction(&"ui_right")

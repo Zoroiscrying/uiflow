@@ -1,11 +1,21 @@
 ## Directional (gamepad d-pad / arrow keys) focus navigation for the top page.
 ##
-## Godot does not move focus between controls on directional input; this node
-## implements it for UIFlow pages:
+## Godot 4.6 moves focus on directional input using explicit
+## [code]focus_neighbor_*[/code] assignments or a viewport-wide geometry guess.
+## The guess knows nothing about the page stack: covered pages stay visible,
+## so the engine can move focus into a page below the top one. This navigator
+## intercepts directional input in [code]_input[/code] (before the engine's
+## GUI phase) to make navigation on UIFlow pages authoritative:
 ##
+## - Candidates are scoped to the top page's subtree.
 ## - Explicit [code]focus_neighbor_*[/code] assignments win over geometry.
 ## - Otherwise the best candidate is picked by directional distance.
-## - Edge behavior is wrap or trap ([member UIFlowConfig.focus_wrap_enabled]).
+## - Edge behavior is wrap or trap ([member UIFlowConfig.focus_wrap_enabled]);
+##   a trapped edge consumes the event instead of leaking to pages below.
+## - Controls that use arrow keys internally (text edits, lists, trees,
+##   sliders, tabs, scroll containers) keep their keys (engine behavior).
+## - Focus owners outside the top page (e.g. overlay dialogs) are left to
+##   the engine as well.
 ## - Per-page focus memory: the focused control is remembered when a page is
 ##   hidden and restored when it is shown again
 ##   ([member UIFlowConfig.restore_focus_on_pop]).
@@ -29,7 +39,7 @@ func setup(navigator: UIFlowNavigator) -> void:
 	_navigator = navigator
 
 
-func _unhandled_input(event: InputEvent) -> void:
+func _input(event: InputEvent) -> void:
 	if not _is_enabled():
 		return
 	for entry: Array in _DIRECTIONS:
@@ -41,8 +51,19 @@ func _unhandled_input(event: InputEvent) -> void:
 		# d-pad buttons and arrow keys still drive focus.
 		if event is InputEventJoypadMotion and UIFlow.Cursor != null and UIFlow.Cursor.is_enabled():
 			return
-		if move_focus(entry[1]):
-			get_viewport().set_input_as_handled()
+		var root := _top_page()
+		if root == null:
+			return
+		var owner := get_viewport().gui_get_focus_owner()
+		if owner != null and is_instance_valid(owner):
+			if not root.is_ancestor_of(owner):
+				return  # focus is outside the top page (overlay dialog etc.) — leave it to the engine
+			if _owner_consumes_directional(owner):
+				return  # controls with internal arrow-key handling keep their keys
+		move_focus(entry[1])
+		# Consume even when trapped at an edge: falling through to the
+		# engine's viewport-wide guess could reach covered pages below.
+		get_viewport().set_input_as_handled()
 		return
 
 
@@ -108,6 +129,15 @@ func _is_enabled() -> bool:
 
 func _wrap_enabled() -> bool:
 	return UIFlow.Config != null and UIFlow.Config.focus_wrap_enabled
+
+
+## Controls that use arrow keys internally (caret movement, item selection,
+## value adjustment). Directional input is left to the engine for these.
+func _owner_consumes_directional(owner: Control) -> bool:
+	return owner is LineEdit or owner is TextEdit or owner is ItemList \
+		or owner is Tree or owner is Range or owner is TabBar \
+		or owner is TabContainer or owner is ScrollContainer \
+		or owner is RichTextLabel or owner is GraphEdit
 
 
 func _top_page() -> Control:

@@ -4,11 +4,12 @@ UIFlow ships gamepad-first UI support in the Free core: **directional focus navi
 
 ## Directional Focus Navigation
 
-Godot does not move focus between controls on directional input — `UIFlow.Focus` implements it for the top page:
+Godot 4.6 moves focus on directional input using explicit `focus_neighbor_*` assignments or a viewport-wide geometry guess — but the guess knows nothing about your UI structure and can wander into covered pages or unrelated overlays. `UIFlow.Focus` intercepts directional input before the engine and makes navigation authoritative for the top page:
 
-- `ui_left` / `ui_right` / `ui_up` / `ui_down` (arrow keys, d-pad, left stick) move focus between focusable controls.
+- `ui_left` / `ui_right` / `ui_up` / `ui_down` (arrow keys, d-pad, left stick) move focus between focusable controls **of the top page only** — focus can never leak into pages below.
 - Explicit `focus_neighbor_*` assignments on a control always win over the automatic geometry search.
 - Disabled controls and invisible controls are skipped automatically.
+- Controls that use arrow keys internally (LineEdit, TextEdit, ItemList, Tree, sliders, tabs, scroll containers) keep their keys; focus owners outside the top page (e.g. overlay dialogs) are handled by the engine as usual.
 
 ```gdscript
 # Move focus programmatically (usually not needed — input is handled for you):
