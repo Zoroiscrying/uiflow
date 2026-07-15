@@ -49,8 +49,10 @@ Tunable exports: `cursor_speed`, `acceleration`, `deadzone`, `joy_device`, `acce
 
 ## Demo
 
-The demo hub contains a **Gamepad & Virtual Cursor** page showing focus movement, wrap/trap, disabled-button skipping, and the virtual cursor:
+A standalone demo scene showcases focus movement, wrap/trap, disabled-button skipping, focus memory, and the virtual cursor:
 
 ```
-res://addons/ui_flow/examples/scenes/UIScene/UIFlowDemoGamepad.tscn
+res://addons/ui_flow/examples/scenes/gamepad_demo.tscn
 ```
+
+It is also reachable from the demo hub ("Gamepad Demo" button).

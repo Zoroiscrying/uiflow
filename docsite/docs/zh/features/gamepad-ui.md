@@ -49,8 +49,10 @@ UIFlow.Cursor.get_cursor_position()
 
 ## 演示
 
-演示中心包含 **Gamepad & Virtual Cursor** 页面，展示焦点移动、环绕/限制、禁用按钮跳过以及虚拟光标：
+一个独立演示场景展示了焦点移动、环绕/限制、禁用按钮跳过、焦点记忆以及虚拟光标：
 
 ```
-res://addons/ui_flow/examples/scenes/UIScene/UIFlowDemoGamepad.tscn
+res://addons/ui_flow/examples/scenes/gamepad_demo.tscn
 ```
+
+也可以从演示中心进入（"Gamepad Demo" 按钮）。

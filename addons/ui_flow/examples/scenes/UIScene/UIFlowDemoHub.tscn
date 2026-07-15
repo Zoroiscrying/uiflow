@@ -102,7 +102,7 @@ text = "Timeline & Async Loading"
 layout_mode = 2
 custom_minimum_size = Vector2(0, 48)
 theme_override_font_sizes/font_size = 16
-text = "Gamepad & Virtual Cursor"
+text = "Gamepad Demo (Standalone Scene)"
 
 [node name="World3DBtn" type="Button" parent="Margin/Scroll/VBox/Buttons"]
 layout_mode = 2

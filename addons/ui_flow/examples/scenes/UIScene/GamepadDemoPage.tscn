@@ -1,0 +1,128 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://addons/ui_flow/examples/free_demo/gamepad_demo_page.gd" id="1"]
+
+[node name="GamepadDemoPage" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1")
+
+[node name="BG" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.07, 0.07, 0.1, 1)
+
+[node name="Panel" type="PanelContainer" parent="BG"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 60.0
+offset_top = 40.0
+offset_right = -60.0
+offset_bottom = -40.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="BG/Panel"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="TopBar" type="HBoxContainer" parent="BG/Panel/VBox"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="BG/Panel/VBox/TopBar"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 26
+text = "Gamepad UI Demo"
+
+[node name="FocusLabel" type="Label" parent="BG/Panel/VBox/TopBar"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Focus: -"
+modulate = Color(1, 1, 1, 0.6)
+
+[node name="Sep" type="HSeparator" parent="BG/Panel/VBox"]
+layout_mode = 2
+
+[node name="Body" type="HBoxContainer" parent="BG/Panel/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 24
+
+[node name="MenuPanel" type="PanelContainer" parent="BG/Panel/VBox/Body"]
+layout_mode = 2
+
+[node name="MenuVBox" type="VBoxContainer" parent="BG/Panel/VBox/Body/MenuPanel"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="GridPanel" type="PanelContainer" parent="BG/Panel/VBox/Body"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Grid" type="GridContainer" parent="BG/Panel/VBox/Body/GridPanel"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+columns = 5
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+
+[node name="DetailPanel" type="PanelContainer" parent="BG/Panel/VBox/Body"]
+layout_mode = 2
+custom_minimum_size = Vector2(280, 0)
+
+[node name="DetailVBox" type="VBoxContainer" parent="BG/Panel/VBox/Body/DetailPanel"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="DetailTitle" type="Label" parent="BG/Panel/VBox/Body/DetailPanel/DetailVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Item Details"
+modulate = Color(1, 1, 1, 0.6)
+
+[node name="ItemName" type="Label" parent="BG/Panel/VBox/Body/DetailPanel/DetailVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "-"
+
+[node name="ItemDesc" type="Label" parent="BG/Panel/VBox/Body/DetailPanel/DetailVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Highlight a slot to inspect it."
+autowrap_mode = 2
+modulate = Color(1, 1, 1, 0.7)
+
+[node name="Sep2" type="HSeparator" parent="BG/Panel/VBox"]
+layout_mode = 2
+
+[node name="BottomBar" type="HBoxContainer" parent="BG/Panel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="WrapCheck" type="CheckBox" parent="BG/Panel/VBox/BottomBar"]
+layout_mode = 2
+text = "Wrap focus at edges"
+
+[node name="CursorButton" type="Button" parent="BG/Panel/VBox/BottomBar"]
+layout_mode = 2
+custom_minimum_size = Vector2(190, 38)
+text = "Virtual Cursor: OFF"
+
+[node name="Hint" type="Label" parent="BG/Panel/VBox/BottomBar"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "D-Pad / Arrows: move focus   A / Enter: press   L-Stick: cursor   Esc: back"
+modulate = Color(1, 1, 1, 0.5)
