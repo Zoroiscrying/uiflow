@@ -160,8 +160,14 @@ func push_async_with_loading(page_class: GDScript, data: Variant = null, page_th
 	if loading_class != null:
 		loading_instance = _do_push(loading_class, {}, null, false)
 
-	# Load target scene asynchronously.
-	var scene: PackedScene = await _scene_resolver.resolve_async(page_class)
+	# Load target scene asynchronously. Forward load progress to the loading
+	# page when it implements set_progress(float) (0.0–1.0, always ends at 1.0).
+	var progress_cb := Callable()
+	if loading_instance != null and loading_instance.has_method("set_progress"):
+		progress_cb = func(p: float) -> void:
+			if is_instance_valid(loading_instance):
+				loading_instance.set_progress(p)
+	var scene: PackedScene = await _scene_resolver.resolve_async(page_class, progress_cb)
 	if scene == null:
 		if loading_instance != null:
 			_pop_and_cleanup(loading_instance, loading_class)

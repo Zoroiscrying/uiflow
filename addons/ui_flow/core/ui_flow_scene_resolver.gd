@@ -89,15 +89,21 @@ func resolve(page_class: GDScript) -> PackedScene:
 
 ## Resolve a page class asynchronously using threaded scene loading.
 ## Returns null if the scene cannot be found or fails to load.
-func resolve_async(page_class: GDScript) -> PackedScene:
+## [param progress_callback] receives load progress (0.0–1.0) on each poll
+## and a final 1.0 when the scene is ready (including cache hits).
+func resolve_async(page_class: GDScript, progress_callback: Callable = Callable()) -> PackedScene:
 	# Check cache
 	if _cache.has(page_class):
+		if progress_callback.is_valid():
+			progress_callback.call(1.0)
 		return _cache[page_class]
 
 	# Check custom mappings (already in memory, no async needed)
 	if _custom_mappings.has(page_class):
 		var scene: PackedScene = _custom_mappings[page_class]
 		_cache[page_class] = scene
+		if progress_callback.is_valid():
+			progress_callback.call(1.0)
 		return scene
 
 	var path := _find_scene_path(page_class)
@@ -105,18 +111,23 @@ func resolve_async(page_class: GDScript) -> PackedScene:
 		return null
 
 	ResourceLoader.load_threaded_request(path, "PackedScene")
+	var progress: Array = []
 	while true:
-		match ResourceLoader.load_threaded_get_status(path):
+		match ResourceLoader.load_threaded_get_status(path, progress):
 			ResourceLoader.THREAD_LOAD_INVALID_RESOURCE, \
 			ResourceLoader.THREAD_LOAD_FAILED:
 				push_error("UIFlow: Async load failed for scene: %s" % path)
 				return null
 			ResourceLoader.THREAD_LOAD_LOADED:
+				if progress_callback.is_valid():
+					progress_callback.call(1.0)
 				var scene: PackedScene = ResourceLoader.load_threaded_get(path) as PackedScene
 				if scene:
 					_cache[page_class] = scene
 				return scene
 			_:
+				if progress_callback.is_valid() and not progress.is_empty():
+					progress_callback.call(progress[0])
 				await Engine.get_main_loop().process_frame
 	return null
 

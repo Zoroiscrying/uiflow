@@ -42,6 +42,12 @@ theme_override_font_sizes/font_size = 24
 text = "Loading"
 horizontal_alignment = 1
 
+[node name="ProgressBar" type="ProgressBar" parent="Center"]
+layout_mode = 2
+custom_minimum_size = Vector2(200, 12)
+max_value = 100.0
+show_percentage = false
+
 [node name="Timer" type="Timer" parent="."]
 wait_time = 0.4
 autostart = true

@@ -41,6 +41,44 @@ func _on_start() -> void:
     UIFlow.push(GamePage)
 ```
 
+## Async Navigation and Loading Pages
+
+For large scenes, use `push_async()` to load the scene on a background thread instead of blocking the frame:
+
+```gdscript
+await UIFlow.push_async(InventoryPage)
+```
+
+`push_async_with_loading()` shows a loading page while the target scene loads, then swaps it for the target automatically:
+
+```gdscript
+# Explicit loading page:
+await UIFlow.push_async_with_loading(WorldPage, {"level": 3}, null, MyLoadingPage)
+
+# Or configure a default once (used when the parameter is omitted):
+UIFlow.Config.loading_page_class = MyLoadingPage
+await UIFlow.push_async_with_loading(WorldPage)
+```
+
+**Progress protocol.** If the loading page implements `set_progress(float)`, the navigator forwards threaded load progress (0.0–1.0, always ending at 1.0 — including cache hits):
+
+```gdscript
+class_name MyLoadingPage extends UIFlowPage
+
+@onready var _bar: ProgressBar = $Center/ProgressBar
+
+func set_progress(p: float) -> void:
+    _bar.value = p * 100.0
+```
+
+Loading pages are ordinary `UIFlowPage`s, so they are fully skinnable — use your theme, transitions, and layout. See `AsyncLoadingPage` in the free demo (Timeline & Async demo) for a complete example.
+
+**Pre-warming.** To make the first push instant, preload scenes ahead of time:
+
+```gdscript
+await UIFlow.load_scenes_async([WorldPage, InventoryPage])
+```
+
 ## Recommendations
 
 - Prefer `UIFlowTimelineEffect` resources for complex enter / exit animations.

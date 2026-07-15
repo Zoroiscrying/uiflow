@@ -135,6 +135,8 @@ func push_async(page_class: GDScript, data: Variant = null, page_theme: UIFlowTh
 
 
 ## Push a page asynchronously with an optional loading page shown while loading.
+## If the loading page implements set_progress(float), it receives load
+## progress updates (0.0–1.0, always ending at 1.0).
 func push_async_with_loading(page_class: GDScript, data: Variant = null, page_theme: UIFlowTheme = null, loading_page_class: GDScript = null) -> Control:
 	_ensure_page_container()
 	return await Router.push_async_with_loading(page_class, data, page_theme, loading_page_class)
