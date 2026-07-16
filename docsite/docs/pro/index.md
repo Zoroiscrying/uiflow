@@ -18,7 +18,7 @@ UIFlow Pro is designed for teams that outgrow the Free framework and need:
 | Fade / Slide / Scale / Timeline transitions | ✓ | ✓ + custom Pro transitions |
 | Toast, Confirm, Alert, basic DataGrid | ✓ | ✓ + advanced DataGrid, VirtualList, InventoryGrid, TreeView, ChartView |
 | Event bus & data binding | ✓ | ✓ + enhanced binding debug |
-| Theme system | ✓ | ✓ + Theme Editor |
+| Theme system | ✓ | ✓ + Theme Manager |
 | Runtime debugger | — | ✓ |
 | Editor flow graph / page viewer | — | ✓ |
 | Survivors ARPG demo | — | ✓ |

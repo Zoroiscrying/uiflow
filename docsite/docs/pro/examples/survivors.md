@@ -27,7 +27,7 @@ godot --path . --scene res://addons/ui_flow_pro/examples/survivors/main.tscn
 - **Pro transitions**: advanced enter/exit effects for menus.
 - **Pro components**: `UIFlowProInventoryGrid`, `UIFlowProDataGrid`, `UIFlowProTreeView`.
 - **Runtime debugger**: inspect stack and pool state while playing.
-- **Theme Editor**: the demo uses a custom Pro theme.
+- **Theme Manager**: the demo uses a custom Pro theme.
 
 ## Learning Points
 

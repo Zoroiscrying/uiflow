@@ -27,7 +27,7 @@ godot --path . --scene res://addons/ui_flow_pro/examples/survivors/main.tscn
 - **Pro 过渡**：菜单的高级进入 / 退出效果。
 - **Pro 组件**：`UIFlowProInventoryGrid`、`UIFlowProDataGrid`、`UIFlowProTreeView`。
 - **运行时调试器**：游戏运行时检查栈和池状态。
-- **主题编辑器**：演示使用自定义 Pro 主题。
+- **主题管理器**：演示使用自定义 Pro 主题。
 
 ## 学习要点
 

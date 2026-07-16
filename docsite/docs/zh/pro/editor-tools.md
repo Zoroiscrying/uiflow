@@ -5,17 +5,19 @@
 
 UIFlow Pro 在 Godot 编辑器中添加了多个面板和检查器，加速 UI 工作流。
 
-## 主题编辑器
+## 主题管理器
 
-可视化编辑 `UIFlowTheme` 资源，无需手写属性字典。
+在编辑器内管理 UIFlow 使用的原生 Godot Theme 资源。
 
-- 预览颜色、字体、间距和圆角。
-- 在深色与浅色预览之间切换。
-- 导出主题变体为新的 `.tres` 文件。
+- 选择任意 `.tres` Theme 资源，或在 UIFlow 内置预设之间切换（dark、light、ocean、forest、high contrast、warm）。
+- 在实时组件画廊上预览主题效果。
+- 一键应用主题到 UIFlow 自动加载并设为项目默认主题。
+- 在 Godot 内置 Theme 检查器中打开选中主题进行完整编辑。
+- 将旧版 `UIFlowTheme` 资源导入为原生 Godot Theme。
 
-插件启用后，从 **项目 → 工具 → UIFlow Pro → Theme Editor** 打开。
+启用 UIFlow Pro 插件后，**UIFlow Pro** 坞会自动出现。选择其中的 **Theme Manager** 标签页。
 
-![主题编辑器](/assets/screenshots/theme_editor.png)
+<!-- TODO: UI 定稿后替换为新的主题管理器截图 -->
 
 ## 流程坞 / 流程图
 
