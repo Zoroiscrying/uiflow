@@ -36,7 +36,12 @@ class_name UIFlowConfig extends Resource
 @export_range(1, 20, 1) var max_pool_size: int = 5
 
 ## Default theme name applied on startup ("dark", "light", or a custom registered name).
+## Deprecated: prefer [member default_godot_theme], which is a native Godot Theme resource.
 @export var default_theme_name: String = "dark"
+
+## Default Godot Theme resource applied on startup. Takes precedence over
+## [member default_theme_name] when set. This is the recommended path.
+@export var default_godot_theme: Theme = null
 
 ## Optional page class shown while an async page is loading.
 ## If empty, no loading page is shown.

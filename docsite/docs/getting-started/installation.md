@@ -19,9 +19,9 @@ You can change the following options under **Project Settings → UI Flow**:
 | `ui_flow/scene_directory` | Default search directory for page scenes | `res://UIScene/` |
 | `ui_flow/max_stack_depth` | Maximum navigation stack depth | `32` |
 | `ui_flow/modal_close_on_back` | Whether back/cancel closes modal pages | `true` |
-| `ui_flow/default_theme_name` | Default theme name | `dark` |
+| `ui_flow/default_theme_name` | Default theme name (legacy `UIFlowTheme`) | `dark` |
 
-You can also create a `UIFlowConfig` resource at `res://ui_flow_config.tres` to override more options.
+You can also create a `UIFlowConfig` resource at `res://ui_flow_config.tres` to override more options, including `default_godot_theme` for a native Godot `Theme` resource.
 
 ## Recommended Folder Structure
 

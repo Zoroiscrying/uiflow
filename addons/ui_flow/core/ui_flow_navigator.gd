@@ -109,7 +109,7 @@ func _remove_input_blocker(page: UIFlowPage) -> void:
 ## Push a new page onto the stack.
 ## If the page is already in the stack, moves it to the top.
 ## Returns the page instance. Returns null if blocked by a guard or busy.
-func push(page_class: GDScript, data: Variant = null, page_theme: UIFlowTheme = null) -> Control:
+func push(page_class: GDScript, data: Variant = null, page_theme: Variant = null) -> Control:
 	if not _start_navigation():
 		_queue_navigation(func():
 			push(page_class, data, page_theme)
@@ -122,7 +122,7 @@ func push(page_class: GDScript, data: Variant = null, page_theme: UIFlowTheme = 
 
 ## Push a page with asynchronous scene loading.
 ## Returns the page instance once it has been opened.
-func push_async(page_class: GDScript, data: Variant = null, page_theme: UIFlowTheme = null) -> Control:
+func push_async(page_class: GDScript, data: Variant = null, page_theme: Variant = null) -> Control:
 	if not _start_navigation():
 		_queue_navigation(func():
 			push_async(page_class, data, page_theme)
@@ -143,7 +143,7 @@ func push_async(page_class: GDScript, data: Variant = null, page_theme: UIFlowTh
 ## If [param loading_page_class] is null, falls back to UIFlow.Config.loading_page_class.
 ## The loading page is pushed normally, then the target page is pushed on top once ready,
 ## and finally the loading page is removed.
-func push_async_with_loading(page_class: GDScript, data: Variant = null, page_theme: UIFlowTheme = null, loading_page_class: GDScript = null) -> Control:
+func push_async_with_loading(page_class: GDScript, data: Variant = null, page_theme: Variant = null, loading_page_class: GDScript = null) -> Control:
 	if not _start_navigation():
 		_queue_navigation(func():
 			push_async_with_loading(page_class, data, page_theme, loading_page_class)
@@ -242,7 +242,7 @@ func _pop_and_cleanup(instance: Control, page_class: GDScript) -> void:
 ## [param p_finish_navigation] controls whether this operation releases the
 ## navigation lock on completion. Pass false when the caller holds the lock
 ## across multiple steps (e.g. push_async_with_loading).
-func _do_push(page_class: GDScript, data: Variant, page_theme: UIFlowTheme, p_finish_navigation: bool = true) -> Control:
+func _do_push(page_class: GDScript, data: Variant, page_theme: Variant, p_finish_navigation: bool = true) -> Control:
 	# If already in stack, move to top (no animation needed, no lock needed)
 	var existing := get_page(page_class)
 	if existing:
@@ -317,8 +317,10 @@ func _do_push(page_class: GDScript, data: Variant, page_theme: UIFlowTheme, p_fi
 		page.mouse_filter = Control.MOUSE_FILTER_STOP
 		_setup_input_blocker(page)
 
-	# Apply theme
-	if page_theme:
+	# Apply theme (accepts either a native Godot Theme or a legacy UIFlowTheme)
+	if page_theme is Theme:
+		instance.theme = page_theme
+	elif page_theme is UIFlowTheme:
 		instance.theme = page_theme.build_godot_theme()
 
 	_stack.push_back({
@@ -557,7 +559,7 @@ func _cleanup_after_pop(top_instance: Control, top_class: GDScript) -> void:
 
 
 ## Replace the top page with a new one.
-func replace(page_class: GDScript, data: Variant = null, page_theme: UIFlowTheme = null) -> Control:
+func replace(page_class: GDScript, data: Variant = null, page_theme: Variant = null) -> Control:
 	if not _start_navigation():
 		_queue_navigation(func():
 			replace(page_class, data, page_theme)

@@ -48,7 +48,9 @@ func _ready() -> void:
 		Scenes.add_scene_dir(Config.scene_directory)
 
 	# Apply default theme from config
-	if Config and not Config.default_theme_name.is_empty():
+	if Config and Config.default_godot_theme != null:
+		ThemeHelper.apply_godot_theme(Config.default_godot_theme)
+	elif Config and not Config.default_theme_name.is_empty():
 		ThemeHelper.apply_builtin(Config.default_theme_name)
 
 	Router = UIFlowNavigator.new()
@@ -90,6 +92,8 @@ func _load_config() -> void:
 		Config.modal_close_on_back = ProjectSettings.get_setting("ui_flow/modal_close_on_back") as bool
 	if ProjectSettings.has_setting("ui_flow/default_theme_name"):
 		Config.default_theme_name = ProjectSettings.get_setting("ui_flow/default_theme_name") as String
+	if ProjectSettings.has_setting("ui_flow/default_godot_theme"):
+		Config.default_godot_theme = ProjectSettings.get_setting("ui_flow/default_godot_theme") as Theme
 
 
 func _on_back_pressed() -> void:
@@ -130,7 +134,8 @@ func _ensure_page_container() -> void:
 # ── Router shortcuts ─────────────────────────────────────────────────────────
 
 ## Push a page. Returns the page instance.
-func push(page_class: GDScript, data: Variant = null, page_theme: UIFlowTheme = null) -> Control:
+## [param page_theme] may be a [UIFlowTheme] (legacy) or a native [Theme].
+func push(page_class: GDScript, data: Variant = null, page_theme: Variant = null) -> Control:
 	_ensure_page_container()
 	return Router.push(page_class, data, page_theme)
 
@@ -142,7 +147,8 @@ func push_instance(instance: Control, data: Variant = null) -> Control:
 
 
 ## Push a page asynchronously. Await the returned Control to wait for the page to open.
-func push_async(page_class: GDScript, data: Variant = null, page_theme: UIFlowTheme = null) -> Control:
+## [param page_theme] may be a [UIFlowTheme] (legacy) or a native [Theme].
+func push_async(page_class: GDScript, data: Variant = null, page_theme: Variant = null) -> Control:
 	_ensure_page_container()
 	return await Router.push_async(page_class, data, page_theme)
 
@@ -150,7 +156,8 @@ func push_async(page_class: GDScript, data: Variant = null, page_theme: UIFlowTh
 ## Push a page asynchronously with an optional loading page shown while loading.
 ## If the loading page implements set_progress(float), it receives load
 ## progress updates (0.0–1.0, always ending at 1.0).
-func push_async_with_loading(page_class: GDScript, data: Variant = null, page_theme: UIFlowTheme = null, loading_page_class: GDScript = null) -> Control:
+## [param page_theme] may be a [UIFlowTheme] (legacy) or a native [Theme].
+func push_async_with_loading(page_class: GDScript, data: Variant = null, page_theme: Variant = null, loading_page_class: GDScript = null) -> Control:
 	_ensure_page_container()
 	return await Router.push_async_with_loading(page_class, data, page_theme, loading_page_class)
 
@@ -161,7 +168,8 @@ func pop() -> void:
 
 
 ## Replace the top page.
-func replace(page_class: GDScript, data: Variant = null, page_theme: UIFlowTheme = null) -> Control:
+## [param page_theme] may be a [UIFlowTheme] (legacy) or a native [Theme].
+func replace(page_class: GDScript, data: Variant = null, page_theme: Variant = null) -> Control:
 	_ensure_page_container()
 	return Router.replace(page_class, data, page_theme)
 
@@ -363,12 +371,35 @@ func set_default_focus(node: Control) -> void:
 
 # ── Theme shortcuts ──────────────────────────────────────────────────────────
 
+## Set the active theme. [param theme] may be a [UIFlowTheme] (legacy) or a native [Theme].
+func set_theme(theme: Variant) -> void:
+	if theme is Theme:
+		ThemeHelper.apply_godot_theme(theme)
+	elif theme is UIFlowTheme:
+		ThemeHelper.apply_theme(theme)
+	else:
+		push_warning("UIFlow.set_theme: expected Theme or UIFlowTheme, got %s" % typeof(theme))
+		return
+	_apply_theme_to_container()
+
+
 func get_theme() -> UIFlowTheme:
 	return ThemeHelper.get_current()
+
+
+func get_godot_theme() -> Theme:
+	return ThemeHelper.get_godot_theme()
+
 
 func apply_theme(theme: UIFlowTheme) -> void:
 	ThemeHelper.apply_theme(theme)
 	_apply_theme_to_container()
+
+
+func apply_godot_theme(theme: Theme) -> void:
+	ThemeHelper.apply_godot_theme(theme)
+	_apply_theme_to_container()
+
 
 func apply_builtin_theme(name: String) -> void:
 	ThemeHelper.apply_builtin(name)
@@ -392,6 +423,10 @@ func get_radius(size_name: String) -> int:
 
 func _apply_theme_to_container() -> void:
 	if _page_container == null:
+		return
+	var godot_theme: Theme = ThemeHelper.get_godot_theme()
+	if godot_theme != null:
+		_page_container.theme = godot_theme
 		return
 	var uiflow_theme: UIFlowTheme = ThemeHelper.get_current()
 	if uiflow_theme == null:

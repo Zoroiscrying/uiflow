@@ -5,10 +5,12 @@
 ## UIFlow（autoload）
 
 ```gdscript
-UIFlow.push(page_class: GDScript, data := {})
+UIFlow.push(page_class: GDScript, data := {}, page_theme := null)
 UIFlow.push_instance(instance: Control, data := {})
+UIFlow.push_async(page_class: GDScript, data := {}, page_theme := null)
+UIFlow.push_async_with_loading(page_class: GDScript, data := {}, page_theme := null, loading_page_class: GDScript = null)
 UIFlow.pop()
-UIFlow.replace(page_class: GDScript, data := {})
+UIFlow.replace(page_class: GDScript, data := {}, page_theme := null)
 UIFlow.pop_to(page_class: GDScript)
 UIFlow.clear_and_push(page_class: GDScript, data := {})
 UIFlow.pop_result(result: Variant)
@@ -21,6 +23,11 @@ UIFlow.EventBus
 UIFlow.DataStore
 UIFlow.ThemeHelper
 UIFlow.Config
+
+# 主题（优先使用原生 Godot Theme；UIFlowTheme 为 legacy 兼容）
+UIFlow.set_theme(theme: Variant)          # Theme 或 UIFlowTheme
+UIFlow.apply_godot_theme(theme: Theme)
+UIFlow.get_godot_theme() -> Theme
 ```
 
 ## UIFlowPage

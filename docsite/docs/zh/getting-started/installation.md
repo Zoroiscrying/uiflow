@@ -19,9 +19,9 @@ UIFlow Free 以文件夹形式分发，路径为 `addons/ui_flow/`。
 | `ui_flow/scene_directory` | 页面场景默认搜索目录 | `res://UIScene/` |
 | `ui_flow/max_stack_depth` | 导航栈最大深度 | `32` |
 | `ui_flow/modal_close_on_back` | 点击返回时是否关闭模态页 | `true` |
-| `ui_flow/default_theme_name` | 默认主题名称 | `dark` |
+| `ui_flow/default_theme_name` | 默认主题名称（legacy `UIFlowTheme`） | `dark` |
 
-也可以创建 `res://ui_flow_config.tres` 作为自定义 `UIFlowConfig` 资源覆盖更多选项。
+也可以创建 `res://ui_flow_config.tres` 作为自定义 `UIFlowConfig` 资源覆盖更多选项，包括 `default_godot_theme` 以使用原生 Godot `Theme` 资源。
 
 ## 推荐的目录结构
 

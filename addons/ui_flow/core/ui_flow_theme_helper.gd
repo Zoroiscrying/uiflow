@@ -5,6 +5,7 @@
 class_name UIFlowThemeHelper extends RefCounted
 
 const THEMES_DIR := "res://addons/ui_flow/themes/"
+const GODOT_THEMES_DIR := "res://addons/ui_flow/themes/godot/"
 
 const BUILTIN_THEMES: Dictionary = {
 	"dark": "dark.tres",
@@ -15,7 +16,10 @@ const BUILTIN_THEMES: Dictionary = {
 	"warm": "warm.tres",
 }
 
+const DEFAULT_GODOT_THEME_PATH := GODOT_THEMES_DIR + "dark.tres"
+
 var _current_theme: UIFlowTheme = null
+var _current_godot_theme: Theme = null
 var _loaded_themes: Dictionary = {} # String -> UIFlowTheme
 
 
@@ -30,7 +34,7 @@ func _init() -> void:
 	_current_theme = _loaded_themes.get("dark", UIFlowTheme.new())
 
 
-## Get the current active theme.
+## Get the current active UIFlowTheme (legacy semantic-token theme).
 func get_current() -> UIFlowTheme:
 	return _current_theme
 
@@ -47,6 +51,22 @@ func apply_builtin(name: String) -> void:
 		_current_theme = _loaded_themes[name]
 	else:
 		push_warning("UIFlowThemeHelper: Unknown built-in theme '%s'" % name)
+
+
+## Get the current active Godot Theme. If none has been explicitly set,
+## loads and returns the default built-in dark Godot theme.
+func get_godot_theme() -> Theme:
+	if _current_godot_theme != null:
+		return _current_godot_theme
+	if ResourceLoader.exists(DEFAULT_GODOT_THEME_PATH):
+		return ResourceLoader.load(DEFAULT_GODOT_THEME_PATH) as Theme
+	return null
+
+
+## Apply a native Godot Theme resource as the active theme.
+func apply_godot_theme(theme: Theme) -> void:
+	if theme:
+		_current_godot_theme = theme
 
 
 ## Get a color from the current theme.
