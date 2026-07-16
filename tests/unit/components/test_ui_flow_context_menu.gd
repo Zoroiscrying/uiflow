@@ -83,3 +83,15 @@ func test_add_item_before_tree() -> void:
 	# The lazily created container holds the entries; _ready must not duplicate it.
 	assert_that(menu._vbox.get_child_count()).is_equal(3)
 	menu.queue_free()
+
+
+## Regression: show_at() must work when the menu has not been added to the tree yet.
+func test_show_at_before_tree() -> void:
+	var menu := UIFlowContextMenu.new()
+	menu.add_item("A", func(): pass)
+	menu.show_at(Vector2(100, 100))
+	await get_tree().process_frame
+
+	assert_that(menu.is_inside_tree()).is_true()
+	assert_that(menu.visible).is_true()
+	menu.close()

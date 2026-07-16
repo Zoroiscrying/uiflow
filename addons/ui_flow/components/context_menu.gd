@@ -44,6 +44,8 @@ func _ready() -> void:
 ## Lazily create the item container so add_item()/add_separator()/add_submenu()
 ## also work before the menu enters the tree (e.g. UIFlowContextMenu.new()).
 func _ensure_vbox() -> void:
+	if not is_instance_valid(self):
+		return
 	if _vbox == null:
 		_vbox = VBoxContainer.new()
 		_vbox.add_theme_constant_override("separation", 2)
@@ -52,6 +54,8 @@ func _ensure_vbox() -> void:
 
 ## Add a clickable item.
 func add_item(label: String, callback: Callable = Callable()) -> UIFlowContextMenu:
+	if not is_instance_valid(self):
+		return null
 	_ensure_vbox()
 	var btn := Button.new()
 	btn.text = label
@@ -78,6 +82,8 @@ func add_item(label: String, callback: Callable = Callable()) -> UIFlowContextMe
 
 ## Add a separator line.
 func add_separator() -> UIFlowContextMenu:
+	if not is_instance_valid(self):
+		return null
 	_ensure_vbox()
 	var sep := HSeparator.new()
 	_vbox.add_child(sep)
@@ -87,6 +93,8 @@ func add_separator() -> UIFlowContextMenu:
 
 ## Add a submenu item. Returns the submenu for chaining.
 func add_submenu(label: String) -> UIFlowContextMenu:
+	if not is_instance_valid(self):
+		return null
 	_ensure_vbox()
 	var btn := Button.new()
 	btn.text = label + "  ▸"
@@ -111,10 +119,15 @@ func add_submenu(label: String) -> UIFlowContextMenu:
 
 ## Show the menu at a screen position.
 func show_at(position: Vector2) -> void:
-	# Add to viewport
-	var viewport := get_viewport()
+	# Add to viewport first; get_viewport() only works once we are in the tree.
 	if not is_inside_tree():
-		viewport.add_child(self)
+		var tree := Engine.get_main_loop() as SceneTree
+		if tree != null:
+			tree.root.add_child(self)
+
+	var viewport := get_viewport()
+	if viewport == null:
+		return
 
 	global_position = position
 	_clamp_to_screen()
@@ -132,7 +145,7 @@ func close() -> void:
 	_hide_submenu()
 
 	var viewport := get_viewport()
-	if viewport.gui_focus_changed.is_connected(_on_focus_changed):
+	if viewport != null and viewport.gui_focus_changed.is_connected(_on_focus_changed):
 		viewport.gui_focus_changed.disconnect(_on_focus_changed)
 
 	closed.emit()

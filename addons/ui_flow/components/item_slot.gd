@@ -20,7 +20,7 @@ signal item_dragged(item: ItemData, slot_index: int)
 var _item: ItemData = null
 var _icon: TextureRect
 var _rarity_border: ColorRect
-var _count_label: Label
+var _letter_label: Label
 var _drag_drop: UIFlowDragDrop
 var _drop_target: UIFlowDropTarget
 var _empty_style: StyleBoxFlat
@@ -36,7 +36,8 @@ func _ready() -> void:
 func _setup_ui() -> void:
 	custom_minimum_size = Vector2(56, 56)
 
-	# Styles
+	# Styles — keep fallback colors; components will pick up a native Theme
+	# automatically unless we add an override, so we only set our own styles.
 	_empty_style = StyleBoxFlat.new()
 	_empty_style.bg_color = Color(0.1, 0.1, 0.13, 0.6)
 	_empty_style.set_corner_radius_all(4)
@@ -56,6 +57,7 @@ func _setup_ui() -> void:
 	_icon.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	_icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_icon.visible = false
 	add_child(_icon)
 
 	# Rarity border
@@ -65,14 +67,14 @@ func _setup_ui() -> void:
 	_rarity_border.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_rarity_border)
 
-	# Count label (bottom-right)
-	_count_label = Label.new()
-	_count_label.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
-	_count_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	_count_label.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
-	_count_label.add_theme_font_size_override("font_size", 12)
-	_count_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(_count_label)
+	# Letter label (centered) — used when no item icon is set.
+	_letter_label = Label.new()
+	_letter_label.set_anchors_and_offsets_preset(Control.PRESET_CENTER, Control.PRESET_MODE_MINSIZE)
+	_letter_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_letter_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	_letter_label.add_theme_font_size_override("font_size", 18)
+	_letter_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(_letter_label)
 
 
 func _setup_drag_drop() -> void:
@@ -111,23 +113,26 @@ func get_item() -> ItemData:
 func _update_display() -> void:
 	if _item:
 		_icon.texture = _item.icon
+		_icon.visible = _item.icon != null
 		_icon.modulate = Color.WHITE
-		_rarity_border.color = ItemData.get_rarity_color(_item.rarity)
+		var rarity_color: Color = ItemData.get_rarity_color(_item.rarity)
+		_rarity_border.color = rarity_color
 		_rarity_border.color.a = 0.3
-		_filled_style.border_color = ItemData.get_rarity_color(_item.rarity)
+		_filled_style.border_color = rarity_color
 		_filled_style.set_border_width_all(2)
 		add_theme_stylebox_override("panel", _filled_style)
 		if _item.icon == null:
 			# Show first letter as fallback when no icon
-			_count_label.text = _item.item_name.left(1)
-			_count_label.add_theme_color_override("font_color", ItemData.get_rarity_color(_item.rarity))
+			_letter_label.text = _item.item_name.left(1)
+			_letter_label.add_theme_color_override("font_color", rarity_color)
 		else:
-			_count_label.text = ""
-			_count_label.remove_theme_color_override("font_color")
+			_letter_label.text = ""
+			_letter_label.remove_theme_color_override("font_color")
 	else:
 		_icon.texture = null
+		_icon.visible = false
 		_rarity_border.color = Color.TRANSPARENT
-		_count_label.text = ""
+		_letter_label.text = ""
 		add_theme_stylebox_override("panel", _empty_style)
 
 

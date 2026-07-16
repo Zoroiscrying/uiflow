@@ -47,6 +47,9 @@ func _ready() -> void:
 
 
 func _setup_layout() -> void:
+	# Let the grid expand vertically inside its parent.
+	size_flags_vertical = Control.SIZE_EXPAND_FILL
+
 	var margin := MarginContainer.new()
 	margin.set_anchors_preset(Control.PRESET_FULL_RECT)
 	margin.add_theme_constant_override("margin_left", 4)
@@ -60,7 +63,7 @@ func _setup_layout() -> void:
 	_scroll_container.name = "Body"
 	_scroll_container.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_scroll_container.follow_focus = true
-	_scroll_container.custom_minimum_size = Vector2(0, 240)
+	_scroll_container.custom_minimum_size = Vector2(0, 320)
 	margin.add_child(_scroll_container)
 
 	_grid = GridContainer.new()
@@ -72,6 +75,17 @@ func _setup_layout() -> void:
 ## Define columns. Call before set_data.
 func add_column(title: String, width: float = 120.0, sortable: bool = true) -> void:
 	_columns.append(Column.new(title, width, sortable))
+
+
+## Define columns from an array of dictionaries.
+## Each dictionary may contain: "title" (String), "width" (float), "sortable" (bool).
+func set_columns(columns: Array[Dictionary]) -> void:
+	_columns.clear()
+	for col in columns:
+		var title: String = col.get("title", "")
+		var width: float = col.get("width", 120.0)
+		var sortable: bool = col.get("sortable", true)
+		add_column(title, width, sortable)
 
 
 ## Set the data array. Each element is an Array of column values.
@@ -124,7 +138,7 @@ func _rebuild() -> void:
 		var col: Column = _columns[i]
 		var btn := Button.new()
 		btn.text = col.title
-		btn.custom_minimum_size = Vector2(col.width, 32)
+		btn.custom_minimum_size = Vector2(col.width, 40)
 		btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		btn.flat = true
@@ -139,7 +153,7 @@ func _rebuild() -> void:
 			var col: Column = _columns[col_idx]
 			var cell := Label.new()
 			cell.text = str(row_data[col_idx]) if col_idx < row_data.size() else ""
-			cell.custom_minimum_size = Vector2(col.width, 28)
+			cell.custom_minimum_size = Vector2(col.width, 36)
 			cell.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			cell.clip_text = true
 			cell.mouse_filter = Control.MOUSE_FILTER_STOP

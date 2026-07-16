@@ -11,7 +11,7 @@ UIFlowUI.Toast.show_toast("保存成功", "success")
 UIFlowUI.Toast.show_toast("网络断开", "error", 3.0)
 ```
 
-![Toast 示例](../assets/screenshots/toast_example.png)
+![Toast 示例](/assets/screenshots/toast_example.png)
 
 ### 自定义 Toast
 
@@ -41,8 +41,8 @@ UIFlowUI.Confirm.show_confirm("删除存档？", "确定删除吗？", _on_confi
 UIFlowUI.Alert.show_alert("操作完成", "数据已保存。")
 ```
 
-![Confirm 对话框](../assets/screenshots/confirm_dialog.png)
-![Alert 对话框](../assets/screenshots/alert_dialog.png)
+![Confirm 对话框](/assets/screenshots/confirm_dialog.png)
+![Alert 对话框](/assets/screenshots/alert_dialog.png)
 
 ### 自定义 Confirm / Alert
 
@@ -82,14 +82,18 @@ UIFlowUI.set_custom_alert(my_custom_alert)
 
 ```gdscript
 var grid := $DataGrid
-grid.set_columns([
-    {"name": "name", "title": "名称", "width": 200},
-    {"name": "score", "title": "分数", "width": 100}
+grid.add_column("名称", 200)
+grid.add_column("等级", 80)
+grid.add_column("生命", 100)
+grid.set_data([
+    ["战士", 5, 150],
+    ["法师", 3, 80],
 ])
-grid.set_data(player_list)
 ```
 
-![DataGrid 示例](../assets/screenshots/data_grid_example.png)
+也可以使用 `set_columns([{"title": "名称", "width": 200}])` 批量定义列。
+
+![DataGrid 示例](/assets/screenshots/data_grid_example.png)
 
 ## InventoryGrid / ItemSlot
 
@@ -106,7 +110,7 @@ inventory.add_item(potion)
 $InventoryGrid.setup(inventory)
 ```
 
-![Survivors 演示中的 InventoryGrid](../assets/screenshots/inventory_grid.png)
+![Survivors 演示中的 InventoryGrid](/assets/screenshots/inventory_grid.png)
 
 每个槽位都会发出 `item_dropped` 信号，可据此接入装备槽、右键菜单（`UIFlowContextMenu`）和悬浮提示（`UIFlowTooltip`）——完整示例见 Survivors 演示。
 

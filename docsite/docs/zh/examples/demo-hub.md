@@ -18,7 +18,7 @@ godot --path . --scene res://addons/ui_flow/examples/main.tscn
 - 事件总线示例页面
 - Timeline / Async 动画示例页面
 
-![Demo Hub 主界面](../assets/screenshots/demo_hub_main.png)
+![Demo Hub 主界面](/assets/screenshots/demo_hub_main.png)
 
 ## 学习重点
 

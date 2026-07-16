@@ -32,7 +32,7 @@ const _PAGE_SNIPPETS: Dictionary = {
 		{"title": "UIFlowUI.Alert — Alert dialog", "code": "UIFlowUI.Alert.show_alert(\n    \"Alert\", \"Something happened.\")"},
 	],
 	"UIFlowDemoTheme": [
-		{"title": "apply_builtin_theme — Switch theme", "code": "UIFlow.apply_builtin_theme(\"dark\")\nUIFlow.apply_builtin_theme(\"light\")"},
+		{"title": "apply_godot_theme — Switch native Theme", "code": "UIFlow.apply_godot_theme(\n    preload(\"res://addons/ui_flow/themes/godot/dark.tres\"))\nUIFlow.apply_godot_theme(\n    preload(\"res://addons/ui_flow/themes/godot/light.tres\"))"},
 	],
 	"UIFlowDemoTimelineAsync": [
 		{"title": "UIFlowTimelineEffect — Scene configured", "code": "# TimelineAsyncTargetPage has enter_effect set in its .tscn\nUIFlow.push(TimelineAsyncTargetPage, {\n    \"title\": \"Timeline: Scale → Scale (Punch)\",\n})"},

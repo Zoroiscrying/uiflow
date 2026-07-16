@@ -82,12 +82,16 @@ Display tabular data with column definitions, sorting, and selection callbacks:
 
 ```gdscript
 var grid := $DataGrid
-grid.set_columns([
-    {"name": "name", "title": "Name", "width": 200},
-    {"name": "score", "title": "Score", "width": 100}
+grid.add_column("Name", 200)
+grid.add_column("Level", 80)
+grid.add_column("HP", 100)
+grid.set_data([
+    ["Warrior", 5, 150],
+    ["Mage", 3, 80],
 ])
-grid.set_data(player_list)
 ```
+
+You can also define columns with `set_columns([{"title": "Name", "width": 200}])`.
 
 ![DataGrid example](../assets/screenshots/data_grid_example.png)
 

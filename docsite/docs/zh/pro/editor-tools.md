@@ -15,7 +15,7 @@ UIFlow Pro 在 Godot 编辑器中添加了多个面板和检查器，加速 UI �
 
 插件启用后，从 **项目 → 工具 → UIFlow Pro → Theme Editor** 打开。
 
-![主题编辑器](../assets/screenshots/theme_editor.png)
+![主题编辑器](/assets/screenshots/theme_editor.png)
 
 ## 流程坞 / 流程图
 
@@ -27,7 +27,7 @@ UIFlow Pro 在 Godot 编辑器中添加了多个面板和检查器，加速 UI �
 
 适合审查复杂 UI 流程是否存在不可达页面或循环导航。
 
-![流程图](../assets/screenshots/flow_graph.png)
+![流程图](/assets/screenshots/flow_graph.png)
 
 ## 页面查看器
 

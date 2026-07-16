@@ -67,10 +67,10 @@ func _setup_datagrid() -> void:
 	grid.add_column("Level", 80, true)
 	grid.add_column("HP", 100, true)
 	grid.set_data([
-		["Warrior", "5", "150"],
-		["Mage", "3", "80"],
-		["Rogue", "7", "100"],
-		["Paladin", "4", "200"],
+		["Warrior", 5, 150],
+		["Mage", 3, 80],
+		["Rogue", 7, 100],
+		["Paladin", 4, 200],
 	])
 	grid.row_selected.connect(func(idx, data):
 		UIFlowUI.Toast.show_toast("Selected: %s" % data[0], "info")

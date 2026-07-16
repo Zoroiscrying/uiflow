@@ -174,12 +174,17 @@ func _create_ghost() -> Control:
 
 
 func _find_drop_target(position: Vector2) -> UIFlowDropTarget:
-	var nodes := get_tree().get_nodes_in_group("uiflow_drop_target")
-	for node in nodes:
-		if node is UIFlowDropTarget and node is Control:
-			var ctrl: Control = node
-			if ctrl.get_global_rect().has_point(position):
-				return node
+	# Use the engine's topmost hovered control so that a drop target on top
+	# (e.g. an equipment slot) wins over one behind it (e.g. an inventory slot).
+	var viewport := get_viewport()
+	if viewport == null:
+		return null
+	var hovered: Control = viewport.gui_get_hovered_control()
+	var node: Node = hovered
+	while node != null:
+		if node is UIFlowDropTarget and node.is_in_group("uiflow_drop_target"):
+			return node
+		node = node.get_parent()
 	return null
 
 

@@ -67,6 +67,26 @@ layout_mode = 2
 custom_minimum_size = Vector2(120, 40)
 text = "Light"
 
+[node name="OceanBtn" type="Button" parent="Panel/VBox/ThemeButtons"]
+layout_mode = 2
+custom_minimum_size = Vector2(120, 40)
+text = "Ocean"
+
+[node name="ForestBtn" type="Button" parent="Panel/VBox/ThemeButtons"]
+layout_mode = 2
+custom_minimum_size = Vector2(120, 40)
+text = "Forest"
+
+[node name="HighContrastBtn" type="Button" parent="Panel/VBox/ThemeButtons"]
+layout_mode = 2
+custom_minimum_size = Vector2(120, 40)
+text = "High Contrast"
+
+[node name="WarmBtn" type="Button" parent="Panel/VBox/ThemeButtons"]
+layout_mode = 2
+custom_minimum_size = Vector2(120, 40)
+text = "Warm"
+
 [node name="BackButton" type="Button" parent="Panel/VBox"]
 layout_mode = 2
 custom_minimum_size = Vector2(200, 36)

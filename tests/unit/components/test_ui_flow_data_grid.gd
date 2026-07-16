@@ -87,3 +87,21 @@ func test_column_properties() -> void:
 	assert_that(col.title).is_equal("Test")
 	assert_that(col.width).is_equal(150.0)
 	assert_that(col.sortable).is_true()
+
+
+## Test: set_columns clears and repopulates columns from dictionaries.
+func test_set_columns() -> void:
+	_grid.set_columns([
+		{"title": "Name", "width": 200.0, "sortable": false},
+		{"title": "Score", "width": 80.0, "sortable": true},
+	])
+	assert_that(_grid._columns).has_size(2)
+	assert_that(_grid._columns[0].title).is_equal("Name")
+	assert_that(_grid._columns[0].width).is_equal(200.0)
+	assert_that(_grid._columns[0].sortable).is_false()
+	assert_that(_grid._columns[1].title).is_equal("Score")
+
+
+## Test: grid expands vertically.
+func test_grid_expands_vertically() -> void:
+	assert_that(_grid.size_flags_vertical).is_equal(Control.SIZE_EXPAND_FILL)
