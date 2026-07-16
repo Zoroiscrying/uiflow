@@ -9,16 +9,14 @@ UIFlow Pro adds several docks and inspectors to the Godot editor to speed up UI 
 
 Manage native Godot Theme resources for your UIFlow project without leaving the editor.
 
-- Pick any `.tres` Theme resource or switch between UIFlow's built-in presets (dark, light, ocean, forest, high contrast, warm).
-- Create, rename, and delete Theme files.
-- Open the selected Theme in Godot's built-in Theme inspector for full editing.
-- Reveal the Theme file in the FileSystem dock.
-- Apply a Theme to the running UIFlow autoload and set it as the project default.
+- Browse themes in a split view: **UIFlow Presets** (dark, light, ocean, forest, high contrast, warm) and **Project Themes** (every `.tres` Theme discovered under `res://`).
+- Create a new empty Theme file with **New Theme**.
+- Rename, delete, open in Godot's Theme inspector, reveal in the FileSystem dock, or apply the selected Theme to UIFlow.
 - Inspect basic Theme info: file path, size, and counts of icons, styleboxes, fonts, colors, constants, and types.
 
 The dock appears automatically when the UIFlow Pro plugin is enabled. Select the **Theme Manager** tab in the **UIFlow Pro** dock.
 
-<!-- TODO: replace with a new Theme Manager screenshot once the UI is finalized -->
+![Theme Manager](../assets/screenshots/theme_editor.png)
 
 ## Flow Dock / Flow Graph
 
