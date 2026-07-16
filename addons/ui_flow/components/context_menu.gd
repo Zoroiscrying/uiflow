@@ -44,8 +44,6 @@ func _ready() -> void:
 ## Lazily create the item container so add_item()/add_separator()/add_submenu()
 ## also work before the menu enters the tree (e.g. UIFlowContextMenu.new()).
 func _ensure_vbox() -> void:
-	if not is_instance_valid(self):
-		return
 	if _vbox == null:
 		_vbox = VBoxContainer.new()
 		_vbox.add_theme_constant_override("separation", 2)
