@@ -163,6 +163,7 @@ func _on_item_drop(data: Variant) -> void:
 
 
 func _on_drag_dropped(target) -> void:
+	print("UIFlowItemSlot._on_drag_dropped: target=", target, " slot_index=", slot_index)
 	# If dropped on self, don't clear _item (inventory_grid will handle via items_changed)
 	if target == _drop_target:
 		UIFlowDragDrop.drag_source_index = slot_index
@@ -172,13 +173,17 @@ func _on_drag_dropped(target) -> void:
 	# Only clear the visual state, do NOT clear _drag_drop.data (drag system still needs it)
 	_item = null
 	_drag_drop.drag_icon = null
-	_drag_drop.visible = false
+	# Keep visible so PanelContainer keeps assigning a rect; disable input instead.
+	_drag_drop.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_update_display()
 	UIFlowDragDrop.drag_source_index = slot_index
 	item_dragged.emit(dragged_item, slot_index)
 
 
 func _on_gui_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.pressed:
+		print("UIFlowItemSlot._on_gui_input: button=", event.button_index, " slot_index=", slot_index, " item=", _item)
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_RIGHT:
 		if _item != null:
+			print("UIFlowItemSlot: right_clicked emit slot_index=", slot_index)
 			right_clicked.emit(_item, slot_index, event.global_position)
