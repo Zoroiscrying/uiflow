@@ -8,6 +8,9 @@ signal item_dropped(item: ItemData, from_index: int, old_item: ItemData)
 ## Emitted when an item is dragged from this slot.
 signal item_dragged(item: ItemData, slot_index: int)
 
+## Emitted when the user right-clicks this slot while it holds an item.
+signal right_clicked(item: ItemData, slot_index: int, global_position: Vector2)
+
 ## Slot index in the inventory.
 @export var slot_index: int = -1
 
@@ -30,6 +33,7 @@ var _filled_style: StyleBoxFlat
 func _ready() -> void:
 	_setup_ui()
 	_setup_drag_drop()
+	gui_input.connect(_on_gui_input)
 	_update_display()
 
 
@@ -161,3 +165,9 @@ func _on_drag_dropped(target) -> void:
 	_update_display()
 	UIFlowDragDrop.drag_source_index = slot_index
 	item_dragged.emit(dragged_item, slot_index)
+
+
+func _on_gui_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_RIGHT:
+		if _item != null:
+			right_clicked.emit(_item, slot_index, event.global_position)

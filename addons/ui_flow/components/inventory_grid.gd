@@ -1,6 +1,9 @@
 ## InventoryGrid — grid layout of ItemSlots bound to InventoryData.
 class_name UIFlowInventoryGrid extends GridContainer
 
+## Emitted when the user right-clicks an inventory slot that holds an item.
+signal item_right_clicked(item: ItemData, slot_index: int, global_position: Vector2)
+
 ## Item slot scene to instantiate.
 @export var slot_scene: PackedScene
 
@@ -36,6 +39,7 @@ func _create_slots() -> void:
 			slot = UIFlowItemSlot.new()
 		slot.slot_index = i
 		slot.item_dropped.connect(_on_item_dropped.bind(i))
+		slot.right_clicked.connect(_on_slot_right_clicked)
 		add_child(slot)
 		_slots.append(slot)
 
@@ -44,6 +48,10 @@ func _update_all_slots() -> void:
 	for i in range(_slots.size()):
 		var item: ItemData = inventory_data.get_item(i)
 		_slots[i].set_item(item)
+
+
+func _on_slot_right_clicked(item: ItemData, slot_index: int, global_position: Vector2) -> void:
+	item_right_clicked.emit(item, slot_index, global_position)
 
 
 func _on_item_dropped(item: ItemData, from_index: int, old_item: ItemData, to_index: int) -> void:
