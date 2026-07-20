@@ -24,6 +24,8 @@ var _vbox: VBoxContainer
 var _submenu: UIFlowContextMenu
 var _is_open: bool = false
 
+static var _current_menu: UIFlowContextMenu = null
+
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_STOP
@@ -115,8 +117,12 @@ func add_submenu(label: String) -> UIFlowContextMenu:
 	return sub
 
 
-## Show the menu at a screen position.
+## Show the menu at a screen position. Closes any previously open menu.
 func show_at(position: Vector2) -> void:
+	if _current_menu != null and is_instance_valid(_current_menu) and _current_menu != self:
+		_current_menu.close()
+	_current_menu = self
+
 	print("UIFlowContextMenu.show_at: position=", position, " items=", _items.size())
 	# Add to a high CanvasLayer so the menu is not hidden behind UIFlow's
 	# page layer (layer 10).
@@ -154,6 +160,8 @@ func close() -> void:
 		viewport.gui_focus_changed.disconnect(_on_focus_changed)
 
 	closed.emit()
+	if _current_menu == self:
+		_current_menu = null
 	var layer: CanvasLayer = get_meta("_canvas_layer", null)
 	if layer and is_instance_valid(layer):
 		layer.queue_free()
