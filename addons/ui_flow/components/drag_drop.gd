@@ -55,7 +55,6 @@ func _ready() -> void:
 
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
-		print("UIFlowDragDrop._gui_input: button=", event.button_index, " pressed=", event.pressed, " data=", data, " size=", size)
 		if event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 			_pressing = true
 			_press_timer = 0.0
@@ -78,7 +77,6 @@ func _process(delta: float) -> void:
 	if _pressing and not is_dragging:
 		_press_timer += delta
 		if _press_timer >= long_press_duration:
-			print("UIFlowDragDrop._process: long press reached, calling _start_drag")
 			_start_drag()
 
 	if is_dragging:
@@ -116,10 +114,8 @@ func _update_hover_highlight() -> void:
 
 func _start_drag() -> void:
 	if _current_drag:
-		print("UIFlowDragDrop._start_drag: already dragging, skip")
 		return
 
-	print("UIFlowDragDrop._start_drag: data=", data, " size=", size)
 	is_dragging = true
 	_current_drag = self
 	drag_started.emit()
@@ -134,7 +130,6 @@ func _start_drag() -> void:
 
 
 func _end_drag(position: Vector2) -> void:
-	print("UIFlowDragDrop._end_drag: position=", position, " data=", data)
 	is_dragging = false
 	modulate.a = 1.0
 
@@ -150,7 +145,6 @@ func _end_drag(position: Vector2) -> void:
 	# Check for drop targets
 	var target := _find_drop_target(position)
 	var accepted := target != null and target.can_drop(data)
-	print("UIFlowDragDrop._end_drag: target=", target, " accepted=", accepted)
 	if accepted:
 		dropped.emit(target)
 		target.on_drop.emit(data)
@@ -186,7 +180,6 @@ func _find_drop_target(position: Vector2) -> UIFlowDropTarget:
 	if viewport == null:
 		return null
 	var hovered: Control = viewport.gui_get_hovered_control()
-	print("UIFlowDragDrop._find_drop_target: hovered=", hovered, " pos=", position)
 	var node: Node = hovered
 	while node != null:
 		if node is UIFlowDropTarget and node.is_in_group("uiflow_drop_target"):

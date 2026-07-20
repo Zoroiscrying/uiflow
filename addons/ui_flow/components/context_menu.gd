@@ -123,7 +123,6 @@ func show_at(position: Vector2) -> void:
 		_current_menu.close()
 	_current_menu = self
 
-	print("UIFlowContextMenu.show_at: position=", position, " items=", _items.size())
 	# Add to a high CanvasLayer so the menu is not hidden behind UIFlow's
 	# page layer (layer 10).
 	if not is_inside_tree():
@@ -143,7 +142,6 @@ func show_at(position: Vector2) -> void:
 	_clamp_to_screen()
 	visible = true
 	_is_open = true
-	print("UIFlowContextMenu.show_at: visible=", visible, " size=", size, " global_position=", global_position)
 
 	# Close on click outside
 	viewport.gui_focus_changed.connect(_on_focus_changed)
@@ -162,9 +160,10 @@ func close() -> void:
 	closed.emit()
 	if _current_menu == self:
 		_current_menu = null
-	var layer: CanvasLayer = get_meta("_canvas_layer", null)
-	if layer and is_instance_valid(layer):
-		layer.queue_free()
+	if has_meta("_canvas_layer"):
+		var layer: CanvasLayer = get_meta("_canvas_layer")
+		if layer and is_instance_valid(layer):
+			layer.queue_free()
 	queue_free()
 
 

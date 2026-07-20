@@ -163,7 +163,6 @@ func _on_item_drop(data: Variant) -> void:
 
 
 func _on_drag_dropped(target) -> void:
-	print("UIFlowItemSlot._on_drag_dropped: target=", target, " slot_index=", slot_index)
 	# If dropped on self, don't clear _item (inventory_grid will handle via items_changed)
 	if target == _drop_target:
 		UIFlowDragDrop.drag_source_index = slot_index
@@ -181,9 +180,6 @@ func _on_drag_dropped(target) -> void:
 
 
 func _on_gui_input(event: InputEvent) -> void:
-	if event is InputEventMouseButton and event.pressed:
-		print("UIFlowItemSlot._on_gui_input: button=", event.button_index, " slot_index=", slot_index, " item=", _item)
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_RIGHT:
 		if _item != null:
-			print("UIFlowItemSlot: right_clicked emit slot_index=", slot_index)
 			right_clicked.emit(_item, slot_index, event.global_position)
