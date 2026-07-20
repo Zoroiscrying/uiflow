@@ -150,6 +150,7 @@ func _end_drag(position: Vector2) -> void:
 	# Check for drop targets
 	var target := _find_drop_target(position)
 	var accepted := target != null and target.can_drop(data)
+	print("UIFlowDragDrop._end_drag: target=", target, " accepted=", accepted)
 	if accepted:
 		dropped.emit(target)
 		target.on_drop.emit(data)
@@ -185,10 +186,18 @@ func _find_drop_target(position: Vector2) -> UIFlowDropTarget:
 	if viewport == null:
 		return null
 	var hovered: Control = viewport.gui_get_hovered_control()
+	print("UIFlowDragDrop._find_drop_target: hovered=", hovered, " pos=", position)
 	var node: Node = hovered
 	while node != null:
 		if node is UIFlowDropTarget and node.is_in_group("uiflow_drop_target"):
 			return node
+		# If we reached an item slot, check its children for a drop target.
+		# This handles the case where the drag source (UIFlowDragDrop) is the
+		# hovered control instead of the drop target.
+		if node is UIFlowItemSlot:
+			for child in node.get_children():
+				if child is UIFlowDropTarget and child.is_in_group("uiflow_drop_target"):
+					return child
 		node = node.get_parent()
 	return null
 

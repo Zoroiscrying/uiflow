@@ -117,6 +117,7 @@ func add_submenu(label: String) -> UIFlowContextMenu:
 
 ## Show the menu at a screen position.
 func show_at(position: Vector2) -> void:
+	print("UIFlowContextMenu.show_at: position=", position, " items=", _items.size())
 	# Add to viewport first; get_viewport() only works once we are in the tree.
 	if not is_inside_tree():
 		var tree := Engine.get_main_loop() as SceneTree
@@ -131,6 +132,7 @@ func show_at(position: Vector2) -> void:
 	_clamp_to_screen()
 	visible = true
 	_is_open = true
+	print("UIFlowContextMenu.show_at: visible=", visible, " size=", size, " global_position=", global_position)
 
 	# Close on click outside
 	viewport.gui_focus_changed.connect(_on_focus_changed)
