@@ -84,7 +84,8 @@ func _setup_ui() -> void:
 func _setup_drag_drop() -> void:
 	# Drop target
 	_drop_target = UIFlowDropTarget.new()
-	_drop_target.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_drop_target.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_drop_target.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_drop_target.can_drop_check = func(data):
 		if data is ItemData:
 			if accept_type.is_empty():
@@ -96,7 +97,10 @@ func _setup_drag_drop() -> void:
 
 	# Drag source
 	_drag_drop = UIFlowDragDrop.new()
-	_drag_drop.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_drag_drop.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_drag_drop.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	# PASS so right-click events also reach UIFlowItemSlot._on_gui_input.
+	_drag_drop.mouse_filter = Control.MOUSE_FILTER_PASS
 	_drag_drop.visible = false  # Only active when item exists
 	add_child(_drag_drop)
 	_drag_drop.dropped.connect(_on_drag_dropped)
