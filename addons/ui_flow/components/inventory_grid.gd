@@ -11,6 +11,8 @@ signal item_right_clicked(item: ItemData, slot_index: int, global_position: Vect
 @export var inventory_data: InventoryData
 
 var _slots: Array[UIFlowItemSlot] = []
+var _equipment_data: EquipmentData = null
+var _equipment_slots: Dictionary = {}  # slot_name -> UIFlowItemSlot
 
 
 func _ready() -> void:
@@ -68,3 +70,87 @@ func _on_item_dropped(item: ItemData, from_index: int, old_item: ItemData, to_in
 		if old_item:
 			inventory_data.add_item(old_item)
 		inventory_data.set_item(to_index, item)
+
+		# If it came from an equipment slot, unequip it in the data model too.
+		var source_slot := _find_drag_source_slot()
+		if source_slot and source_slot.is_equip_slot and _equipment_data:
+			_equipment_data.unequip(item.equip_slot)
+
+
+## Bind a set of equipment slots to this grid so drag-and-drop between
+## inventory and equipment works without user-written boilerplate.
+##
+## [param equipment] is the EquipmentData resource that stores equipped items.
+## [param equip_slots] maps slot names (e.g. "weapon", "chest") to the
+## UIFlowItemSlot nodes that represent them in the UI.
+func bind_equipment_slots(equipment: EquipmentData, equip_slots: Dictionary) -> void:
+	unbind_equipment_slots()
+
+	_equipment_data = equipment
+	_equipment_slots = equip_slots
+
+	for slot_name in _equipment_slots:
+		var slot: UIFlowItemSlot = _equipment_slots[slot_name]
+		if not slot.item_dropped.is_connected(_on_equip_slot_dropped):
+			slot.item_dropped.connect(_on_equip_slot_dropped.bind(slot_name))
+
+	if _equipment_data:
+		if not _equipment_data.item_equipped.is_connected(_update_equipment_displays):
+			_equipment_data.item_equipped.connect(_update_equipment_displays)
+		if not _equipment_data.item_unequipped.is_connected(_update_equipment_displays):
+			_equipment_data.item_unequipped.connect(_update_equipment_displays)
+		_update_equipment_displays()
+
+
+## Remove equipment bindings previously set with bind_equipment_slots().
+func unbind_equipment_slots() -> void:
+	if _equipment_data:
+		if _equipment_data.item_equipped.is_connected(_update_equipment_displays):
+			_equipment_data.item_equipped.disconnect(_update_equipment_displays)
+		if _equipment_data.item_unequipped.is_connected(_update_equipment_displays):
+			_equipment_data.item_unequipped.disconnect(_update_equipment_displays)
+	_equipment_data = null
+	_equipment_slots = {}
+
+
+func _on_equip_slot_dropped(item: ItemData, from_index: int, old_item: ItemData, slot_name: StringName) -> void:
+	if item == null or _equipment_data == null or inventory_data == null:
+		return
+
+	# Only accept items that match this equipment slot type.
+	if item.equip_slot != slot_name:
+		return
+
+	# Return the previously equipped item to the inventory.
+	if old_item:
+		inventory_data.add_item(old_item)
+		_equipment_data.unequip(slot_name)
+
+	# Remove the newly equipped item from the inventory.
+	if from_index >= 0:
+		inventory_data.remove_item(from_index)
+	else:
+		var found_index := inventory_data.items.find(item)
+		if found_index >= 0:
+			inventory_data.remove_item(found_index)
+
+	_equipment_data.equip(item)
+
+
+func _update_equipment_displays() -> void:
+	if _equipment_data == null:
+		return
+	for slot_name in _equipment_slots:
+		var slot: UIFlowItemSlot = _equipment_slots[slot_name]
+		var item: ItemData = _equipment_data.get_equipped(slot_name)
+		slot.set_item(item)
+
+
+func _find_drag_source_slot() -> UIFlowItemSlot:
+	var current_drag: UIFlowDragDrop = UIFlowDragDrop._current_drag
+	if current_drag == null:
+		return null
+	var parent: Node = current_drag.get_parent()
+	if parent is UIFlowItemSlot:
+		return parent as UIFlowItemSlot
+	return null
