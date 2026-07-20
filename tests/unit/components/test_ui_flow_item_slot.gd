@@ -52,20 +52,20 @@ func test_item_with_icon_hides_letter() -> void:
 	slot.queue_free()
 
 
-## Test: drag source becomes visible when an item is set and hidden when cleared.
-func test_drag_source_visibility() -> void:
+## Test: drag source input is enabled when an item is set and disabled when cleared.
+func test_drag_source_input_toggle() -> void:
 	var slot := UIFlowItemSlot.new()
 	add_child(slot)
 	await get_tree().process_frame
 
-	assert_that(slot._drag_drop.visible).is_false()
+	assert_that(slot._drag_drop.mouse_filter).is_equal(Control.MOUSE_FILTER_IGNORE)
 
 	var item := ItemData.new()
 	item.item_name = "Shield"
 	slot.set_item(item)
-	assert_that(slot._drag_drop.visible).is_true()
+	assert_that(slot._drag_drop.mouse_filter).is_equal(Control.MOUSE_FILTER_PASS)
 
 	slot.set_item(null)
-	assert_that(slot._drag_drop.visible).is_false()
+	assert_that(slot._drag_drop.mouse_filter).is_equal(Control.MOUSE_FILTER_IGNORE)
 
 	slot.queue_free()

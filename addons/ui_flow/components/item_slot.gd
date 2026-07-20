@@ -99,10 +99,15 @@ func _setup_drag_drop() -> void:
 	_drag_drop = UIFlowDragDrop.new()
 	_drag_drop.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_drag_drop.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	# PASS so right-click events also reach UIFlowItemSlot._on_gui_input.
-	_drag_drop.mouse_filter = Control.MOUSE_FILTER_PASS
-	_drag_drop.visible = false  # Only active when item exists
 	add_child(_drag_drop)
+	# Must be set after add_child because UIFlowDragDrop._ready() resets
+	# mouse_filter to STOP. Default to IGNORE; set_item() enables it when
+	# an item is present.
+	_drag_drop.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	# Do not hide the drag control; PanelContainer skips invisible children
+	# when sorting, so a hidden drag control would have zero size forever.
+	# Instead we disable input via mouse_filter when the slot is empty.
+	_drag_drop.visible = true
 	_drag_drop.dropped.connect(_on_drag_dropped)
 
 
@@ -111,7 +116,9 @@ func set_item(item: ItemData) -> void:
 	_item = item
 	_drag_drop.data = item
 	_drag_drop.drag_icon = item.icon if item else null
-	_drag_drop.visible = item != null
+	# Keep the drag control visible so PanelContainer assigns it a rect;
+	# toggle input via mouse_filter instead.
+	_drag_drop.mouse_filter = Control.MOUSE_FILTER_PASS if item != null else Control.MOUSE_FILTER_IGNORE
 	_update_display()
 
 
