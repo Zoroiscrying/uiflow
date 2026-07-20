@@ -118,11 +118,16 @@ func add_submenu(label: String) -> UIFlowContextMenu:
 ## Show the menu at a screen position.
 func show_at(position: Vector2) -> void:
 	print("UIFlowContextMenu.show_at: position=", position, " items=", _items.size())
-	# Add to viewport first; get_viewport() only works once we are in the tree.
+	# Add to a high CanvasLayer so the menu is not hidden behind UIFlow's
+	# page layer (layer 10).
 	if not is_inside_tree():
 		var tree := Engine.get_main_loop() as SceneTree
 		if tree != null:
-			tree.root.add_child(self)
+			var layer := CanvasLayer.new()
+			layer.layer = 100
+			tree.root.add_child(layer)
+			layer.add_child(self)
+			set_meta("_canvas_layer", layer)
 
 	var viewport := get_viewport()
 	if viewport == null:
@@ -149,6 +154,9 @@ func close() -> void:
 		viewport.gui_focus_changed.disconnect(_on_focus_changed)
 
 	closed.emit()
+	var layer: CanvasLayer = get_meta("_canvas_layer", null)
+	if layer and is_instance_valid(layer):
+		layer.queue_free()
 	queue_free()
 
 
