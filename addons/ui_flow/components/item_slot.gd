@@ -80,6 +80,7 @@ func _setup_ui() -> void:
 func _setup_drag_drop() -> void:
 	# Drop target
 	_drop_target = UIFlowDropTarget.new()
+	_drop_target.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_drop_target.can_drop_check = func(data):
 		if data is ItemData:
 			if accept_type.is_empty():
@@ -91,6 +92,7 @@ func _setup_drag_drop() -> void:
 
 	# Drag source
 	_drag_drop = UIFlowDragDrop.new()
+	_drag_drop.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_drag_drop.visible = false  # Only active when item exists
 	add_child(_drag_drop)
 	_drag_drop.dropped.connect(_on_drag_dropped)
