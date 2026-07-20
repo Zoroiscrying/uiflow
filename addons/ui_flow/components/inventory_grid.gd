@@ -137,7 +137,7 @@ func _on_equip_slot_dropped(item: ItemData, from_index: int, old_item: ItemData,
 	_equipment_data.equip(item)
 
 
-func _update_equipment_displays() -> void:
+func _update_equipment_displays(_slot_name: StringName = &"", _item: ItemData = null) -> void:
 	if _equipment_data == null:
 		return
 	for slot_name in _equipment_slots:
