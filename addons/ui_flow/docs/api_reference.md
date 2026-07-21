@@ -354,8 +354,9 @@ Equipment/inventory slot with drag-drop.
 
 | Signal | Description |
 |--------|-------------|
-| `item_dropped(item, from_index)` | Item dropped into slot |
+| `item_dropped(item, from_index, old_item)` | Item dropped into slot |
 | `item_dragged(item, slot_index)` | Item dragged from slot |
+| `right_clicked(item, slot_index, pos)` | Right-clicked while holding an item |
 
 | Property | Type | Description |
 |----------|------|-------------|
@@ -372,6 +373,13 @@ Grid of ItemSlots bound to InventoryData.
 | Method | Signature | Description |
 |--------|-----------|-------------|
 | `setup` | `(data: InventoryData)` | Initialize with inventory data |
+| `bind_equipment_slots` | `(equipment: EquipmentData, slots: Dictionary)` | Auto-wire drag-and-drop between inventory and equipment slots |
+
+### Signals
+
+| Signal | Description |
+|--------|-------------|
+| `item_right_clicked(item, slot_index, pos)` | Forwarded from child slots |
 
 ---
 

@@ -29,6 +29,10 @@ var _drop_target: UIFlowDropTarget
 var _empty_style: StyleBoxFlat
 var _filled_style: StyleBoxFlat
 
+var _equipment_data: EquipmentData = null
+var _inventory_data: InventoryData = null
+var _equipment_slot_name: StringName = &""
+
 
 func _ready() -> void:
 	_setup_ui()
@@ -183,3 +187,53 @@ func _on_gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_RIGHT:
 		if _item != null:
 			right_clicked.emit(_item, slot_index, event.global_position)
+
+
+## Configure this slot as an equipment slot bound to an EquipmentData resource.
+## Handles drop-to-equip, unequip display sync and inventory return automatically.
+func setup_equipment(equipment: EquipmentData, inventory: InventoryData, slot_name: StringName) -> void:
+	_equipment_data = equipment
+	_inventory_data = inventory
+	_equipment_slot_name = slot_name
+	accept_type = slot_name
+	is_equip_slot = true
+
+	if not item_dropped.is_connected(_on_equipment_drop):
+		item_dropped.connect(_on_equipment_drop)
+	if equipment and not equipment.item_equipped.is_connected(_on_equipment_changed):
+		equipment.item_equipped.connect(_on_equipment_changed)
+	if equipment and not equipment.item_unequipped.is_connected(_on_equipment_changed):
+		equipment.item_unequipped.connect(_on_equipment_changed)
+
+	if equipment:
+		set_item(equipment.get_equipped(slot_name))
+
+
+## Remove equipment bindings previously set with setup_equipment().
+func unbind_equipment() -> void:
+	if _equipment_data:
+		if _equipment_data.item_equipped.is_connected(_on_equipment_changed):
+			_equipment_data.item_equipped.disconnect(_on_equipment_changed)
+		if _equipment_data.item_unequipped.is_connected(_on_equipment_changed):
+			_equipment_data.item_unequipped.disconnect(_on_equipment_changed)
+	_equipment_data = null
+	_inventory_data = null
+	_equipment_slot_name = &""
+
+
+func _on_equipment_drop(item: ItemData, from_index: int, old_item: ItemData) -> void:
+	if _equipment_data == null or _inventory_data == null:
+		return
+	if item.equip_slot != _equipment_slot_name:
+		return
+	if old_item:
+		_inventory_data.add_item(old_item)
+		_equipment_data.unequip(_equipment_slot_name)
+	if from_index >= 0:
+		_inventory_data.remove_item(from_index)
+	_equipment_data.equip(item)
+
+
+func _on_equipment_changed(slot: StringName, _item: ItemData) -> void:
+	if slot == _equipment_slot_name and _equipment_data:
+		set_item(_equipment_data.get_equipped(slot))
