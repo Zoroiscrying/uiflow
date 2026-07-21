@@ -20,6 +20,21 @@ signal right_clicked(item: ItemData, slot_index: int, global_position: Vector2)
 ## Is this an equipment slot?
 @export var is_equip_slot: bool = false
 
+## Background color when the slot is empty.
+@export var empty_bg_color: Color = Color(0.1, 0.1, 0.13, 0.6)
+
+## Background color when the slot holds an item.
+@export var filled_bg_color: Color = Color(0.15, 0.15, 0.2, 0.8)
+
+## Border color when the slot is empty.
+@export var empty_border_color: Color = Color(0.25, 0.25, 0.3, 0.5)
+
+## Corner radius for the slot background.
+@export var corner_radius: int = 4
+
+## Font size for the fallback letter label.
+@export var letter_font_size: int = 18
+
 var _item: ItemData = null
 var _icon: TextureRect
 var _rarity_border: ColorRect
@@ -47,15 +62,15 @@ func _setup_ui() -> void:
 	# Styles — keep fallback colors; components will pick up a native Theme
 	# automatically unless we add an override, so we only set our own styles.
 	_empty_style = StyleBoxFlat.new()
-	_empty_style.bg_color = Color(0.1, 0.1, 0.13, 0.6)
-	_empty_style.set_corner_radius_all(4)
+	_empty_style.bg_color = empty_bg_color
+	_empty_style.set_corner_radius_all(corner_radius)
 	_empty_style.set_content_margin_all(4)
-	_empty_style.border_color = Color(0.25, 0.25, 0.3, 0.5)
+	_empty_style.border_color = empty_border_color
 	_empty_style.set_border_width_all(1)
 
 	_filled_style = StyleBoxFlat.new()
-	_filled_style.bg_color = Color(0.15, 0.15, 0.2, 0.8)
-	_filled_style.set_corner_radius_all(4)
+	_filled_style.bg_color = filled_bg_color
+	_filled_style.set_corner_radius_all(corner_radius)
 	_filled_style.set_content_margin_all(4)
 
 	add_theme_stylebox_override("panel", _empty_style)
@@ -80,7 +95,7 @@ func _setup_ui() -> void:
 	_letter_label.set_anchors_and_offsets_preset(Control.PRESET_CENTER, Control.PRESET_MODE_MINSIZE)
 	_letter_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_letter_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	_letter_label.add_theme_font_size_override("font_size", 18)
+	_letter_label.add_theme_font_size_override("font_size", letter_font_size)
 	_letter_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_letter_label)
 
