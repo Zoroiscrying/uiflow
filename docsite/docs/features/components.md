@@ -112,7 +112,35 @@ $InventoryGrid.setup(inventory)
 
 ![InventoryGrid in the Survivors demo](../assets/screenshots/inventory_grid.png)
 
-The grid emits `item_dropped` per slot so you can wire equipment slots, context menus (`UIFlowContextMenu`), and tooltips (`UIFlowTooltip`) — see the Survivors demo for a full example.
+The grid emits `item_right_clicked` and forwards per-slot `item_dropped` events so you can wire equipment slots, context menus (`UIFlowContextMenu`), and tooltips (`UIFlowTooltip`) — see the Survivors demo for a full example.
+
+### Quick Equipment Binding
+
+`UIFlowInventoryGrid.bind_equipment_slots()` removes the boilerplate for drag-and-drop between inventory and equipment:
+
+```gdscript
+$InventoryGrid.setup(inventory)
+$InventoryGrid.bind_equipment_slots(equipment_data, {
+    &"weapon": weapon_slot,
+    &"chest": chest_slot,
+})
+```
+
+Right-clicking an inventory item emits `item_right_clicked(item, slot_index, pos)`; equippable items can be equipped directly or through a context menu.
+
+## EquipmentGrid
+
+`UIFlowEquipmentGrid` creates a labeled grid of equipment slots that handle drop-to-equip, type filtering, and display sync automatically:
+
+```gdscript
+var grid := UIFlowEquipmentGrid.new()
+grid.slot_names = {&"weapon": "Weapon", &"chest": "Chest"}
+add_child(grid)
+grid.setup(equipment_data, inventory_data)
+grid.slot_right_clicked.connect(_on_equipment_right_clicked)
+```
+
+Each slot is a `UIFlowItemSlot` with `setup_equipment()` already wired, so drag-and-drop from an inventory grid works out of the box.
 
 ## VirtualList
 

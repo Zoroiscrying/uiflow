@@ -30,13 +30,13 @@ window/stretch/mode="viewport"
 
 project/assembly_name="Godot-Plugin-UI-Flow"
 
-[gdunit4]
-
-dotnet/disabled=true
-
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/gdUnit4/plugin.cfg", "res://addons/ui_flow/plugin.cfg")
+
+[gdunit4]
+
+dotnet/disabled=true
 
 [input]
 

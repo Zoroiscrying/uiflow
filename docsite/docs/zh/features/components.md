@@ -112,7 +112,35 @@ $InventoryGrid.setup(inventory)
 
 ![Survivors 演示中的 InventoryGrid](/assets/screenshots/inventory_grid.png)
 
-每个槽位都会发出 `item_dropped` 信号，可据此接入装备槽、右键菜单（`UIFlowContextMenu`）和悬浮提示（`UIFlowTooltip`）——完整示例见 Survivors 演示。
+网格会转发 `item_right_clicked` 和各槽位的 `item_dropped` 信号，可据此接入装备槽、右键菜单（`UIFlowContextMenu`）和悬浮提示（`UIFlowTooltip`）——完整示例见 Survivors 演示。
+
+### 快速装备绑定
+
+`UIFlowInventoryGrid.bind_equipment_slots()` 封装了背包与装备槽之间的拖放逻辑，无需手写样板代码：
+
+```gdscript
+$InventoryGrid.setup(inventory)
+$InventoryGrid.bind_equipment_slots(equipment_data, {
+    &"weapon": weapon_slot,
+    &"chest": chest_slot,
+})
+```
+
+右键背包物品会发出 `item_right_clicked(item, slot_index, pos)`；可装备物品可直接装备或通过右键菜单操作。
+
+## EquipmentGrid
+
+`UIFlowEquipmentGrid` 自动生成带标签的装备槽网格，内部处理装备拖放、类型过滤和显示同步：
+
+```gdscript
+var grid := UIFlowEquipmentGrid.new()
+grid.slot_names = {&"weapon": "武器", &"chest": "胸甲"}
+add_child(grid)
+grid.setup(equipment_data, inventory_data)
+grid.slot_right_clicked.connect(_on_equipment_right_clicked)
+```
+
+每个槽位都是已配置好 `setup_equipment()` 的 `UIFlowItemSlot`，与背包网格拖放开箱即用。
 
 ## VirtualList
 
