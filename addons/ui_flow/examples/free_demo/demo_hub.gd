@@ -39,6 +39,11 @@ func _ready() -> void:
 		UIFlow.pop()
 		tree.change_scene_to_file("res://addons/ui_flow_pro/examples/survivors/arpg_main.tscn")
 	)
+	_buttons.get_child(9).pressed.connect(func():
+		var script := load("res://addons/ui_flow_pro/examples/demo_pro_components.gd") as GDScript
+		if script:
+			UIFlow.push(script)
+	)
 
 
 func _on_opened(_data: Variant = null) -> void:
