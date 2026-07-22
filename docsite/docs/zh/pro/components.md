@@ -7,18 +7,30 @@ UIFlow Pro 扩展了 Free 的组件集，增加了面向大数据和游戏专用
 
 ## UIFlowProDataGrid
 
-更强大的数据表格，支持排序、筛选、列拖拽、分页和行选中回调。
+更强大的数据表格，支持排序、筛选、列宽调整、分页、单元格/行编辑和行条纹。
 
 ```gdscript
 var grid := $ProDataGrid
-grid.set_columns([
-    {"name": "name", "title": "道具", "sortable": true, "width": 180},
+grid.setup([
+    {"name": "name", "title": "道具", "sortable": true, "filterable": true, "editable": true, "width": 180},
     {"name": "rarity", "title": "稀有度", "filterable": true, "width": 100},
     {"name": "price", "title": "价格", "sortable": true, "align": "right"}
-])
+], preload("res://UIScene/ItemRow.tscn"))
+grid.page_size = 20
 grid.set_data(shop_items)
-grid.row_selected.connect(_on_item_selected)
+grid.cell_edited.connect(_on_cell_edited)
+grid.row_edited.connect(_on_row_edited)
 ```
+
+### 功能
+
+- **排序** — 点击可排序列头。
+- **筛选** — 全局 `set_filter()` 加每列筛选输入框。
+- **分页** — `page_size` 配合上一页/下一页按钮。
+- **列宽调整** — 拖拽列头右边缘。
+- **单元格编辑** — 双击可编辑单元格。
+- **行编辑** — 双击行打开编辑面板。
+- **条纹** — 通过 `show_stripes` 和 `stripe_color` 设置交替行背景。
 
 ## UIFlowProVirtualList
 
@@ -49,17 +61,32 @@ inventory_grid.slot_clicked.connect(_on_slot_clicked)
 
 ## UIFlowProTreeView
 
-层级数据展示，适合技能树、科技树或文件浏览器：
+层级数据展示，适合技能树、科技树或文件浏览器，支持拖拽排序、多选和虚拟滚动。
 
 ```gdscript
 tree_view.set_root({
-    "name": "技能",
+    "id": "root",
+    "label": "技能",
     "children": [
-        {"name": "战斗", "children": [{"name": "剑术精通"}, {"name": "双持"}]},
-        {"name": "魔法", "children": [{"name": "火球术"}, {"name": "冰盾"}]}
+        {"id": "combat", "label": "战斗", "children": [
+            {"id": "sword", "label": "剑术精通"},
+            {"id": "dual", "label": "双持"}
+        ]},
+        {"id": "magic", "label": "魔法", "children": [
+            {"id": "fireball", "label": "火球术"},
+            {"id": "ice", "label": "冰盾"}
+        ]}
     ]
 })
 ```
+
+### 功能
+
+- **拖拽排序** — 拖到节点上作为子节点；拖到上/下边缘作为兄弟节点前/后插入。
+- **多选** — Ctrl+点击切换，Shift+点击范围选择。
+- **键盘导航** — 上/下移动选择，左/右折叠/展开，Enter 激活。
+- **虚拟滚动** — 大数据量时只渲染可视行。
+- **事件** — `item_moved`、`selection_changed`、`item_activated`。
 
 ## UIFlowProChartView
 

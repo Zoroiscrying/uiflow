@@ -7,18 +7,30 @@ UIFlow Pro extends the Free component set with data-heavy and game-specific widg
 
 ## UIFlowProDataGrid
 
-A more capable data grid with sorting, filtering, column reordering, pagination, and row selection callbacks.
+A more capable data grid with sorting, filtering, column resizing, pagination, cell/row editing, and row striping.
 
 ```gdscript
 var grid := $ProDataGrid
-grid.set_columns([
-    {"name": "name", "title": "Item", "sortable": true, "width": 180},
+grid.setup([
+    {"name": "name", "title": "Item", "sortable": true, "filterable": true, "editable": true, "width": 180},
     {"name": "rarity", "title": "Rarity", "filterable": true, "width": 100},
     {"name": "price", "title": "Price", "sortable": true, "align": "right"}
-])
+], preload("res://UIScene/ItemRow.tscn"))
+grid.page_size = 20
 grid.set_data(shop_items)
-grid.row_selected.connect(_on_item_selected)
+grid.cell_edited.connect(_on_cell_edited)
+grid.row_edited.connect(_on_row_edited)
 ```
+
+### Features
+
+- **Sorting** — click sortable column headers.
+- **Filtering** — global `set_filter()` plus per-column filter inputs.
+- **Pagination** — `page_size` with previous/next controls.
+- **Column resize** — drag the right edge of a column header.
+- **Cell editing** — double-click an editable cell.
+- **Row editing** — double-click a row to open an edit panel.
+- **Striping** — alternating row background via `show_stripes` and `stripe_color`.
 
 ## UIFlowProVirtualList
 
@@ -49,17 +61,32 @@ inventory_grid.slot_clicked.connect(_on_slot_clicked)
 
 ## UIFlowProTreeView
 
-Hierarchical data display for skill trees, tech trees, or file browsers:
+Hierarchical data display for skill trees, tech trees, or file browsers, with drag-and-drop reordering, multi-select, and virtual scrolling.
 
 ```gdscript
 tree_view.set_root({
-    "name": "Skills",
+    "id": "root",
+    "label": "Skills",
     "children": [
-        {"name": "Combat", "children": [{"name": "Sword Mastery"}, {"name": "Dual Wield"}]},
-        {"name": "Magic", "children": [{"name": "Fireball"}, {"name": "Ice Shield"}]}
+        {"id": "combat", "label": "Combat", "children": [
+            {"id": "sword", "label": "Sword Mastery"},
+            {"id": "dual", "label": "Dual Wield"}
+        ]},
+        {"id": "magic", "label": "Magic", "children": [
+            {"id": "fireball", "label": "Fireball"},
+            {"id": "ice", "label": "Ice Shield"}
+        ]}
     ]
 })
 ```
+
+### Features
+
+- **Drag-and-drop reordering** — drop onto a node to insert as child; drop near top/bottom edge to insert as sibling before/after.
+- **Multi-select** — Ctrl+click toggles, Shift+click range-selects.
+- **Keyboard navigation** — Up/Down moves selection, Left/Right collapses/expands, Enter activates.
+- **Virtual scrolling** — only visible rows are rendered for large trees.
+- **Events** — `item_moved`, `selection_changed`, `item_activated`.
 
 ## UIFlowProChartView
 
