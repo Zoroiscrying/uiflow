@@ -17,7 +17,7 @@ albedo_color = Color(0.8, 0.6, 0.3, 1)
 script = ExtResource("1")
 page_scene_path = "res://addons/ui_flow/examples/scenes/UIScene/DialogPage.tscn"
 display_name = "Talk"
-key_prompt = "[E] Talk"
+key_prompt = "[E/A] Talk"
 
 [node name="Collision" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)

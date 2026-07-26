@@ -13,6 +13,8 @@ var FlowInput: UIFlowInputHandler
 var Focus: UIFlowFocusNavigator
 ## Analog-stick driven virtual cursor.
 var Cursor: UIFlowVirtualCursor
+## Last-used input device family (keyboard/mouse vs gamepad) for prompt glyphs.
+var InputDevice: UIFlowInputDevice
 ## Theme utilities and named color palette.
 var ThemeHelper: UIFlowThemeHelper
 ## Global configuration.
@@ -73,6 +75,10 @@ func _ready() -> void:
 	Cursor = UIFlowVirtualCursor.new()
 	Cursor.name = "UIFlowVirtualCursor"
 	add_child(Cursor)
+
+	InputDevice = UIFlowInputDevice.new()
+	InputDevice.name = "UIFlowInputDevice"
+	add_child(InputDevice)
 
 
 func _load_config() -> void:
@@ -177,6 +183,11 @@ func replace(page_class: GDScript, data: Variant = null, page_theme: Variant = n
 ## Remove all pages except root.
 func pop_to_root() -> void:
 	Router.pop_to_root()
+
+
+## Remove every page immediately (no exit animations). Useful when changing demos.
+func clear_stack() -> void:
+	Router.clear_stack()
 
 
 ## Close a specific page by class, anywhere in the stack.

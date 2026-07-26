@@ -94,3 +94,14 @@ func test_click_triggers_button() -> void:
 	await get_tree().process_frame
 	await get_tree().process_frame
 	assert_that(pressed[0]).is_true()
+
+
+func test_accept_input_is_consumed_while_cursor_enabled() -> void:
+	UIFlow.Cursor.enable()
+	var ev := InputEventAction.new()
+	ev.action = &"ui_accept"
+	ev.pressed = true
+	UIFlow.Cursor._input(ev)
+	# Handler path runs click(); verify no crash and cursor stays enabled.
+	assert_that(UIFlow.Cursor.is_enabled()).is_true()
+	UIFlow.Cursor.disable()

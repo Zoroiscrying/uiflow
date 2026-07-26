@@ -42,6 +42,19 @@ func get_slot(slot_name: StringName) -> UIFlowItemSlot:
 	return _slots.get(slot_name, null)
 
 
+## Prefer the first filled equipment slot for initial gamepad focus.
+func get_default_focus_slot() -> UIFlowItemSlot:
+	for slot_name in _slots:
+		var slot: UIFlowItemSlot = _slots[slot_name]
+		if slot != null and slot.get_item() != null:
+			return slot
+	for slot_name in _slots:
+		var slot: UIFlowItemSlot = _slots[slot_name]
+		if slot != null:
+			return slot
+	return null
+
+
 func _create_slots() -> void:
 	UIFlowUtils.clear_children(self)
 	_slots.clear()
@@ -60,10 +73,12 @@ func _create_slots() -> void:
 
 		var slot := UIFlowItemSlot.new()
 		slot.custom_minimum_size = slot_size
-		slot.right_clicked.connect(func(item: ItemData, _index: int, pos: Vector2):
-			slot_right_clicked.emit(item, slot_name, pos)
-		)
+		slot.right_clicked.connect(_on_slot_right_clicked_internal.bind(slot_name))
 		vbox.add_child(slot)
 
 		add_child(vbox)
 		_slots[slot_name] = slot
+
+
+func _on_slot_right_clicked_internal(item: ItemData, _index: int, pos: Vector2, slot_name: StringName) -> void:
+	slot_right_clicked.emit(item, slot_name, pos)

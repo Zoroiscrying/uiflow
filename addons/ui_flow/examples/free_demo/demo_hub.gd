@@ -7,6 +7,7 @@ const DemoTransitions = preload("res://addons/ui_flow/examples/free_demo/demo_tr
 const DemoComponents = preload("res://addons/ui_flow/examples/free_demo/demo_components.gd")
 const DemoTheme = preload("res://addons/ui_flow/examples/free_demo/demo_theme.gd")
 const DemoTimelineAsync = preload("res://addons/ui_flow/examples/free_demo/demo_timeline_async.gd")
+const DemoWorkflow = preload("res://addons/ui_flow/examples/free_demo/demo_workflow.gd")
 
 @onready var _buttons: VBoxContainer = $Margin/Scroll/VBox/Buttons
 
@@ -25,9 +26,7 @@ func _ready() -> void:
 	_buttons.get_child(5).pressed.connect(func():
 		UIFlow.push(DemoTimelineAsync))
 	_buttons.get_child(6).pressed.connect(func():
-		var tree := get_tree()
-		UIFlow.pop()
-		tree.change_scene_to_file("res://addons/ui_flow/examples/scenes/gamepad_demo.tscn")
+		UIFlow.push(GamepadDemoPage)
 	)
 	_buttons.get_child(7).pressed.connect(func():
 		var tree := get_tree()
@@ -44,6 +43,8 @@ func _ready() -> void:
 		if script:
 			UIFlow.push(script)
 	)
+	_buttons.get_child(10).pressed.connect(func():
+		UIFlow.push(DemoWorkflow))
 
 
 func _on_opened(_data: Variant = null) -> void:

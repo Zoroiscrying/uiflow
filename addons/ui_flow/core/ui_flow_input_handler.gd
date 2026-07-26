@@ -62,8 +62,26 @@ func _get_top_page() -> UIFlowPage:
 	return _navigator._stack.back()["instance"] as UIFlowPage
 
 
+func _input(event: InputEvent) -> void:
+	# Joypad cancel often never reaches _unhandled_input if a Control is focused;
+	# handle it here so B always backs out of UIFlow pages.
+	if event is InputEventJoypadButton and event.pressed and not event.is_echo():
+		_try_handle_back(event)
+
+
 func _unhandled_input(event: InputEvent) -> void:
+	_try_handle_back(event)
+
+
+func _try_handle_back(event: InputEvent) -> void:
 	if _navigator == null or _navigator._stack.is_empty():
+		return
+	# UIFlowUI Confirm/Alert own cancel while open (not a stack page).
+	var ui := get_node_or_null("/root/UIFlowUI")
+	if ui != null and ui.has_method("has_blocking_dialog") and ui.has_blocking_dialog():
+		return
+	var viewport := get_viewport()
+	if viewport != null and viewport.is_input_handled():
 		return
 	var back_action: StringName = UIFlow.Config.back_action if UIFlow.Config else &"ui_cancel"
 	if not event.is_action_pressed(back_action):

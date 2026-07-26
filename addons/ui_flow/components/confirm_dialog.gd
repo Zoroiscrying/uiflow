@@ -21,6 +21,16 @@ class_name UIFlowConfirmDialog extends UIFlowDialogBase
 ## Optional icon for the cancel button.
 @export var cancel_icon: Texture2D = null
 
+var _on_confirm: Callable = Callable()
+var _on_cancel: Callable = Callable()
+var _confirm_btn: Button
+var _cancel_btn: Button
+
+
+func _component_ready() -> void:
+	super._component_ready()
+	set_process_input(true)
+
 
 ## Show a confirmation dialog.
 ## [param title] is the dialog title.
@@ -39,6 +49,8 @@ func show_confirm(
 		return
 
 	_active = true
+	_on_confirm = on_confirm
+	_on_cancel = on_cancel
 	_title_label.text = title
 	_message_label.text = message
 
@@ -46,43 +58,67 @@ func show_confirm(
 	var call_cancel_text: String = options.get("cancel_text", cancel_text)
 	var call_cancel_first: bool = options.get("cancel_first", cancel_first)
 
-	_setup_buttons(call_confirm_text, call_cancel_text, call_cancel_first, on_confirm, on_cancel)
+	_setup_buttons(call_confirm_text, call_cancel_text, call_cancel_first)
 
 	visible = true
 	_show_dialog()
+	_focus_control(_confirm_btn)
 
 
 ## Override this to build the button row from scratch.
 func _setup_buttons(
 	p_confirm_text: String,
 	p_cancel_text: String,
-	p_cancel_first: bool,
-	on_confirm: Callable,
-	on_cancel: Callable
+	p_cancel_first: bool
 ) -> void:
-	# Clear old buttons
 	for child in _button_container.get_children():
 		child.queue_free()
 
-	var confirm_btn := _create_button(p_confirm_text, confirm_icon)
-	confirm_btn.pressed.connect(func():
-		_hide_dialog()
-		if on_confirm.is_valid():
-			on_confirm.call()
-	)
+	_confirm_btn = _create_button(p_confirm_text, confirm_icon)
+	_confirm_btn.pressed.connect(_emit_confirm)
 
-	var cancel_btn := _create_button(p_cancel_text, cancel_icon)
-	cancel_btn.pressed.connect(func():
-		_hide_dialog()
-		if on_cancel.is_valid():
-			on_cancel.call()
-	)
+	_cancel_btn = _create_button(p_cancel_text, cancel_icon)
+	_cancel_btn.pressed.connect(_emit_cancel)
 
 	if p_cancel_first:
-		_button_container.add_child(cancel_btn)
-		_button_container.add_child(confirm_btn)
-		confirm_btn.grab_focus()
+		_button_container.add_child(_cancel_btn)
+		_button_container.add_child(_confirm_btn)
 	else:
-		_button_container.add_child(confirm_btn)
-		_button_container.add_child(cancel_btn)
-		confirm_btn.grab_focus()
+		_button_container.add_child(_confirm_btn)
+		_button_container.add_child(_cancel_btn)
+
+	_cancel_btn.focus_neighbor_right = _cancel_btn.get_path_to(_confirm_btn)
+	_cancel_btn.focus_neighbor_left = _cancel_btn.get_path_to(_confirm_btn)
+	_confirm_btn.focus_neighbor_left = _confirm_btn.get_path_to(_cancel_btn)
+	_confirm_btn.focus_neighbor_right = _confirm_btn.get_path_to(_cancel_btn)
+
+
+func _input(event: InputEvent) -> void:
+	if not _active:
+		return
+	# Own cancel so UIFlowInputHandler does not re-fire MainHUD._on_back.
+	if event.is_action_pressed(&"ui_cancel") and not event.is_echo():
+		_emit_cancel()
+		get_viewport().set_input_as_handled()
+
+
+func _emit_confirm() -> void:
+	if not _active:
+		return
+	var cb := _on_confirm
+	_on_confirm = Callable()
+	_on_cancel = Callable()
+	_hide_dialog()
+	if cb.is_valid():
+		cb.call()
+
+
+func _emit_cancel() -> void:
+	if not _active:
+		return
+	var cb := _on_cancel
+	_on_confirm = Callable()
+	_on_cancel = Callable()
+	_hide_dialog()
+	if cb.is_valid():
+		cb.call()

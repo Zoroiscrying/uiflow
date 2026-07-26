@@ -59,6 +59,7 @@ func _ready() -> void:
 	if _parent_control:
 		_parent_control.mouse_entered.connect(_on_hover_start)
 		_parent_control.mouse_exited.connect(_on_hover_end)
+		_parent_control.tree_exiting.connect(queue_free)
 
 
 func _process(delta: float) -> void:
@@ -68,9 +69,10 @@ func _process(delta: float) -> void:
 			_show()
 
 	if _showing and follow_cursor:
-		var mouse_pos: Vector2 = get_global_mouse_position()
-		global_position = mouse_pos + Vector2(16, 16)
-		_clamp_to_viewport()
+		var vp := get_viewport()
+		if vp:
+			global_position = vp.get_mouse_position() + Vector2(16, 16)
+			_clamp_to_viewport()
 
 
 func _set_text(value: String) -> void:
@@ -91,11 +93,16 @@ func _on_hover_end() -> void:
 func _show() -> void:
 	if hint_text.is_empty():
 		return
+	UIFlowOverlayHost.ensure_on_overlay(self)
 	visible = true
 	_showing = true
 	modulate.a = 0.0
 	var tween: Tween = create_tween()
 	tween.tween_property(self, "modulate:a", 1.0, 0.15)
+	if follow_cursor:
+		var mouse_pos: Vector2 = get_viewport().get_mouse_position()
+		global_position = mouse_pos + Vector2(16, 16)
+		_clamp_to_viewport()
 
 
 func _hide() -> void:
@@ -107,7 +114,10 @@ func _hide() -> void:
 
 
 func _clamp_to_viewport() -> void:
-	var vp_size: Vector2 = get_viewport_rect().size
+	var vp := get_viewport()
+	if vp == null:
+		return
+	var vp_size: Vector2 = vp.get_visible_rect().size
 	var panel_size: Vector2 = _panel.size
 	if global_position.x + panel_size.x > vp_size.x:
 		global_position.x = vp_size.x - panel_size.x - 8
@@ -116,6 +126,8 @@ func _clamp_to_viewport() -> void:
 
 
 ## Static helper: attach a hover hint to a control.
+## The hint node stays as a child for lifecycle; the popup is reparented to an
+## overlay CanvasLayer while visible so it draws above the page stack.
 static func attach(control: Control, text: String, bbcode: bool = false) -> UIFlowHoverHint:
 	var hint := UIFlowHoverHint.new()
 	hint.hint_text = text

@@ -42,6 +42,10 @@ func _ready() -> void:
 		if not _uiflow.page_closed.is_connected(_on_stack_changed):
 			_uiflow.page_closed.connect(_on_stack_changed)
 		_rebind_top_page()
+	if _uiflow != null and _uiflow.get("InputDevice") != null:
+		var device: UIFlowInputDevice = _uiflow.InputDevice
+		if not device.device_changed.is_connected(_on_device_changed):
+			device.device_changed.connect(_on_device_changed)
 
 
 func _exit_tree() -> void:
@@ -50,7 +54,15 @@ func _exit_tree() -> void:
 			_uiflow.page_opened.disconnect(_on_stack_changed)
 		if _uiflow.page_closed.is_connected(_on_stack_changed):
 			_uiflow.page_closed.disconnect(_on_stack_changed)
+		if _uiflow.get("InputDevice") != null:
+			var device: UIFlowInputDevice = _uiflow.InputDevice
+			if device.device_changed.is_connected(_on_device_changed):
+				device.device_changed.disconnect(_on_device_changed)
 	_unbind_page()
+
+
+func _on_device_changed(_kind: UIFlowInputDevice.Kind) -> void:
+	_rebuild()
 
 
 ## Bind the bar to a specific page. Pass null to clear.
@@ -109,32 +121,26 @@ func _rebuild() -> void:
 		add_child(_create_chip(action))
 
 
-## Build one icon/key + label chip for an action.
+## Build one device-aware icon/key + label chip for an action.
 func _create_chip(action: UIInputActionNode) -> Control:
-	var chip := HBoxContainer.new()
-	chip.add_theme_constant_override("separation", 6)
-	chip.mouse_filter = Control.MOUSE_FILTER_IGNORE
-
-	if action.icon:
-		var icon_rect := TextureRect.new()
-		icon_rect.texture = action.icon
-		icon_rect.custom_minimum_size = icon_size
-		icon_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		icon_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		icon_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		chip.add_child(icon_rect)
+	var label: String = action.label if not action.label.is_empty() else String(action.action_name)
+	var chip: UIFlowInputPrompt
+	if action.icon != null:
+		chip = UIFlowInputPrompt.make("?", label, Color(0.35, 0.55, 0.75), action.icon)
 	elif not action.godot_action.is_empty():
-		var key_label := Label.new()
-		key_label.text = "[%s]" % _get_action_key_text(action.godot_action)
-		key_label.add_theme_color_override("font_color", Color(0.9, 0.85, 0.6))
-		key_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		chip.add_child(key_label)
-
-	var label_node := Label.new()
-	label_node.text = action.label if not action.label.is_empty() else String(action.action_name)
-	label_node.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	chip.add_child(label_node)
-
+		var semantic: StringName = UIFlowInputPromptIcons.semantic_for_action(action.godot_action)
+		if not semantic.is_empty():
+			chip = UIFlowInputPrompt.make_semantic(semantic, label, Color(0.35, 0.55, 0.75))
+		else:
+			chip = UIFlowInputPrompt.make(
+				_get_action_key_text(action.godot_action),
+				label,
+				Color(0.35, 0.55, 0.75),
+				UIFlowInputPromptIcons.texture_for_action(action.godot_action)
+			)
+	else:
+		chip = UIFlowInputPrompt.make("?", label, Color(0.45, 0.5, 0.55))
+	chip.icon_size = icon_size
 	if not action.enabled:
 		chip.modulate = disabled_modulate
 	return chip
@@ -142,12 +148,38 @@ func _create_chip(action: UIInputActionNode) -> Control:
 
 ## Resolve a Godot input action to a short human-readable key/button text.
 func _get_action_key_text(godot_action: StringName) -> String:
+	var mapped: String = UIFlowInputPromptIcons.badge_for_action(godot_action)
+	if mapped != String(godot_action):
+		return mapped
+	var prefer_pad: bool = UIFlow != null and UIFlow.InputDevice != null and UIFlow.InputDevice.is_gamepad()
+	var pad_text := ""
+	var key_text := ""
 	for event in InputMap.action_get_events(godot_action):
-		if event is InputEventKey:
+		if event is InputEventKey and key_text.is_empty():
 			var keycode: Key = event.physical_keycode if event.physical_keycode != 0 else event.keycode
-			return OS.get_keycode_string(keycode)
-		if event is InputEventJoypadButton:
-			return "Pad %d" % event.button_index
-		if event is InputEventMouseButton:
-			return "Mouse %d" % event.button_index
+			key_text = OS.get_keycode_string(keycode)
+		elif event is InputEventJoypadButton and pad_text.is_empty():
+			pad_text = _joy_button_name((event as InputEventJoypadButton).button_index)
+		elif event is InputEventMouseButton and key_text.is_empty():
+			key_text = "Mouse %d" % (event as InputEventMouseButton).button_index
+	if prefer_pad and not pad_text.is_empty():
+		return pad_text
+	if not key_text.is_empty():
+		return key_text
+	if not pad_text.is_empty():
+		return pad_text
 	return String(godot_action)
+
+
+func _joy_button_name(button_index: int) -> String:
+	match button_index:
+		JOY_BUTTON_A:
+			return "A"
+		JOY_BUTTON_B:
+			return "B"
+		JOY_BUTTON_X:
+			return "X"
+		JOY_BUTTON_Y:
+			return "Y"
+		_:
+			return "Pad %d" % button_index

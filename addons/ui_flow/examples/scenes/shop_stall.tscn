@@ -32,7 +32,7 @@ emission_energy_multiplier = 0.4
 script = ExtResource("1")
 page_scene_path = "res://addons/ui_flow/examples/scenes/UIScene/ShopPage.tscn"
 display_name = "Shop"
-key_prompt = "[E] Open"
+key_prompt = "[E/A] Open"
 
 [node name="Collision" type="CollisionShape3D" parent="."]
 shape = SubResource("1")

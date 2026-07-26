@@ -125,4 +125,4 @@ text = "Virtual Cursor: OFF"
 modulate = Color(1, 1, 1, 0.5)
 layout_mode = 2
 theme_override_font_sizes/font_size = 13
-text = "D-Pad / Arrows: move focus   A / Enter: press   L-Stick: cursor   Esc: back"
+text = "A=confirm (needs focus) · B/Esc=back · D-Pad=focus · L-Stick=cursor when ON · F1=code"

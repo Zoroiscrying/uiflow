@@ -40,10 +40,44 @@ var _scroll_container: ScrollContainer
 var _grid: GridContainer
 
 var _selected_index: int = -1
+@export var keyboard_nav_enabled: bool = true
 
 
 func _ready() -> void:
+	focus_mode = Control.FOCUS_ALL
+	mouse_filter = Control.MOUSE_FILTER_STOP
 	_setup_layout()
+
+
+## Tell UIFlowFocusNavigator to leave arrow keys to this widget while focused.
+func _uiflow_consumes_directional() -> bool:
+	return keyboard_nav_enabled and has_focus() and not _data.is_empty()
+
+
+func _gui_input(event: InputEvent) -> void:
+	if not keyboard_nav_enabled or _data.is_empty():
+		return
+	if event.is_action_pressed(&"ui_down"):
+		_move_selection(1)
+		accept_event()
+	elif event.is_action_pressed(&"ui_up"):
+		_move_selection(-1)
+		accept_event()
+	elif event.is_action_pressed(&"ui_accept"):
+		if _selected_index >= 0:
+			row_clicked.emit(_selected_index, _data[_selected_index])
+		accept_event()
+
+
+func _move_selection(delta: int) -> void:
+	if _data.is_empty():
+		return
+	var next := _selected_index
+	if next < 0:
+		next = 0 if delta > 0 else _data.size() - 1
+	else:
+		next = clampi(next + delta, 0, _data.size() - 1)
+	_select_row(next)
 
 
 func _setup_layout() -> void:
@@ -63,12 +97,14 @@ func _setup_layout() -> void:
 	_scroll_container.name = "Body"
 	_scroll_container.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_scroll_container.follow_focus = true
+	_scroll_container.focus_mode = Control.FOCUS_NONE
 	_scroll_container.custom_minimum_size = Vector2(0, 320)
 	margin.add_child(_scroll_container)
 
 	_grid = GridContainer.new()
 	_grid.name = "Grid"
 	_grid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_grid.focus_mode = Control.FOCUS_NONE
 	_scroll_container.add_child(_grid)
 
 
@@ -143,7 +179,10 @@ func _rebuild() -> void:
 		btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		btn.flat = true
 		if col.sortable:
-			btn.pressed.connect(func(): _on_header_clicked(i))
+			btn.pressed.connect(_on_header_clicked.bind(i))
+			btn.focus_mode = Control.FOCUS_CLICK
+		else:
+			btn.focus_mode = Control.FOCUS_NONE
 		_grid.add_child(btn)
 
 	# Data rows
@@ -156,6 +195,7 @@ func _rebuild() -> void:
 			cell.custom_minimum_size = Vector2(col.width, 36)
 			cell.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			cell.clip_text = true
+			cell.focus_mode = Control.FOCUS_NONE
 			cell.mouse_filter = Control.MOUSE_FILTER_STOP
 			cell.gui_input.connect(_make_cell_input_handler(row_idx))
 			_grid.add_child(cell)
@@ -168,6 +208,7 @@ func _rebuild() -> void:
 func _make_cell_input_handler(row_idx: int) -> Callable:
 	return func(event: InputEvent):
 		if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+			grab_focus()
 			_select_row(row_idx)
 
 
@@ -184,6 +225,22 @@ func _select_row(index: int) -> void:
 	_selected_index = index
 	if index >= 0 and index < _data.size():
 		row_selected.emit(index, _data[index])
+	_update_selection_display()
+
+
+func _update_selection_display() -> void:
+	var col_count := _columns.size()
+	if col_count <= 0:
+		return
+	for row_idx in range(_data.size()):
+		var selected := row_idx == _selected_index
+		for col_idx in range(col_count):
+			var child_idx := col_count + row_idx * col_count + col_idx
+			if child_idx >= _grid.get_child_count():
+				break
+			var cell := _grid.get_child(child_idx) as Control
+			if cell:
+				cell.modulate = Color(0.75, 0.85, 1.0) if selected else Color.WHITE
 
 
 func _update_sort_indicator() -> void:

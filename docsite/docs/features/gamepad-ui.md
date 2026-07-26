@@ -48,6 +48,19 @@ Behavior while enabled:
 
 Tunable exports: `cursor_speed`, `acceleration`, `deadzone`, `joy_device`, `accept_action`, `cursor_texture` (a simple arrow is drawn when unset).
 
+## Device-aware input prompts
+
+`UIFlow.InputDevice` tracks whether the player last used **keyboard/mouse** or a **gamepad**, and emits `device_changed` when that flips.
+
+```gdscript
+UIFlow.InputDevice.is_gamepad()
+UIFlow.InputDevice.device_changed.connect(func(kind): refresh_prompts())
+```
+
+`UIFlowInputPrompt.make_semantic(&"interact", "Open chest")` builds a chip with a Kenney (CC0) glyph for the active device (Xbox A vs keyboard E, etc.). Textures live under `addons/ui_flow/assets/input_prompts/`.
+
+The 3D world `MainHUD` uses these chips and refreshes when the device changes.
+
 ## Demo
 
 A standalone demo scene showcases focus movement, wrap/trap, disabled-button skipping, focus memory, and the virtual cursor:

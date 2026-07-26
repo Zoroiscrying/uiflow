@@ -213,3 +213,56 @@ func test_focus_not_restored_when_flag_off() -> void:
 
 	UIFlow.pop()
 	assert_that(_owner()).is_not_equal(_buttons[4])
+
+
+func test_stick_motion_does_not_move_focus_when_cursor_on() -> void:
+	_buttons[4].grab_focus()
+	UIFlow.Cursor.enable()
+	var before := _owner()
+	var motion := InputEventJoypadMotion.new()
+	motion.axis = JOY_AXIS_LEFT_X
+	motion.axis_value = 1.0
+	# _input consumes stick; _process must not move focus while cursor is on.
+	UIFlow.Focus._input(motion)
+	UIFlow.Focus._process(0.016)
+	assert_that(_owner()).is_equal(before)
+	UIFlow.Cursor.disable()
+
+
+func test_stick_poll_moves_focus_when_cursor_off() -> void:
+	_buttons[4].grab_focus()
+	UIFlow.Cursor.disable()
+	UIFlow.Focus._update_stick_focus(Vector2(1.0, 0.0), 0.016)
+	assert_that(_owner()).is_equal(_buttons[5])
+	# Release
+	UIFlow.Focus._update_stick_focus(Vector2.ZERO, 0.016)
+
+
+func test_dpad_button_moves_focus() -> void:
+	_buttons[4].grab_focus()
+	var ev := InputEventJoypadButton.new()
+	ev.button_index = JOY_BUTTON_DPAD_RIGHT
+	ev.pressed = true
+	UIFlow.Focus._input(ev)
+	assert_that(_owner()).is_equal(_buttons[5])
+
+
+## Pro TreeView / DataGrid opt out of FocusNavigator while focused.
+func test_tree_view_consumes_directional_while_focused() -> void:
+	var tree_script = load("res://addons/ui_flow_pro/components/tree_view.gd")
+	var tree: Control = tree_script.new()
+	tree.position = Vector2(0, 450)
+	tree.size = Vector2(240, 120)
+	_page.add_child(tree)
+	tree.set_root({
+		"id": "root",
+		"label": "Root",
+		"children": [{"id": "a", "label": "A"}],
+	})
+	await get_tree().process_frame
+	tree.grab_focus()
+
+	assert_that(UIFlow.Focus._owner_consumes_directional(tree)).is_true()
+	_press_direction(&"ui_right")
+	assert_that(_owner()).is_equal(tree)
+	tree.queue_free()

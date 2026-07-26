@@ -27,13 +27,18 @@ func _add_action(action_name: StringName, label: String, enabled: bool = true, g
 	return action
 
 
-## Find all Label descendants of a chip.
+## Find all Label descendants of a chip (badge + prompt).
 func _chip_labels(chip: Control) -> Array[Label]:
 	var result: Array[Label] = []
-	for child in chip.get_children():
-		if child is Label:
-			result.append(child)
+	_collect_labels(chip, result)
 	return result
+
+
+func _collect_labels(node: Node, out: Array[Label]) -> void:
+	if node is Label:
+		out.append(node)
+	for child in node.get_children():
+		_collect_labels(child, out)
 
 
 ## Test: bind_page renders one chip per enabled action.
@@ -92,23 +97,22 @@ func test_chip_label_text() -> void:
 	_add_action(&"confirm", "Confirm")
 	_bar.bind_page(_page)
 
-	var labels := _chip_labels(_bar.get_child(0))
-	assert_that(labels).has_size(1)
-	assert_that(labels[0].text).is_equal("Confirm")
+	var chip := _bar.get_child(0) as UIFlowInputPrompt
+	assert_that(chip).is_not_null()
+	assert_that(chip.prompt_label).is_equal("Confirm")
 
 
-## Test: actions with a godot_action but no icon show a key hint chip.
+## Test: mapped InputMap actions use device-aware semantic chips.
 func test_key_hint_from_input_map() -> void:
 	_add_action(&"confirm", "Confirm", true, &"ui_accept")
 	_bar.bind_page(_page)
 
-	var labels := _chip_labels(_bar.get_child(0))
-	# One label for the key hint, one for the action label.
-	assert_that(labels).has_size(2)
-	assert_that(labels[0].text.begins_with("[")).is_true()
-	assert_that(labels[0].text.ends_with("]")).is_true()
-	assert_that(labels[0].text.contains("Enter")).is_true()
-	assert_that(labels[1].text).is_equal("Confirm")
+	var chip := _bar.get_child(0) as UIFlowInputPrompt
+	assert_that(chip).is_not_null()
+	assert_that(chip.semantic).is_equal(&"accept")
+	assert_that(chip.prompt_label).is_equal("Confirm")
+	# Badge or Kenney texture — either is fine; badge falls back to "Enter".
+	assert_that(chip.badge_text.is_empty()).is_false()
 
 
 ## Test: unbind clears the bar and disconnects from actions.

@@ -104,6 +104,67 @@ func _remove_input_blocker(page: UIFlowPage) -> void:
 	_modal_overlays.erase(page)
 
 
+# ── Cover / uncover pages under the top of the stack ─────────────────────────
+
+## Hide or freeze [param page] because [param incoming] is being pushed above it.
+##
+## Non-modal covers hide the page ([code]visible = false[/code]) so its buttons
+## cannot keep keyboard/gamepad focus. Modal covers keep the page visible
+## (HUD under a dialog) but disable GUI processing so input cannot leak.
+func _cover_page(page: UIFlowPage, incoming: UIFlowPage) -> void:
+	if page == null or not is_instance_valid(page):
+		return
+	if UIFlow.Focus != null:
+		UIFlow.Focus.remember_focus(page)
+	_release_focus_under(page)
+	if page.has_method("_on_hidden"):
+		page._on_hidden()
+	page._state = UIFlowPage.State.HIDDEN
+	page.set_process_input(false)
+	page.set_process_unhandled_input(false)
+	if incoming != null and incoming.is_modal:
+		_set_page_gui_blocked(page, true)
+	else:
+		page.visible = false
+
+
+## Restore a previously covered page when it becomes the top again.
+func _uncover_page(page: UIFlowPage) -> void:
+	if page == null or not is_instance_valid(page):
+		return
+	_set_page_gui_blocked(page, false)
+	page.visible = true
+	if page.has_method("_on_shown"):
+		page._on_shown()
+	if page._state == UIFlowPage.State.HIDDEN:
+		page._state = UIFlowPage.State.OPENED
+		page.set_process_input(true)
+		page.set_process_unhandled_input(true)
+	if UIFlow.Focus != null:
+		UIFlow.Focus.restore_focus(page)
+
+
+func _release_focus_under(page: Control) -> void:
+	var viewport := get_viewport()
+	if viewport == null:
+		return
+	var owner := viewport.gui_get_focus_owner()
+	if owner != null and is_instance_valid(owner) and (owner == page or page.is_ancestor_of(owner)):
+		owner.release_focus()
+
+
+func _set_page_gui_blocked(page: Control, blocked: bool) -> void:
+	if blocked:
+		if not page.has_meta("_uiflow_process_mode"):
+			page.set_meta("_uiflow_process_mode", page.process_mode)
+		page.process_mode = Node.PROCESS_MODE_DISABLED
+	elif page.has_meta("_uiflow_process_mode"):
+		page.process_mode = page.get_meta("_uiflow_process_mode")
+		page.remove_meta("_uiflow_process_mode")
+	else:
+		page.process_mode = Node.PROCESS_MODE_INHERIT
+
+
 # ── Push ─────────────────────────────────────────────────────────────────────
 
 ## Push a new page onto the stack.
@@ -272,19 +333,8 @@ func _do_push(page_class: GDScript, data: Variant, page_theme: Variant, p_finish
 			_finish_navigation()
 		return null
 
-	# Notify current top page it's being hidden
-	if _stack.size() > 0:
-		var current: Dictionary = _stack.back()
-		var current_page: UIFlowPage = current["instance"] as UIFlowPage
-		if current_page and is_instance_valid(current_page) and current_page.has_method("_on_hidden"):
-			if UIFlow.Focus != null:
-				UIFlow.Focus.remember_focus(current_page)
-			current_page._on_hidden()
-			current_page._state = UIFlowPage.State.HIDDEN
-			current_page.set_process_input(false)
-			current_page.set_process_unhandled_input(false)
-
-	# Try to acquire from object pool
+	# Notify current top page it's being covered (after we know incoming modal flag).
+	# Instantiation happens first so [member UIFlowPage.is_modal] is available.
 	var instance: Control = _scene_resolver.acquire_pooled(page_class)
 	var page: UIFlowPage = null
 	if instance != null:
@@ -296,6 +346,11 @@ func _do_push(page_class: GDScript, data: Variant, page_theme: Variant, p_finish
 		# Instantiate new
 		instance = scene.instantiate()
 		page = instance as UIFlowPage
+
+	if _stack.size() > 0:
+		var current: Dictionary = _stack.back()
+		var current_page: UIFlowPage = current["instance"] as UIFlowPage
+		_cover_page(current_page, page)
 
 	# Lifecycle: created (before add_child, so user can configure position etc.)
 	if page and page.has_method("_on_created"):
@@ -399,18 +454,12 @@ func _do_push_instance(instance: Control, data: Variant) -> Control:
 		_finish_navigation()
 		return null
 
+	var page: UIFlowPage = instance as UIFlowPage
+
 	if _stack.size() > 0:
 		var current: Dictionary = _stack.back()
 		var current_page: UIFlowPage = current["instance"] as UIFlowPage
-		if current_page and is_instance_valid(current_page) and current_page.has_method("_on_hidden"):
-			if UIFlow.Focus != null:
-				UIFlow.Focus.remember_focus(current_page)
-			current_page._on_hidden()
-			current_page._state = UIFlowPage.State.HIDDEN
-			current_page.set_process_input(false)
-			current_page.set_process_unhandled_input(false)
-
-	var page: UIFlowPage = instance as UIFlowPage
+		_cover_page(current_page, page)
 
 	# Lifecycle: created (before add_child)
 	if page and page.has_method("_on_created"):
@@ -544,15 +593,7 @@ func _cleanup_after_pop(top_instance: Control, top_class: GDScript) -> void:
 	if _stack.size() > 0:
 		var below: Dictionary = _stack.back()
 		var below_page: UIFlowPage = below["instance"] as UIFlowPage
-		if below_page and is_instance_valid(below_page):
-			if below_page.has_method("_on_shown"):
-				below_page._on_shown()
-			if below_page._state == UIFlowPage.State.HIDDEN:
-				below_page._state = UIFlowPage.State.OPENED
-				below_page.set_process_input(true)
-				below_page.set_process_unhandled_input(true)
-			if UIFlow.Focus != null:
-				UIFlow.Focus.restore_focus(below_page)
+		_uncover_page(below_page)
 
 	page_popped.emit(top_class)
 	page_closed.emit(top_class)
@@ -631,17 +672,35 @@ func pop_to_root() -> void:
 	# Now only root remains; notify it
 	var root: Dictionary = _stack.back()
 	var root_page: UIFlowPage = root["instance"] as UIFlowPage
-	if root_page and is_instance_valid(root_page):
-		if root_page.has_method("_on_shown"):
-			root_page._on_shown()
-		if root_page._state == UIFlowPage.State.HIDDEN:
-			root_page._state = UIFlowPage.State.OPENED
-			root_page.set_process_input(true)
-			root_page.set_process_unhandled_input(true)
-		if UIFlow.Focus != null:
-			UIFlow.Focus.restore_focus(root_page)
+	_uncover_page(root_page)
 
 	_finish_navigation()
+
+
+## Remove every page from the stack immediately (no exit animations).
+## Use when switching demo scenes so leftover HUD pages do not linger.
+func clear_stack() -> void:
+	_pending_navigations.clear()
+	_is_navigating = false
+	while not _stack.is_empty():
+		var entry: Dictionary = _stack.pop_back()
+		var instance: Control = entry["instance"]
+		var page: UIFlowPage = instance as UIFlowPage
+		if page:
+			_remove_input_blocker(page)
+			page._state = UIFlowPage.State.CLOSED
+			page._unbind_all()
+			if page.has_method("_on_closed"):
+				page._on_closed()
+			if page.has_method("_on_destroyed"):
+				page._on_destroyed()
+			page._state = UIFlowPage.State.DESTROYED
+			if UIFlow.Focus != null:
+				UIFlow.Focus.forget_focus(page)
+		if is_instance_valid(instance):
+			if instance.is_inside_tree():
+				_container.remove_child(instance)
+			instance.queue_free()
 
 
 ## Close a specific page by class, anywhere in the stack.
@@ -730,19 +789,14 @@ func _move_to_top(page_class: GDScript) -> void:
 	if target_index == -1 or target_index == _stack.size() - 1:
 		return  # Not found or already on top
 
-	# Notify current top it's being hidden
+	# Notify current top it's being covered, then bring target to front.
 	var current_top: Dictionary = _stack.back()
 	var current_page: UIFlowPage = current_top["instance"] as UIFlowPage
-	if current_page and is_instance_valid(current_page) and current_page.has_method("_on_hidden"):
-		if UIFlow.Focus != null:
-			UIFlow.Focus.remember_focus(current_page)
-		current_page._on_hidden()
-		current_page._state = UIFlowPage.State.HIDDEN
-		current_page.set_process_input(false)
-		current_page.set_process_unhandled_input(false)
+	var entry: Dictionary = _stack[target_index]
+	var moved_page: UIFlowPage = entry["instance"] as UIFlowPage
+	_cover_page(current_page, moved_page)
 
 	# Move to top
-	var entry: Dictionary = _stack[target_index]
 	_stack.remove_at(target_index)
 	_stack.push_back(entry)
 
@@ -751,17 +805,7 @@ func _move_to_top(page_class: GDScript) -> void:
 	if instance.is_inside_tree():
 		_container.move_child(instance, _container.get_child_count() - 1)
 
-	# Notify moved page it's now shown
-	var moved_page: UIFlowPage = instance as UIFlowPage
-	if moved_page and is_instance_valid(moved_page):
-		if moved_page.has_method("_on_shown"):
-			moved_page._on_shown()
-		if moved_page._state == UIFlowPage.State.HIDDEN:
-			moved_page._state = UIFlowPage.State.OPENED
-			moved_page.set_process_input(true)
-			moved_page.set_process_unhandled_input(true)
-		if UIFlow.Focus != null:
-			UIFlow.Focus.restore_focus(moved_page)
+	_uncover_page(moved_page)
 
 
 ## Get current top page class.

@@ -63,6 +63,7 @@ func _ready() -> void:
 	if _parent_control:
 		_parent_control.mouse_entered.connect(_on_hover_start)
 		_parent_control.mouse_exited.connect(_on_hover_end)
+		_parent_control.tree_exiting.connect(queue_free)
 
 
 func _process(delta: float) -> void:
@@ -84,14 +85,14 @@ func _on_hover_end() -> void:
 func _show_tooltip() -> void:
 	if text.is_empty():
 		return
+	UIFlowOverlayHost.ensure_on_overlay(self)
 	visible = true
 	_visible = true
-	# Position near mouse
-	var mouse_pos: Vector2 = get_global_mouse_position()
+	var vp := get_viewport()
+	var mouse_pos: Vector2 = vp.get_mouse_position() if vp else Vector2.ZERO
 	global_position = mouse_pos + offset
 	_clamp_to_viewport()
 
-	# Fade in
 	modulate.a = 0.0
 	var tween: Tween = create_tween()
 	tween.tween_property(self, "modulate:a", 1.0, 0.1)
@@ -104,7 +105,10 @@ func _hide_tooltip() -> void:
 
 
 func _clamp_to_viewport() -> void:
-	var vp_size: Vector2 = get_viewport_rect().size
+	var vp := get_viewport()
+	if vp == null:
+		return
+	var vp_size: Vector2 = vp.get_visible_rect().size
 	var panel_size: Vector2 = _panel.size
 	if global_position.x + panel_size.x > vp_size.x:
 		global_position.x = vp_size.x - panel_size.x - 8

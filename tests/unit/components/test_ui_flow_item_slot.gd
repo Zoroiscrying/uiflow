@@ -69,3 +69,39 @@ func test_drag_source_input_toggle() -> void:
 	assert_that(slot._drag_drop.mouse_filter).is_equal(Control.MOUSE_FILTER_IGNORE)
 
 	slot.queue_free()
+
+
+## Test: slots are focusable for gamepad / keyboard navigation.
+func test_slot_is_focusable() -> void:
+	var slot := UIFlowItemSlot.new()
+	add_child(slot)
+	await get_tree().process_frame
+
+	assert_that(slot.focus_mode).is_equal(Control.FOCUS_ALL)
+	slot.queue_free()
+
+
+## Test: ui_accept on a filled focused slot emits activated.
+func test_ui_accept_emits_activated() -> void:
+	var slot := UIFlowItemSlot.new()
+	add_child(slot)
+	await get_tree().process_frame
+
+	var item := ItemData.new()
+	item.item_name = "Ring"
+	slot.set_item(item)
+	slot.grab_focus()
+
+	var activated := [null, -1]
+	slot.activated.connect(func(i: ItemData, idx: int):
+		activated[0] = i
+		activated[1] = idx
+	)
+
+	var ev := InputEventAction.new()
+	ev.action = &"ui_accept"
+	ev.pressed = true
+	slot._on_gui_input(ev)
+
+	assert_that(activated[0]).is_same(item)
+	slot.queue_free()

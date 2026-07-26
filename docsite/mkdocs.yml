@@ -1,5 +1,5 @@
 site_name: UIFlow Docs
-site_url: https://zoroiscrying.github.io/uiflow/
+site_url: https://indieshade.github.io/uiflow/
 site_author: UIFlow
 site_description: UIFlow - Godot 4 UI workflow framework documentation
 
@@ -83,7 +83,7 @@ markdown_extensions:
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/zoroiscrying/uiflow
+      link: https://github.com/indieshade/uiflow
   version:
     provider: mike
 

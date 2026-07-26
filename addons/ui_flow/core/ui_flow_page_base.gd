@@ -13,6 +13,7 @@
 ##
 ## Configuration:
 ## - [code]is_modal[/code]: Intercept all input (modal dialog)
+## - [code]allow_world_input[/code]: Keep gameplay input while this page is top (HUD)
 ## - [code]enter_effect[/code] / [code]exit_effect[/code]: Auto-play transitions
 ## - [code]default_focus_path[/code]: Auto-focus on open
 ## - UIInputActionNode children: Declare input actions
@@ -50,7 +51,13 @@ func is_animating() -> bool:
 # ── Inspector Configuration ──────────────────────────────────────────────────
 
 ## If true, this page intercepts all input. Lower pages don't receive back/cancel.
+## Modal covers also keep the page below visible (for dimmed HUDs) while blocking
+## its GUI via [code]PROCESS_MODE_DISABLED[/code].
 @export var is_modal: bool = false
+
+## If true, world/gameplay input (player move, interact) stays active while this
+## page is on top. Use for HUD pages. Modal pages always block world input.
+@export var allow_world_input: bool = false
 
 ## Transition effect played when this page is pushed onto the stack.
 @export var enter_effect: UIFlowTransitionEffect = null

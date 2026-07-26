@@ -29,6 +29,19 @@ func setup(data: InventoryData) -> void:
 	inventory_data.items_changed.connect(_update_all_slots)
 
 
+## All slot controls (empty or filled), in grid order.
+func get_slots() -> Array[UIFlowItemSlot]:
+	return _slots
+
+
+## Prefer the first filled slot for initial gamepad focus; else the first slot.
+func get_default_focus_slot() -> UIFlowItemSlot:
+	for slot in _slots:
+		if slot.get_item() != null:
+			return slot
+	return _slots[0] if not _slots.is_empty() else null
+
+
 func _create_slots() -> void:
 	UIFlowUtils.clear_children(self)
 	_slots.clear()

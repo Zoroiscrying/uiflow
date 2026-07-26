@@ -11,6 +11,9 @@ signal item_dragged(item: ItemData, slot_index: int)
 ## Emitted when the user right-clicks this slot while it holds an item.
 signal right_clicked(item: ItemData, slot_index: int, global_position: Vector2)
 
+## Emitted when the focused slot is activated (ui_accept / Enter / A).
+signal activated(item: ItemData, slot_index: int)
+
 ## Slot index in the inventory.
 @export var slot_index: int = -1
 
@@ -29,6 +32,9 @@ signal right_clicked(item: ItemData, slot_index: int, global_position: Vector2)
 ## Border color when the slot is empty.
 @export var empty_border_color: Color = Color(0.25, 0.25, 0.3, 0.5)
 
+## Border color while this slot has keyboard/gamepad focus.
+@export var focus_border_color: Color = Color(0.35, 0.75, 1.0)
+
 ## Corner radius for the slot background.
 @export var corner_radius: int = 4
 
@@ -43,6 +49,7 @@ var _drag_drop: UIFlowDragDrop
 var _drop_target: UIFlowDropTarget
 var _empty_style: StyleBoxFlat
 var _filled_style: StyleBoxFlat
+var _focused: bool = false
 
 var _equipment_data: EquipmentData = null
 var _inventory_data: InventoryData = null
@@ -50,9 +57,12 @@ var _equipment_slot_name: StringName = &""
 
 
 func _ready() -> void:
+	focus_mode = Control.FOCUS_ALL
 	_setup_ui()
 	_setup_drag_drop()
 	gui_input.connect(_on_gui_input)
+	focus_entered.connect(_on_focus_entered)
+	focus_exited.connect(_on_focus_exited)
 	_update_display()
 
 
@@ -112,6 +122,7 @@ func _setup_drag_drop() -> void:
 			return data.equip_slot == accept_type
 		return false
 	add_child(_drop_target)
+	_drop_target.focus_mode = Control.FOCUS_NONE
 	_drop_target.on_drop.connect(_on_item_drop)
 
 	# Drag source
@@ -123,6 +134,7 @@ func _setup_drag_drop() -> void:
 	# mouse_filter to STOP. Default to IGNORE; set_item() enables it when
 	# an item is present.
 	_drag_drop.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_drag_drop.focus_mode = Control.FOCUS_NONE
 	# Do not hide the drag control; PanelContainer skips invisible children
 	# when sorting, so a hidden drag control would have zero size forever.
 	# Instead we disable input via mouse_filter when the slot is empty.
@@ -156,7 +168,6 @@ func _update_display() -> void:
 		_rarity_border.color.a = 0.3
 		_filled_style.border_color = rarity_color
 		_filled_style.set_border_width_all(2)
-		add_theme_stylebox_override("panel", _filled_style)
 		if _item.icon == null:
 			# Show first letter as fallback when no icon
 			_letter_label.text = _item.item_name.left(1)
@@ -164,12 +175,33 @@ func _update_display() -> void:
 		else:
 			_letter_label.text = ""
 			_letter_label.remove_theme_color_override("font_color")
+		_apply_panel_style(_filled_style)
 	else:
 		_icon.texture = null
 		_icon.visible = false
 		_rarity_border.color = Color.TRANSPARENT
 		_letter_label.text = ""
-		add_theme_stylebox_override("panel", _empty_style)
+		_apply_panel_style(_empty_style)
+
+
+func _apply_panel_style(base: StyleBoxFlat) -> void:
+	if not _focused:
+		add_theme_stylebox_override("panel", base)
+		return
+	var focused := base.duplicate() as StyleBoxFlat
+	focused.border_color = focus_border_color
+	focused.set_border_width_all(maxi(2, base.get_border_width(SIDE_LEFT)))
+	add_theme_stylebox_override("panel", focused)
+
+
+func _on_focus_entered() -> void:
+	_focused = true
+	_update_display()
+
+
+func _on_focus_exited() -> void:
+	_focused = false
+	_update_display()
 
 
 func _on_item_drop(data: Variant) -> void:
@@ -202,6 +234,11 @@ func _on_gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_RIGHT:
 		if _item != null:
 			right_clicked.emit(_item, slot_index, event.global_position)
+		return
+	if event.is_action_pressed(&"ui_accept") and not event.is_echo():
+		if _item != null:
+			activated.emit(_item, slot_index)
+			accept_event()
 
 
 ## Configure this slot as an equipment slot bound to an EquipmentData resource.

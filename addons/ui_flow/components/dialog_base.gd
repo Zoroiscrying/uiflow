@@ -3,6 +3,11 @@
 ## Provides common overlay, panel, title/message labels, and open/close animation.
 ## Subclasses should override [code]_create_buttons()[/code] to add action buttons
 ## to the provided button container.
+##
+## While open, the dialog:
+## - Stops mouse events with a full-screen overlay
+## - Consumes leftover [code]_unhandled_input[/code] so world/gameplay cannot react
+## - Expects a focusable button to hold GUI focus (see [method _focus_control])
 class_name UIFlowDialogBase extends UIFlowComponent
 
 ## Minimum panel size.
@@ -24,6 +29,9 @@ var _active: bool = false
 
 
 func _component_ready() -> void:
+	mouse_filter = Control.MOUSE_FILTER_IGNORE
+	set_process_unhandled_input(true)
+
 	var theme: UIFlowTheme = UIFlow.get_theme() if UIFlow else null
 	var radius: int = theme.radius_lg if theme else 8
 	var pad: int = theme.spacing_lg if theme else 20
@@ -48,6 +56,7 @@ func _component_ready() -> void:
 	_panel.set_anchors_preset(Control.PRESET_CENTER)
 	_panel.grow_horizontal = Control.GROW_DIRECTION_BOTH
 	_panel.grow_vertical = Control.GROW_DIRECTION_BOTH
+	_panel.mouse_filter = Control.MOUSE_FILTER_STOP
 
 	var style := StyleBoxFlat.new()
 	style.set_corner_radius_all(radius)
@@ -67,6 +76,7 @@ func _component_ready() -> void:
 	_title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_title_label.add_theme_color_override("font_color", text_color)
 	_title_label.add_theme_font_size_override("font_size", title_size)
+	_title_label.focus_mode = Control.FOCUS_NONE
 	_content_vbox.add_child(_title_label)
 
 	# Message
@@ -76,6 +86,7 @@ func _component_ready() -> void:
 	_message_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_message_label.add_theme_color_override("font_color", text_color)
 	_message_label.add_theme_font_size_override("font_size", body_size)
+	_message_label.focus_mode = Control.FOCUS_NONE
 	_content_vbox.add_child(_message_label)
 
 	# Button container
@@ -88,8 +99,14 @@ func _component_ready() -> void:
 	visible = false
 
 
+## True while the dialog is visible / accepting input.
+func is_open() -> bool:
+	return _active
+
+
 ## Called by subclasses after buttons are created.
 func _show_dialog() -> void:
+	mouse_filter = Control.MOUSE_FILTER_STOP
 	if show_scale_animation:
 		_panel.scale = Vector2(0.8, 0.8)
 		_overlay.modulate.a = 0.0
@@ -107,13 +124,30 @@ func _show_dialog() -> void:
 
 ## Hide the dialog with a fade-out animation.
 func _hide_dialog() -> void:
+	if not visible and not _active:
+		return
+	_active = false
+	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var tween: Tween = create_tween().set_parallel(true)
 	tween.tween_property(_overlay, "modulate:a", 0.0, 0.1)
 	tween.tween_property(_panel, "modulate:a", 0.0, 0.1)
 	tween.finished.connect(func():
 		visible = false
-		_active = false
 	)
+
+
+## Grab focus on the next frame so newly added buttons are in the tree.
+func _focus_control(control: Control) -> void:
+	if control == null or not is_instance_valid(control):
+		return
+	control.call_deferred("grab_focus")
+
+
+## Swallow leftover input so gameplay (_unhandled_input on world objects) cannot run.
+func _unhandled_input(event: InputEvent) -> void:
+	if not _active:
+		return
+	get_viewport().set_input_as_handled()
 
 
 ## Create a button respecting the custom_button_scene override.
@@ -124,6 +158,7 @@ func _create_button(text: String, icon: Texture2D = null) -> Button:
 	else:
 		btn = Button.new()
 	btn.text = text
+	btn.focus_mode = Control.FOCUS_ALL
 	if icon:
 		btn.icon = icon
 	return btn

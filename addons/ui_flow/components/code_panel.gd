@@ -1,4 +1,7 @@
-## UIFlowCodePanel — collapsible sidebar showing UIFlow API snippets.
+## UIFlowCodePanel — legacy sidebar (prefer [UIFlowCodeOverlay] for demos).
+##
+## Kept for compatibility. New demos should use [UIFlowCodeOverlay], which draws
+## on a high CanvasLayer and supports F1 toggle from the main scene.
 class_name UIFlowCodePanel extends Control
 
 var _panel: PanelContainer

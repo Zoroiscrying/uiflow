@@ -20,7 +20,7 @@ concurrency:
 
 jobs:
   build:
-    if: github.repository == 'Zoroiscrying/uiflow'
+    if: github.repository == 'indieshade/uiflow'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -45,7 +45,7 @@ jobs:
           path: docsite/site
 
   deploy:
-    if: github.repository == 'Zoroiscrying/uiflow'
+    if: github.repository == 'indieshade/uiflow'
     needs: build
     runs-on: ubuntu-latest
     environment:

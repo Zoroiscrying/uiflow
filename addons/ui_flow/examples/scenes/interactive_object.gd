@@ -9,8 +9,8 @@ extends Area3D
 ## Display name for prompts.
 @export var display_name: String = "Interact"
 
-## Key prompt text.
-@export var key_prompt: String = "[E] Open"
+## Key / gamepad prompt — prefer semantic chips via get_interaction_prompts().
+@export var key_prompt: String = ""
 
 var _player_in_range: bool = false
 var _main_hud: MainHUD = null
@@ -38,11 +38,20 @@ func _on_body_exited(body: Node3D) -> void:
 
 
 func get_interaction_prompts() -> Array:
-	return ["%s %s" % [key_prompt, display_name]]
+	# Structured prompts so MainHUD can show device-aware Kenney icons.
+	var label := display_name if not display_name.is_empty() else "Interact"
+	return [{
+		"semantic": &"interact",
+		"label": label,
+		"color": Color(0.25, 0.7, 0.35),
+	}]
 
 
 func _unhandled_input(event: InputEvent) -> void:
 	if not _player_in_range or page_scene_path.is_empty():
+		return
+	var ui := get_node_or_null("/root/UIFlowUI")
+	if ui != null and ui.has_method("has_blocking_dialog") and ui.has_blocking_dialog():
 		return
 	if event.is_action_pressed("interact"):
 		# Don't open if any modal page is already open

@@ -15,7 +15,7 @@ albedo_color = Color(0.5, 0.35, 0.2, 1)
 script = ExtResource("1")
 page_scene_path = "res://addons/ui_flow/examples/scenes/UIScene/GalleryPage.tscn"
 display_name = "Gallery"
-key_prompt = "[E] View Gallery"
+key_prompt = "[E/A] View Gallery"
 
 [node name="Collision" type="CollisionShape3D" parent="."]
 shape = SubResource("1")

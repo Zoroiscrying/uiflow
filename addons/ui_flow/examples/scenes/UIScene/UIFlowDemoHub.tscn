@@ -122,6 +122,12 @@ custom_minimum_size = Vector2(0, 48)
 theme_override_font_sizes/font_size = 16
 text = "Pro Components (DataGrid / TreeView)"
 
+[node name="WorkflowBtn" type="Button" parent="Margin/Scroll/VBox/Buttons"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 48)
+theme_override_font_sizes/font_size = 16
+text = "Workflow Glue (Opener / Multi-target Switcher / Pool / Gate)"
+
 [node name="Sep2" type="HSeparator" parent="Margin/Scroll/VBox"]
 layout_mode = 2
 

@@ -4,10 +4,12 @@
 ## While enabled:
 ##
 ## - The left analog stick moves an on-screen cursor (d-pad and arrow keys
-##   stay on directional focus navigation).
+##   stay on directional focus navigation; stick axis events are consumed so
+##   the engine cannot also move focus).
 ## - The OS mouse is hidden and warped to the cursor position, so hover
 ##   states and tooltips keep working ([member warp_os_cursor]).
-## - [member accept_action] synthesizes a left mouse click at the cursor.
+## - [member accept_action] synthesizes a left mouse click at the cursor and
+##   is consumed so the focused control does not also activate.
 ##
 ## Access via [code]UIFlow.Cursor[/code].
 class_name UIFlowVirtualCursor extends CanvasLayer
@@ -60,6 +62,7 @@ func _ready() -> void:
 	layer = 100  # above UIFlowPageLayer (10)
 	_rebuild_cursor_visual()
 	set_process(false)
+	set_process_input(false)
 
 
 func is_enabled() -> bool:
@@ -78,6 +81,7 @@ func enable() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_HIDDEN
 	_cursor_control.show()
 	set_process(true)
+	set_process_input(true)
 
 
 ## Hide the virtual cursor and restore the previous OS mouse mode.
@@ -88,17 +92,25 @@ func disable() -> void:
 	Input.mouse_mode = _prev_mouse_mode
 	_cursor_control.hide()
 	set_process(false)
+	set_process_input(false)
 
 
 func get_cursor_position() -> Vector2:
 	return _cursor_pos
 
 
+func _input(event: InputEvent) -> void:
+	if not _enabled:
+		return
+	# Own accept while cursor is on so focused Buttons do not also fire.
+	if event.is_action_pressed(accept_action) and not event.is_echo():
+		click()
+		get_viewport().set_input_as_handled()
+
+
 func _process(delta: float) -> void:
 	var stick := _read_stick()
 	_integrate(delta, stick)
-	if Input.is_action_just_pressed(accept_action):
-		click()
 
 
 func _read_stick() -> Vector2:

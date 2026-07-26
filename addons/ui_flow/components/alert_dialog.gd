@@ -13,20 +13,20 @@ class_name UIFlowAlertDialog extends UIFlowDialogBase
 @export var ok_icon: Texture2D = null
 
 var _ok_button: Button
+var _on_close: Callable = Callable()
 
 
 func _component_ready() -> void:
 	super._component_ready()
+	set_process_input(true)
 
-	# OK button container
 	var btn_container := HBoxContainer.new()
 	btn_container.name = "ButtonContainer"
 	btn_container.alignment = BoxContainer.ALIGNMENT_CENTER
 	_content_vbox.add_child(btn_container)
 
-	# OK button
 	_ok_button = _create_ok_button()
-	_ok_button.pressed.connect(func(): _hide_dialog())
+	_ok_button.pressed.connect(_emit_close)
 	btn_container.add_child(_ok_button)
 
 
@@ -40,22 +40,38 @@ func show_alert(title: String, message: String, on_close: Callable = Callable(),
 		return
 
 	_active = true
+	_on_close = on_close
 	_title_label.text = title
 	_message_label.text = message
 
 	var call_ok_text: String = options.get("ok_text", ok_text)
 	_ok_button.text = call_ok_text
 
-	# Connect close callback (one-shot prevents accumulation)
-	if on_close.is_valid():
-		_ok_button.pressed.connect(on_close, CONNECT_ONE_SHOT)
-
 	visible = true
 	_show_dialog()
-
-	_ok_button.grab_focus()
+	_focus_control(_ok_button)
 
 
 ## Create the OK button. Subclasses can override this to return custom Button types.
 func _create_ok_button() -> Button:
 	return _create_button(ok_text, ok_icon)
+
+
+func _input(event: InputEvent) -> void:
+	if not _active:
+		return
+	# Own cancel so page InputHandler does not also react. Accept is left to the
+	# focused OK button (engine activates it via ui_accept).
+	if event.is_action_pressed(&"ui_cancel") and not event.is_echo():
+		_emit_close()
+		get_viewport().set_input_as_handled()
+
+
+func _emit_close() -> void:
+	if not _active:
+		return
+	var cb := _on_close
+	_on_close = Callable()
+	_hide_dialog()
+	if cb.is_valid():
+		cb.call()

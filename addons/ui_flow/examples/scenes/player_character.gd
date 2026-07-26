@@ -45,17 +45,11 @@ func _physics_process(delta: float) -> void:
 			if target:
 				_shoot_at(target, fired_weapon)
 
-	# WASD movement
+	# Movement: WASD / arrows + left stick (move_* actions).
+	# Skip while a modal UI page is on top of the world HUD.
 	var input_dir := Vector2.ZERO
-	if Input.is_key_pressed(KEY_W) or Input.is_key_pressed(KEY_UP):
-		input_dir.y -= 1
-	if Input.is_key_pressed(KEY_S) or Input.is_key_pressed(KEY_DOWN):
-		input_dir.y += 1
-	if Input.is_key_pressed(KEY_A) or Input.is_key_pressed(KEY_LEFT):
-		input_dir.x -= 1
-	if Input.is_key_pressed(KEY_D) or Input.is_key_pressed(KEY_RIGHT):
-		input_dir.x += 1
-	input_dir = input_dir.normalized()
+	if not _is_world_input_blocked():
+		input_dir = Input.get_vector("move_left", "move_right", "move_up", "move_down")
 
 	if _top_down:
 		velocity.x = input_dir.x * SPEED
@@ -205,3 +199,25 @@ func take_damage(amount: float) -> void:
 func _die() -> void:
 	print("Player died!")
 	# Future: death screen, respawn, etc.
+
+
+func _is_world_input_blocked() -> bool:
+	# UIFlowUI Confirm/Alert sit above the page stack but still freeze the world.
+	var ui := get_node_or_null("/root/UIFlowUI")
+	if ui != null and ui.has_method("has_blocking_dialog") and ui.has_blocking_dialog():
+		return true
+	if UIFlow == null or UIFlow.Router == null:
+		return false
+	var top: Control = UIFlow.Router.current_page_instance()
+	if top == null:
+		return false
+	if top is UIFlowPage:
+		var page := top as UIFlowPage
+		# Modals always freeze gameplay.
+		if page.is_modal:
+			return true
+		# HUD pages (MainHUD, SurvivorsHUD, …) keep world input while on top.
+		if page.allow_world_input:
+			return false
+	# Any non-HUD page above the world root blocks locomotion.
+	return UIFlow.stack_depth() > 1

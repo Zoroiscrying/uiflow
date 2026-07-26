@@ -152,11 +152,25 @@ virtual_list.bind(data_array, item_template, _setup_item)
 
 ## Tooltip / HoverHint
 
-鼠标悬停显示提示：
+悬停提示。显示时会挂到高层 [CanvasLayer]，避免被页面栈盖住：
 
 ```gdscript
 $HoverHint.hint_text = "攻击力 +10"
+UIFlowHoverHint.attach($Button, "[b]Rich Text[/b]\nSupports BBCode", true)
+UIFlowTooltip.attach($Button, "Click to confirm")
 ```
+
+## Input Prompts
+
+`UIFlowInputPrompt` 是按键提示徽章。默认字母徽章即可用；也可把 Kenney Input Prompts（CC0）PNG 放进 `addons/ui_flow/assets/input_prompts/` 并赋给 `icon`。
+
+```gdscript
+add_child(UIFlowInputPrompt.make("A", "Confirm", Color(0.2, 0.72, 0.32)))
+```
+
+## Code Overlay
+
+Free Demo 用 `UIFlowCodeOverlay`（CanvasLayer）展示当前页 API 片段。按 **F1** 开关。请优先用它，而不是可能被页层盖住的旧版 `UIFlowCodePanel`。
 
 ## 输入动作条
 
@@ -168,6 +182,41 @@ add_child(bar)  # 自动绑定栈顶页面
 ```
 
 动作设置了 `icon` 时显示图标，否则显示 `godot_action` 绑定的按键（如 `[I]`）。禁用的动作默认隐藏，设 `show_disabled = true` 可改为置灰显示。实际效果见 Survivors 演示的 HUD。
+
+## Children Switcher
+
+`UIFlowChildrenSwitcher` 用一个离散 `state` **同时**驱动多个 NodePath 目标上的可选外观补丁（`visible`、`modulate`、`scale`、`disabled`、`font_size` 等）。卖点就是多子节点联动——卡片选中/禁用、槽位空/满、步骤指示。
+
+```gdscript
+$CardSwitcher.set_state(1)                 # 一次更新图标+标题+详情+按钮
+$CardSwitcher.set_state_by_name("selected")
+```
+
+编辑器里改 **Preview State** 可即时预览。用 **Bake Current State** 把当前预览写入场景基线（并同步 `initial_state`）；普通保存会先还原基线，避免随手预览污染 `.tscn`。
+
+完整多目标卡片示例见 Free Hub → **Workflow Glue**。
+
+## 工作流胶水组件
+
+减轻日常 UI 胶水代码的场景节点。演示：Free Hub → **Workflow Glue**。
+
+| 组件 | 作用 |
+|---|---|
+| `UIFlowPageOpener` | 从按钮 push / replace / async / instance 打开页面 |
+| `UIFlowPageCloser` | pop / pop-to-root / 按脚本 close |
+| `UIFlowChildPool` | `ensure_count(n, init_fn)` — 无数据数组的槽位填充 |
+| `UIFlowInputRelay` | 局部 InputMap → 信号（可选焦点/可见性门控） |
+| `UIFlowHoldRepeater` | 按住重复触发（数量加减 / 快滚） |
+| `UIFlowCooldownGate` | 按钮冷却（`accepted` / `rejected`） |
+| `UIFlowVisibilityGroup` | N 选 1 互斥显示 |
+| `UIFlowAutoFocus` | ready / 页面再次显示时抢焦点 |
+
+```gdscript
+$OpenShopBtn/PageOpener.page_script = ShopPage
+$OpenShopBtn/PageOpener.mode = UIFlowPageOpener.Mode.PUSH
+
+$SkillPool.ensure_count(6, func(slot, i): slot.setup(skills[i]))
+```
 
 ## 自定义组件
 

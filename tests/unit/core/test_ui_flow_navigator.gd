@@ -242,31 +242,31 @@ func test_modal_overlay_removed() -> void:
 	assert_that(overlay_found).is_false()
 
 
-## Test: pushing a non-modal page keeps the page below visible
-func test_push_keeps_page_below_visible() -> void:
+## Test: pushing a non-modal page hides the page below (prevents focus leak).
+func test_push_hides_page_below() -> void:
 	_resolver.register_scene(_dummy_script_a, _dummy_page_scene)
 	_resolver.register_scene(_dummy_script_b, _dummy_page_scene)
 	var first = _navigator.push(_dummy_script_a)
 	assert_bool(first.visible).is_true()
 
 	var second = _navigator.push(_dummy_script_b)
-	assert_bool(first.visible).is_true()
+	assert_bool(first.visible).is_false()
 	assert_bool(second.visible).is_true()
 
 
-## Test: popping a non-modal page leaves the page below visible
-func test_pop_leaves_page_below_visible() -> void:
+## Test: popping a non-modal page restores the page below.
+func test_pop_restores_page_below_visible() -> void:
 	_resolver.register_scene(_dummy_script_a, _dummy_page_scene)
 	_resolver.register_scene(_dummy_script_b, _dummy_page_scene)
 	var first = _navigator.push(_dummy_script_a)
 	_navigator.push(_dummy_script_b)
-	assert_bool(first.visible).is_true()
+	assert_bool(first.visible).is_false()
 
 	_navigator.pop()
 	assert_bool(first.visible).is_true()
 
 
-## Test: pushing a modal page keeps the page below visible
+## Test: pushing a modal page keeps the page below visible but blocks its GUI.
 func test_modal_push_keeps_page_below_visible() -> void:
 	var modal_scene = PackedScene.new()
 	var modal_page = UIFlowPage.new()
@@ -282,6 +282,7 @@ func test_modal_push_keeps_page_below_visible() -> void:
 
 	var second = _navigator.push(_dummy_script_b)
 	assert_bool(first.visible).is_true()
+	assert_that(first.process_mode).is_equal(Node.PROCESS_MODE_DISABLED)
 	assert_bool(second.visible).is_true()
 
 

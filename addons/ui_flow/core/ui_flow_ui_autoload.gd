@@ -86,3 +86,12 @@ func set_custom_alert(alert: UIFlowAlertDialog) -> void:
 	Alert = alert
 	Alert.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_component_layer.add_child(Alert)
+
+
+## True when Confirm or Alert is open and should own input / block world actions.
+func has_blocking_dialog() -> bool:
+	if Confirm != null and is_instance_valid(Confirm) and Confirm.is_open():
+		return true
+	if Alert != null and is_instance_valid(Alert) and Alert.is_open():
+		return true
+	return false

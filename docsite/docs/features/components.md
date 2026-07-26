@@ -152,11 +152,25 @@ virtual_list.bind(data_array, item_template, _setup_item)
 
 ## Tooltip / HoverHint
 
-Show hints on hover:
+Show hints on hover. Popups are reparented to a high [CanvasLayer] (above the page stack) while visible:
 
 ```gdscript
 $HoverHint.hint_text = "Attack +10"
+UIFlowHoverHint.attach($Button, "[b]Rich Text[/b]\nSupports BBCode", true)
+UIFlowTooltip.attach($Button, "Click to confirm")
 ```
+
+## Input Prompts
+
+`UIFlowInputPrompt` is a small badge + label chip for on-screen button hints. Letter badges work out of the box; optional Kenney Input Prompts (CC0) textures can be dropped in `addons/ui_flow/assets/input_prompts/` and assigned to `icon`.
+
+```gdscript
+add_child(UIFlowInputPrompt.make("A", "Confirm", Color(0.2, 0.72, 0.32)))
+```
+
+## Code Overlay
+
+Free Demo uses `UIFlowCodeOverlay` (CanvasLayer) to show page API snippets. Press **F1** to toggle. Prefer this over the legacy sidebar `UIFlowCodePanel`, which could sit under the page layer.
 
 ## Input Action Bar
 
@@ -168,6 +182,43 @@ add_child(bar)  # auto-binds to the top page
 ```
 
 Actions show their `icon` when set, otherwise the key bound to `godot_action` (e.g. `[I]`). Disabled actions are hidden by default; set `show_disabled = true` to keep them visible but dimmed. See the Survivors demo HUD for a live example.
+
+## Children Switcher
+
+`UIFlowChildrenSwitcher` applies one discrete `state` across **multiple** NodePath targets at once (optional patches: `visible`, `modulate`, `scale`, `disabled`, `font_size`, …). That multi-child switch is the point — card selected/disabled, slot empty/filled, step indicators.
+
+```gdscript
+$CardSwitcher.set_state(1)                 # updates icon + title + detail + button together
+$CardSwitcher.set_state_by_name("selected")
+```
+
+In the editor, change **Preview State** to live-preview. Use **Bake Current State** to write that look into the scene baseline (and `initial_state`); casual saves restore the baseline so unrehearsed previews do not pollute the `.tscn`.
+
+See Free Hub → **Workflow Glue** for a multi-target card example plus the other glue components.
+
+## Workflow Glue
+
+Lightweight scene nodes that remove everyday UI boilerplate. Demo: Free Hub → **Workflow Glue**.
+
+| Component | Role |
+|---|---|
+| `UIFlowPageOpener` | Push / replace / async / instance-open a page from a Button |
+| `UIFlowPageCloser` | Pop / pop-to-root / close-by-script |
+| `UIFlowChildPool` | `ensure_count(n, init_fn)` — ReserveChildren without a data array |
+| `UIFlowInputRelay` | Local InputMap → signal (optional focus/visibility gates) |
+| `UIFlowHoldRepeater` | Hold-to-repeat ticks for steppers / fast scroll |
+| `UIFlowCooldownGate` | Rate-limit presses (`accepted` / `rejected`) |
+| `UIFlowVisibilityGroup` | Exactly one of N targets visible |
+| `UIFlowAutoFocus` | Grab focus on ready / when page shown again |
+
+```gdscript
+# Button with opener child — no pressed handler needed
+$OpenShopBtn/PageOpener.page_script = ShopPage
+$OpenShopBtn/PageOpener.mode = UIFlowPageOpener.Mode.PUSH
+
+# Fixed skill slots
+$SkillPool.ensure_count(6, func(slot, i): slot.setup(skills[i]))
+```
 
 ## Custom Components
 
