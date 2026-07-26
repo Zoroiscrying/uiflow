@@ -1,29 +1,16 @@
-# Normalize EOL for all files that Git considers text files.
+# Normalize line endings for all files that Git considers text files.
 * text=auto eol=lf
 
-# Exclude from Asset Library download
-/tests            export-ignore
-/tests/**         export-ignore
-/addons/gdUnit4   export-ignore
+# Godot Asset Library (Addons): only ship the plugin folder in the download ZIP.
+# See: https://docs.godotengine.org/en/stable/community/asset_library/submitting_to_assetlib.html
+/** export-ignore
+/addons !export-ignore
+/addons/** !export-ignore
+
+# Never ship the test harness even if it lives under addons/.
+/addons/gdUnit4 export-ignore
 /addons/gdUnit4/** export-ignore
-/reports          export-ignore
-/reports/**       export-ignore
-/docsite          export-ignore
-/docsite/**       export-ignore
-/scripts          export-ignore
-/scripts/**       export-ignore
-/.mirror-free     export-ignore
-/.mirror-free/**  export-ignore
-/.worktrees       export-ignore
-/.worktrees/**    export-ignore
-/.idea            export-ignore
-/.idea/**         export-ignore
-/.vscode          export-ignore
-/.vscode/**       export-ignore
-/gdscript_audit_report.md export-ignore
-/godot_compile7.log export-ignore
-"/NVIDIA Corporation" export-ignore
-"/NVIDIA Corporation/**" export-ignore
-/FREE_PRO_BOUNDARY.md export-ignore
-/MIRROR_STRATEGY.md export-ignore
-/Godot-Plugin-UI-Flow.csproj export-ignore
+
+# Pro must never appear in the Free Asset Library ZIP (belt-and-suspenders for the pro workspace).
+/addons/ui_flow_pro export-ignore
+/addons/ui_flow_pro/** export-ignore
