@@ -1,0 +1,261 @@
+/* UIFlow docs — same navy / paper / Godot-blue language as the product landing. */
+
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500&family=Sora:wght@400;500;600;700&display=swap");
+
+:root {
+  --uf-ink: #071422;
+  --uf-navy: #0c1f38;
+  --uf-navy-lift: #143052;
+  --uf-paper: #ebe4d6;
+  --uf-paper-deep: #d9cfbc;
+  --uf-mute: #8b96a8;
+  --uf-godot: #4a90c4;
+  --uf-teal: #3db8a8;
+  --uf-lilac: #9b8bc4;
+}
+
+/* ── Brand palette (Material custom) ─────────────────────────────────────── */
+
+:root,
+[data-md-color-scheme="default"],
+[data-md-color-scheme="slate"] {
+  --md-primary-fg-color: #0c1f38;
+  --md-primary-fg-color--light: #4a90c4;
+  --md-primary-fg-color--dark: #071422;
+  --md-primary-bg-color: #ebe4d6;
+  --md-primary-bg-color--light: rgba(235, 228, 214, 0.72);
+
+  --md-accent-fg-color: #4a90c4;
+  --md-accent-fg-color--transparent: rgba(74, 144, 196, 0.12);
+  --md-accent-bg-color: #ebe4d6;
+}
+
+[data-md-color-scheme="slate"] {
+  --md-hue: 212;
+  --md-default-fg-color: #e8eef7;
+  --md-default-fg-color--light: #c5d0e0;
+  --md-default-fg-color--lighter: #8b96a8;
+  --md-default-fg-color--lightest: rgba(235, 228, 214, 0.16);
+
+  --md-default-bg-color: #071422;
+  --md-default-bg-color--light: #0c1f38;
+  --md-default-bg-color--lighter: #143052;
+  --md-default-bg-color--lightest: rgba(20, 48, 82, 0.55);
+
+  --md-code-fg-color: #d7dde8;
+  --md-code-bg-color: #121c2b;
+
+  --md-footer-bg-color: #071422;
+  --md-footer-bg-color--dark: #050e18;
+  --md-footer-fg-color: #ebe4d6;
+  --md-footer-fg-color--light: #c5d0e0;
+  --md-footer-fg-color--lighter: #8b96a8;
+
+  --md-typeset-a-color: #7eb6de;
+  --md-typeset-mark-color: rgba(61, 184, 168, 0.35);
+}
+
+[data-md-color-scheme="default"] {
+  --md-default-fg-color: #14233a;
+  --md-default-fg-color--light: #3d4d66;
+  --md-default-fg-color--lighter: #6b7a90;
+  --md-default-fg-color--lightest: rgba(20, 48, 82, 0.14);
+
+  --md-default-bg-color: #f3eee4;
+  --md-default-bg-color--light: #ebe4d6;
+  --md-default-bg-color--lighter: #fffaf2;
+  --md-default-bg-color--lightest: #ffffff;
+
+  --md-code-fg-color: #1b2a40;
+  --md-code-bg-color: #e5ddd0;
+
+  --md-footer-bg-color: #0c1f38;
+  --md-footer-bg-color--dark: #071422;
+  --md-typeset-a-color: #2f6f9c;
+}
+
+/* ── Type ────────────────────────────────────────────────────────────────── */
+
+.md-typeset,
+.md-nav,
+.md-header,
+.md-footer,
+.md-tabs {
+  font-family: "Sora", "Segoe UI", sans-serif;
+}
+
+.md-typeset h1,
+.md-typeset h2,
+.md-typeset h3 {
+  font-family: "Fraunces", "Times New Roman", serif;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  color: inherit;
+}
+
+.md-typeset code,
+.md-typeset pre,
+.md-clipboard {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+}
+
+.md-header__title {
+  font-family: "Fraunces", serif;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.md-header__button.md-logo img,
+.md-header__button.md-logo svg {
+  height: 1.7rem;
+  width: auto;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+/* ── Header / tabs ───────────────────────────────────────────────────────── */
+
+.md-header {
+  background:
+    linear-gradient(180deg, rgba(74, 144, 196, 0.12), transparent 70%),
+    var(--md-primary-fg-color);
+  box-shadow: none;
+  border-bottom: 1px solid rgba(235, 228, 214, 0.12);
+  backdrop-filter: blur(10px);
+}
+
+.md-tabs {
+  background: rgba(7, 20, 34, 0.55);
+  border-bottom: 1px solid rgba(235, 228, 214, 0.08);
+}
+
+[data-md-color-scheme="default"] .md-tabs {
+  background: rgba(12, 31, 56, 0.94);
+}
+
+/* ── Content surface ─────────────────────────────────────────────────────── */
+
+.md-main {
+  background:
+    radial-gradient(ellipse 70% 40% at 100% 0%, rgba(74, 144, 196, 0.1), transparent 55%),
+    radial-gradient(ellipse 40% 30% at 0% 100%, rgba(61, 184, 168, 0.06), transparent 50%);
+}
+
+[data-md-color-scheme="default"] .md-main {
+  background:
+    radial-gradient(ellipse 60% 35% at 100% 0%, rgba(74, 144, 196, 0.12), transparent 55%),
+    var(--md-default-bg-color);
+}
+
+.md-typeset h1 {
+  font-size: clamp(1.9rem, 3.5vw, 2.55rem);
+}
+
+.md-typeset .admonition,
+.md-typeset details {
+  border-radius: 12px;
+}
+
+.md-typeset pre > code {
+  border-radius: 12px;
+  border: 1px solid rgba(235, 228, 214, 0.1);
+}
+
+[data-md-color-scheme="slate"] .md-typeset pre > code {
+  background: #121c2b;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+.md-typeset table:not([class]) {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--md-default-fg-color--lightest);
+}
+
+.md-typeset table:not([class]) th {
+  background: rgba(74, 144, 196, 0.14);
+  font-weight: 600;
+}
+
+/* Docs home hero */
+.uf-docs-hero {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1.25rem 1.5rem;
+  align-items: center;
+  margin: 0 0 1.75rem;
+  padding: 1.25rem 1.35rem;
+  border-radius: 18px;
+  border: 1px solid rgba(235, 228, 214, 0.16);
+  background:
+    linear-gradient(135deg, rgba(74, 144, 196, 0.16), rgba(61, 184, 168, 0.06));
+}
+
+[data-md-color-scheme="default"] .uf-docs-hero {
+  border-color: rgba(20, 48, 82, 0.12);
+  background: linear-gradient(135deg, rgba(74, 144, 196, 0.12), rgba(235, 228, 214, 0.65));
+}
+
+.uf-docs-hero img {
+  width: 88px;
+  height: 88px;
+  border-radius: 16px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.28);
+}
+
+.uf-docs-hero p {
+  margin: 0.35rem 0 0;
+  color: var(--md-default-fg-color--light);
+}
+
+.uf-docs-hero .uf-kicker {
+  margin: 0;
+  color: var(--uf-teal);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.uf-docs-hero h1 {
+  margin: 0.2rem 0 0;
+  border: 0;
+  padding: 0;
+}
+
+.uf-cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin-top: 0.9rem;
+}
+
+.uf-cta {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.45rem 0.9rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none !important;
+}
+
+.uf-cta-primary {
+  background: linear-gradient(135deg, #4a90c4, #356f9c);
+  color: #f7fbff !important;
+}
+
+.uf-cta-ghost {
+  border: 1px solid rgba(235, 228, 214, 0.28);
+  color: var(--md-default-fg-color) !important;
+}
+
+[data-md-color-scheme="default"] .uf-cta-ghost {
+  border-color: rgba(20, 48, 82, 0.2);
+}
+
+@media (max-width: 720px) {
+  .uf-docs-hero {
+    grid-template-columns: 1fr;
+  }
+}

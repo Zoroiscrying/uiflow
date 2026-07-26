@@ -1,6 +1,23 @@
-# UI Flow — Godot UI Workflow Framework
+# UIFlow
 
-A complete UI workflow framework for Godot 4.x — navigation, data binding, transitions, and components.
+<p align="center">
+  <img src="icon.png" alt="UIFlow — Godot UI workflow framework" width="220"/>
+</p>
+
+<p align="center">
+  <strong>Stack-based UI workflow for Godot 4.6</strong><br/>
+  Navigation · lifecycle · transitions · binding · gamepad prompts
+</p>
+
+<p align="center">
+  <a href="https://indieshade.github.io/uiflow/">Landing</a> ·
+  <a href="https://indieshade.github.io/uiflow/docs/">Docs</a> ·
+  <a href="https://github.com/indieshade/uiflow">GitHub</a>
+</p>
+
+---
+
+A complete UI workflow framework for Godot 4.x — push/pop pages by class, animate transitions, bind data, and ship gamepad-ready prompts without reinventing the stack every project.
 
 ## Features
 
@@ -9,7 +26,8 @@ A complete UI workflow framework for Godot 4.x — navigation, data binding, tra
 - **Transition System** — Built-in presets (fade, slide, scale) + custom transitions; preview enter/exit directly in the editor
 - **Data Binding** — Reactive Resource + Signal pattern for data-driven UI
 - **Event Bus** — Decoupled cross-system communication via native Signals
-- **Components** — Toast, Confirm Dialog, Alert Dialog, Inventory Grid (Pro)
+- **Components** — Toast, Confirm Dialog, Alert Dialog, Inventory Grid, workflow glue, input prompts
+- **Gamepad UX** — Focus navigation, ActionBar prompts, AxisBinder for stick-driven sliders
 - **Dual Language** — GDScript core with C# wrapper bridge
 - **Editor Tools (Pro)** — Pro Hub with Theme Editor, Page Viewer, Navigation Flow Graph, and UIFlowDebugger
 
@@ -57,7 +75,9 @@ When `addons/ui_flow_pro/` is enabled, the **UIFlow Pro Hub** dock provides:
 
 ## Documentation
 
-See `addons/ui_flow/docs/` for detailed documentation.
+- Product page: https://indieshade.github.io/uiflow/
+- Full docs: https://indieshade.github.io/uiflow/docs/
+- In-repo: `addons/ui_flow/docs/`
 
 ## License
 

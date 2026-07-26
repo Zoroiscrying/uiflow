@@ -1,11 +1,14 @@
-name: Deploy Docs to GitHub Pages
-# Trigger rebuild manually or on docsite changes.
+name: Deploy Landing + Docs to GitHub Pages
 on:
   push:
     branches:
       - main
     paths:
       - 'docsite/**'
+      - 'landing/**'
+      - 'branding/**'
+      - 'icon.png'
+      - 'README.md'
       - '.github/workflows/docs.yml'
   workflow_dispatch:
 
@@ -36,13 +39,16 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r docsite/requirements.txt
 
-      - name: Build site
-        run: mkdocs build --config-file docsite/mkdocs.yml
+      - name: Build landing + docs
+        run: |
+          mkdir -p _site
+          cp -R landing/. _site/
+          mkdocs build --config-file docsite/mkdocs.yml --site-dir _site/docs
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: docsite/site
+          path: _site
 
   deploy:
     if: github.repository == 'indieshade/uiflow'

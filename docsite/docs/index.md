@@ -1,8 +1,20 @@
-# UIFlow
+<div class="uf-docs-hero" markdown="0">
+  <img src="assets/icon.png" alt="UIFlow" width="88" height="88" />
+  <div>
+    <p class="uf-kicker">Godot 4.6 · Free MIT</p>
+    <h1>UIFlow Docs</h1>
+    <p>Stack-based page navigation, lifecycle, transitions, binding, and gamepad prompts — documented for shipping menus, not reinventing them.</p>
+    <div class="uf-cta-row">
+      <a class="uf-cta uf-cta-primary" href="https://indieshade.github.io/uiflow/">Product page</a>
+      <a class="uf-cta uf-cta-ghost" href="getting-started/installation/">Install Free</a>
+      <a class="uf-cta uf-cta-ghost" href="https://github.com/indieshade/uiflow">GitHub</a>
+    </div>
+  </div>
+</div>
 
 UIFlow is a UI workflow framework for **Godot 4.6+**. It provides stack-based page navigation, page lifecycle management, transition animations, data binding, an event bus, and a set of reusable UI components.
 
-This documentation covers the **UIFlow Free** plugin only. Pro plugin features are not documented here.
+This documentation covers the **UIFlow Free** plugin. Pro features are called out in the [Pro](pro/index.md) section where relevant.
 
 ## Key Features
 
@@ -12,7 +24,8 @@ This documentation covers the **UIFlow Free** plugin only. Pro plugin features a
 - **Data binding**: `bind_property`, `bind_signal`, `bind_list`. Bindings are automatically cleaned up when a page closes.
 - **Event bus**: pub/sub, sticky values, one-shot subscriptions, and auto-cleanup by subscriber.
 - **Async / Timeline**: combine animations and async logic with `await`.
-- **Reusable components**: Toast, Confirm / Alert dialogs, DataGrid, VirtualList, Tooltip, and more.
+- **Reusable components**: Toast, Confirm / Alert dialogs, DataGrid, VirtualList, Tooltip, workflow glue, input prompts, and more.
+- **Gamepad UX**: top-page focus navigation, device-aware ActionBar prompts, AxisBinder for stick-driven sliders.
 
 ## Use Cases
 

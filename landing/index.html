@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>UIFlow — Godot UI workflow framework</title>
+  <meta name="description" content="Stack-based page navigation, lifecycle, transitions, binding, and gamepad prompts for Godot 4.6." />
+  <meta property="og:title" content="UIFlow" />
+  <meta property="og:description" content="Ship Godot UI as a workflow — not a pile of scenes." />
+  <meta property="og:image" content="assets/godot-ui-flow.png" />
+  <link rel="icon" type="image/png" href="assets/godot-ui-flow.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=IBM+Plex+Mono:wght@400;500&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+
+  <header class="top">
+    <a class="brand" href="./">
+      <img src="assets/godot-ui-flow.png" alt="" width="36" height="36" />
+      <span>UIFlow</span>
+    </a>
+    <nav class="top-nav">
+      <a href="#flow">Flow</a>
+      <a href="#features">Features</a>
+      <a href="#code">Code</a>
+      <a href="docs/">Docs</a>
+      <a class="btn btn-sm" href="https://github.com/indieshade/uiflow">GitHub</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">Godot 4.6 · Free MIT</p>
+        <h1>UIFlow</h1>
+        <p class="lede">
+          Treat menus like a stack, not a spaghetti of scenes.
+          Push pages by class, animate the handoff, bind data, and keep gamepad prompts honest.
+        </p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="https://github.com/indieshade/uiflow">Get Free plugin</a>
+          <a class="btn btn-ghost" href="docs/getting-started/installation/">Read the docs</a>
+        </div>
+        <p class="meta">GDScript core · C# bridge · Asset Library ready</p>
+      </div>
+      <div class="hero-art">
+        <div class="paper-glow" aria-hidden="true"></div>
+        <img
+          class="hero-icon"
+          src="assets/godot-ui-flow.png"
+          alt="UIFlow icon — a paper page with Godot mark and a UI flowchart"
+          width="640"
+          height="640"
+        />
+      </div>
+    </section>
+
+    <section class="strip" id="flow" aria-label="How UIFlow thinks">
+      <ol class="flow-rail">
+        <li>
+          <span class="node node-page">Page</span>
+          <span class="caption">class_name scene</span>
+        </li>
+        <li class="rail" aria-hidden="true"></li>
+        <li>
+          <span class="node node-decision">Push</span>
+          <span class="caption">stack + lifecycle</span>
+        </li>
+        <li class="rail" aria-hidden="true"></li>
+        <li>
+          <span class="node node-panel">Transition</span>
+          <span class="caption">fade · slide · custom</span>
+        </li>
+        <li class="rail" aria-hidden="true"></li>
+        <li>
+          <span class="node node-ok">Ready</span>
+          <span class="caption">focus · prompts · bind</span>
+        </li>
+      </ol>
+    </section>
+
+    <section class="features" id="features">
+      <div class="section-head">
+        <h2>Built for the menu you ship twice</h2>
+        <p>Pause, shop, inventory, dialogue — the same stack, the same lifecycle, fewer one-off managers.</p>
+      </div>
+      <div class="feature-list">
+        <article>
+          <h3>Stack navigation</h3>
+          <p><code>UIFlow.push(ShopPage)</code> resolves the scene, runs enter/exit hooks, and keeps modal pages from leaking input downward.</p>
+        </article>
+        <article>
+          <h3>Gamepad-native UX</h3>
+          <p>Directional focus stays on the top page. ActionBar chips follow the last device. AxisBinder maps the right stick onto sliders.</p>
+        </article>
+        <article>
+          <h3>Workflow glue</h3>
+          <p>PageOpener, VisibilityGroup, ChildPool, ChildrenSwitcher — scene-local helpers so buttons don’t grow custom scripts.</p>
+        </article>
+        <article>
+          <h3>Pro when you need depth</h3>
+          <p>Theme Editor, page graph, DataGrid, TreeView, Survivors demo — productivity on top of the same Free core.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="code-block" id="code">
+      <div class="section-head">
+        <h2>One class. One push.</h2>
+        <p>Scenes live under <code>res://UIScene/</code>. Routing talks in types, not path strings.</p>
+      </div>
+      <pre class="sheet" tabindex="0"><code><span class="k">class_name</span> HomePage <span class="k">extends</span> UIFlowPage
+
+<span class="k">func</span> <span class="f">_on_opened</span>(data: Variant = <span class="k">null</span>) -> <span class="k">void</span>:
+    UIFlow.set_default_focus($PlayButton)
+
+<span class="k">func</span> <span class="f">_on_back</span>() -> <span class="k">void</span>:
+    UIFlow.push(SettingsPage)</code></pre>
+    </section>
+
+    <section class="closing">
+      <div class="closing-card">
+        <img src="assets/godot-ui-flow.png" alt="" width="88" height="88" />
+        <div>
+          <h2>Start with Free. Grow into Pro.</h2>
+          <p>MIT core for every project. Pro adds editor tooling and advanced components when the UI graph gets serious.</p>
+          <div class="cta-row">
+            <a class="btn btn-primary" href="https://github.com/indieshade/uiflow">GitHub · Free</a>
+            <a class="btn btn-ghost" href="docs/">Open documentation</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <span>UIFlow by <a href="https://github.com/indieshade">IndieShade</a></span>
+    <span>MIT License</span>
+    <a href="docs/zh/">中文文档</a>
+  </footer>
+
+  <script>
+    (() => {
+      const root = document.documentElement;
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (reduce) return;
+      const icon = document.querySelector(".hero-icon");
+      if (!icon) return;
+      window.addEventListener("pointermove", (e) => {
+        const x = (e.clientX / window.innerWidth - 0.5) * 8;
+        const y = (e.clientY / window.innerHeight - 0.5) * 8;
+        icon.style.transform = `translate3d(${x}px, ${y}px, 0) rotate(${x * 0.15}deg)`;
+      }, { passive: true });
+      root.classList.add("motion-on");
+    })();
+  </script>
+</body>
+</html>

@@ -1,35 +1,46 @@
 site_name: UIFlow Docs
-site_url: https://indieshade.github.io/uiflow/
-site_author: UIFlow
-site_description: UIFlow - Godot 4 UI workflow framework documentation
+site_url: https://indieshade.github.io/uiflow/docs/
+site_author: IndieShade
+site_description: UIFlow — Godot 4 UI workflow framework documentation
 
 theme:
   name: material
+  custom_dir: overrides
   language: en
+  logo: assets/icon.png
+  favicon: assets/icon.png
+  font:
+    text: Sora
+    code: IBM Plex Mono
   palette:
-    - media: "(prefers-color-scheme: light)"
-      scheme: default
-      primary: indigo
-      accent: indigo
-      toggle:
-        icon: material/brightness-7
-        name: Switch to dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
-      primary: indigo
-      accent: indigo
+      primary: custom
+      accent: custom
       toggle:
-        icon: material/brightness-4
-        name: Switch to light mode
+        icon: material/weather-night
+        name: Switch to paper light
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/white-balance-sunny
+        name: Switch to navy dark
   features:
     - navigation.tabs
     - navigation.sections
     - navigation.expand
     - navigation.top
+    - navigation.indexes
     - search.suggest
     - search.highlight
     - content.code.copy
     - content.code.annotate
+    - toc.follow
+
+extra_css:
+  - stylesheets/uiflow.css
 
 plugins:
   - search:
@@ -42,6 +53,7 @@ plugins:
         - locale: zh
           name: 中文
           nav_translations:
+            Product: 产品页
             Home: 首页
             Getting Started: 快速开始
             Installation: 安装与配置
@@ -53,6 +65,7 @@ plugins:
             Event Bus: 事件总线
             Components: 内置组件
             Timeline & Async: Timeline 与 Async
+            Gamepad UI: 手柄 UI
             Examples: 示例
             Demo Hub: Demo Hub
             3D World Demo: 3D 世界示例
@@ -81,13 +94,17 @@ markdown_extensions:
       permalink: true
 
 extra:
+  homepage: https://indieshade.github.io/uiflow/
+  product_url: https://indieshade.github.io/uiflow/
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/indieshade/uiflow
-  version:
-    provider: mike
+  generator: false
+
+copyright: UIFlow by <a href="https://github.com/indieshade">IndieShade</a> · MIT
 
 nav:
+  - Product: https://indieshade.github.io/uiflow/
   - Home: index.md
   - Getting Started:
       - Installation: getting-started/installation.md
