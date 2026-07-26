@@ -43,7 +43,12 @@ jobs:
         run: |
           mkdir -p _site
           cp -R landing/. _site/
-          mkdocs build --config-file docsite/mkdocs.yml --site-dir _site/docs
+          # Paths in mkdocs.yml are relative to the config file directory, so use an
+          # absolute site-dir; otherwise docs land in docsite/_site and never get uploaded.
+          mkdocs build --config-file docsite/mkdocs.yml --site-dir "$GITHUB_WORKSPACE/_site/docs"
+          test -f _site/index.html
+          test -f _site/docs/index.html
+          ls -la _site _site/docs | head -n 40
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
